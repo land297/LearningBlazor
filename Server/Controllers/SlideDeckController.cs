@@ -19,8 +19,8 @@ namespace Learning.Server.Controllers {
         [HttpPost]
         public async Task<IActionResult> Post(SlideDeck slideDeck) {
             var result = await _slideDeckRepo.Add(slideDeck);
-            if (result == 0) {
-                return BadRequest("Could not save to databse");
+            if (!result.Success) {
+                return BadRequest(result.Message);
             } else {
                 return Ok(slideDeck.Id);
             }

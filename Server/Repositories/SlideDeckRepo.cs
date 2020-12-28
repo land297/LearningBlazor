@@ -1,4 +1,5 @@
 ﻿using Learning.Server.DbContext;
+using Learning.Shared;
 using Learning.Shared.DbModels;
 using Learning.Shared.Extensions;
 using System;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface ISlideDeckRepo {
-        Task<int> Add(SlideDeck slideDeck);
+        Task<sr<int>> Add(SlideDeck slideDeck);
     }
 
     public class SlideDeckRepo : ISlideDeckRepo {
@@ -17,15 +18,16 @@ namespace Learning.Server.Repositories {
         public SlideDeckRepo(AppDbContext dbContext) {
             _dbContext = dbContext;
         }
-        public async Task<int> Add(SlideDeck slideDeck) {
+        public async Task<sr<int>> Add(SlideDeck slideDeck) {
+            var response = sr<int>.Get();
             try {
                 await _dbContext.SlideDecks.AddAsync(slideDeck);
                 await _dbContext.SaveChangesAsync();
-
-                return slideDeck.Id;
-            } catch {
-                return 0;
+                response.SetSuccess(slideDeck.Id);
+            } catch (Exception e){
+                response.Message = e.Message;
             }
+            return response;
         }
     }
 }
