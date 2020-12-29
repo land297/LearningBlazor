@@ -26,6 +26,6 @@ namespace Learning.Shared.DbModels {
         public bool IsPublished { get { return Published > DateTime.MinValue; } }
         public bool Featured { get; set; }
         public AccessLevel AccessLevel { get; set; }
-        public IList<Slide> Slides { get; set; }
+        public IList<Slide> Slides { get; set; } = new List<Slide>();
     }
 }

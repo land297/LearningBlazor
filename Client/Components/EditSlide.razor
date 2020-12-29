@@ -1,0 +1,62 @@
+﻿@using Learning.Shared.DbModels
+@using Syncfusion.Blazor.RichTextEditor
+<MudPaper Elevation="3" Class="pa-2 mx-2">
+    @*<MudText Typo="Typo.h6">Page: (@Index)</MudText>*@
+    <MudText Typo="Typo.subtitle1">Description</MudText>
+    <SfRichTextEditor @bind-Value="SlideTextValue">
+        <RichTextEditorToolbarSettings Items="@Tools" Type="ToolbarType.MultiRow" />
+    </SfRichTextEditor>
+    <MudSelect T="string" Label="Video" ValueChanged="SelectedVideo">
+        @if (Videos != null) {
+            foreach (var video in Videos) {
+                <MudSelectItem Value="@(video.DisplayName)" />
+            }
+        }
+    </MudSelect>
+    @if (!string.IsNullOrWhiteSpace(SlideVideoUrlValue)) {
+        <BlazoredVideo @ref="MyBlazorVideo" class="w-100"
+                       style="max-width:400px;"
+                       controls="controls">
+            <source src="@SlideVideoUrlValue" type="video/mp4" />
+        </BlazoredVideo>
+    }
+
+</MudPaper>
+
+@code {
+    [Parameter]
+    public Slide Slide { get; set; }
+    [Parameter]
+    public List<Media> Videos { get; set; }
+    [Parameter]
+    public int Index { get; set; }
+
+    private string SlideTextValue = string.Empty;
+    private string SlideVideoUrlValue = string.Empty;
+
+    BlazoredVideo MyBlazorVideo;
+
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+{
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.StrikeThrough },
+
+        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+    };
+    public void SelectedVideo(string value) {
+        var video = Videos.FirstOrDefault(v => v.DisplayName == value);
+        SlideVideoUrlValue = video.FullFileName;
+        //MyBlazorVideo.StalledReloadControl();
+        //MyBlazorVideo.ReloadControl();
+        //await JSRuntime.InvokeVoidAsync("Blazored.invoke", "MyBlazorVideo", "pause");
+
+
+        // TODO : chaning video after first selection doesn't work. waiting for update on library
+
+    }
+}
