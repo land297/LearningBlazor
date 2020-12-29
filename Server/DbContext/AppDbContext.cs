@@ -12,7 +12,8 @@ namespace Learning.Server.DbContext {
         public DbSet<User> Users { get; set; }
         public DbSet<Slide> Slides { get; set; }
         public DbSet<SlideDeck> SlideDecks { get; set; }
- 
-    
+        public DbSet<Media> Media { get; set; }
+
+
     }
 }

@@ -11,6 +11,8 @@ namespace Learning.Shared.DbModels {
         public int Id { get; set; }
         public int AuthorId { get; set; }
         public User Author { get; set; }
+        [RegularExpression("^[a-z0-9-]+$", ErrorMessage = "Slug format not valid.")]
+        [StringLength(160)]
         public string Slug { get; set; }
         [Required]
         public string Title { get; set; }
