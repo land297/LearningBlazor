@@ -28,4 +28,23 @@ namespace Learning.Shared.DbModels {
         public AccessLevel AccessLevel { get; set; }
         public IList<Slide> Slides { get; set; } = new List<Slide>();
     }
+    public class SlideDeckDTO {
+        public int AuthorId { get; set; }
+        public User Author { get; set; }
+        [RegularExpression("^[a-z0-9-]+$", ErrorMessage = "Slug format not valid.")]
+        [StringLength(160)]
+        public string Slug { get; set; }
+        [Required]
+        public string Title { get; set; }
+        [Required]
+        public string Description { get; set; }
+        public string Categories { get; set; }
+        public string CoverImage { get; set; }
+        public int Views { get; set; }
+        public double Rating { get; set; }
+        public DateTime Published { get; set; }
+        public bool IsPublished { get { return Published > DateTime.MinValue; } }
+        public bool Featured { get; set; }
+        public IList<SlideDTO> Slides { get; set; } = new List<SlideDTO>();
+    }
 }

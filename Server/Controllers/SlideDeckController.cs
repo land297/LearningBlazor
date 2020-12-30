@@ -22,7 +22,7 @@ namespace Learning.Server.Controllers {
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
-                return Ok(slideDeck.Id);
+                return Ok(slideDeck);
             }
         }
     }

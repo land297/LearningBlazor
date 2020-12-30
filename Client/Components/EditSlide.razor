@@ -3,7 +3,7 @@
 <MudPaper Elevation="3" Class="pa-2 mx-2">
     @*<MudText Typo="Typo.h6">Page: (@Index)</MudText>*@
     <MudText Typo="Typo.subtitle1">Description</MudText>
-    <SfRichTextEditor @bind-Value="SlideTextValue">
+    <SfRichTextEditor @bind-Value="Slide.TextContent">
         <RichTextEditorToolbarSettings Items="@Tools" Type="ToolbarType.MultiRow" />
     </SfRichTextEditor>
     <MudSelect T="string" Label="Video" ValueChanged="SelectedVideo">
@@ -13,14 +13,14 @@
             }
         }
     </MudSelect>
-    @if (!string.IsNullOrWhiteSpace(SlideVideoUrlValue)) {
+    @if (!string.IsNullOrWhiteSpace(Slide.VideoUrl)) {
         <BlazoredVideo @ref="MyBlazorVideo" class="w-100"
                        style="max-width:400px;"
                        controls="controls">
-            <source src="@SlideVideoUrlValue" type="video/mp4" />
+            <source src="@Slide.VideoUrl" type="video/mp4" />
         </BlazoredVideo>
     }
-
+    <MudIconButton Icon="@Icons.Material.Delete" OnClick="@(() => OnDelete.InvokeAsync(Slide))"></MudIconButton>
 </MudPaper>
 
 @code {
@@ -30,6 +30,8 @@
     public List<Media> Videos { get; set; }
     [Parameter]
     public int Index { get; set; }
+    [Parameter]
+    public EventCallback<Slide> OnDelete { get; set; }
 
     private string SlideTextValue = string.Empty;
     private string SlideVideoUrlValue = string.Empty;
@@ -51,6 +53,7 @@
     public void SelectedVideo(string value) {
         var video = Videos.FirstOrDefault(v => v.DisplayName == value);
         SlideVideoUrlValue = video.FullFileName;
+        Slide.VideoUrl = video.FullFileName;
         //MyBlazorVideo.StalledReloadControl();
         //MyBlazorVideo.ReloadControl();
         //await JSRuntime.InvokeVoidAsync("Blazored.invoke", "MyBlazorVideo", "pause");

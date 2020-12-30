@@ -2,7 +2,9 @@
 @using Learning.Shared.DbModels
 
 @inject Learning.Client.Services.IVideoService VideoService
+@inject Learning.Client.Services.ISlideDeckService SlideDeckService
 @inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
 
 <MudGrid>
     <MudItem xs="12" sm="6">
@@ -14,23 +16,21 @@
         </MudPaper>
         @if (SlideDeck.Slides != null) {
             @foreach (var slide in SlideDeck.Slides) {
-            <MudContainer Class="pa-2 mx-2">
-                <Learning.Client.Components.EditSlide Slide="slide" Videos="Videos"></Learning.Client.Components.EditSlide>
-            </MudContainer>
-                
+                <MudContainer Class="pa-2 mx-2">
+                    <Learning.Client.Components.EditSlide Slide="slide" Videos="Videos" OnDelete="DeleteSlide"></Learning.Client.Components.EditSlide>
+                </MudContainer>
+
             }
         }
-
-            </MudItem>
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudIconButton Icon="@Icons.Material.Save" OnClick="SaveSlideDeck"></MudIconButton>
+        </MudPaper>
+    </MudItem>
 </MudGrid>
 
 @code {
     private SlideDeck SlideDeck = new SlideDeck();
-
     private List<Media> Videos;
-
-
-
 
     protected override async Task OnInitializedAsync() {
         var r = await VideoService.GetVideos();
@@ -45,9 +45,19 @@
     public void AddSlide(MouseEventArgs e) {
         SlideDeck.Slides.Add(new Slide());
     }
-    public async void Save() {
-        //await ContentService.SaveExercise(Exercise);
+
+    void DeleteSlide(Slide slide) {
+        foreach (var s in SlideDeck.Slides) {
+            Console.WriteLine(slide == s);
+        }
+        SlideDeck.Slides.Remove(slide);
     }
-
-
+    async Task SaveSlideDeck() {
+        var response = await SlideDeckService.Save(SlideDeck);
+        if (response.Success) {
+            Snackbar.Add($"Saved", Severity.Success);
+        } else {
+            Snackbar.Add($"Could not save. Error: {response.Message}", Severity.Error);
+        }
+    }
 }

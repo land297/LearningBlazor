@@ -30,7 +30,9 @@ namespace Learning.Client {
             builder.Services.AddSyncfusionBlazor();
 
             builder.Services.AddScoped<IVideoService, VideoService>();
+            builder.Services.AddScoped<ISlideDeckService, SlideDeckService>();
             
+
             await builder.Build().RunAsync();
         }
     }
