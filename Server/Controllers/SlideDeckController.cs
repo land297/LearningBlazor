@@ -25,5 +25,23 @@ namespace Learning.Server.Controllers {
                 return Ok(slideDeck);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> Get() {
+            var result = await _slideDeckRepo.Get();
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
+        [HttpGet("contentcreator")]
+        public async Task<IActionResult> GetAsContentCreator() {
+            var result = await _slideDeckRepo.GetAsContentCreator();
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
     }
 }
