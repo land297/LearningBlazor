@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 namespace Learning.Client.Services {
     public interface ISlideDeckService {
         Task<sr<SlideDeck>> Save(SlideDeck slideDeck);
+        Task<sr<List<SlideDeck>>> GetPublished();
+        Task<sr<List<SlideDeck>>> GetAsContentCreator();
     }
 
     public class SlideDeckService : ISlideDeckService {
@@ -29,6 +31,27 @@ namespace Learning.Client.Services {
                 return sr<SlideDeck>.GetSuccess(slideDeck);
             }
             return sr<SlideDeck>.Get();
+        }
+
+        public async Task<sr<List<SlideDeck>>> GetPublished() {
+            return await Get(true);
+        }
+        public async Task<sr<List<SlideDeck>>> GetAsContentCreator() {
+            return await Get(false);
+        }
+        private async Task<sr<List<SlideDeck>>> Get(bool onlyPublished) {
+            HttpResponseMessage response;
+            if (onlyPublished) {
+                response = await _http.GetAsync("api/slideDeck");
+            } else {
+                response = await _http.GetAsync("api/slideDeck/contentcreator");
+            }
+            if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var data = await stream.DeserializeJsonCamelCaseAsync<List<SlideDeck>>();
+                return sr<List<SlideDeck>>.GetSuccess(data);
+            }
+            return sr<List<SlideDeck>>.Get();
         }
     }
 }
