@@ -19,7 +19,7 @@ namespace Learning.Server.Controllers {
         [HttpPost]
         public async Task<IActionResult> Post(SlideDeck slideDeck) {
             //TODO: check if user is authorized
-            var result = await _slideDeckRepo.Add(slideDeck);
+            var result = await _slideDeckRepo.Save(slideDeck);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {

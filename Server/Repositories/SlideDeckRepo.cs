@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface ISlideDeckRepo {
-        Task<sr<SlideDeck>> Add(SlideDeck slideDeck);
+        Task<sr<SlideDeck>> Save(SlideDeck slideDeck);
         Task<sr<List<SlideDeck>>> Get();
         Task<sr<List<SlideDeck>>> GetAsContentCreator();
         Task<sr<SlideDeck>> Get(int id);
@@ -22,11 +22,16 @@ namespace Learning.Server.Repositories {
         public SlideDeckRepo(AppDbContext dbContext) {
             _dbContext = dbContext;
         }
-        public async Task<sr<SlideDeck>> Add(SlideDeck slideDeck) {
+        public async Task<sr<SlideDeck>> Save(SlideDeck slideDeck) {
             var response = sr<SlideDeck>.Get();
             try {
-                if (slideDeck.Id != default(int)) { 
-                await _dbContext.SlideDecks.AddAsync(slideDeck);
+                if (slideDeck.Id != default(int)) {
+                    var slideDeckInDb = await _dbContext.SlideDecks.Include(sd => sd.Slides).FirstOrDefaultAsync(sd => sd.Id == slideDeck.Id);
+                    slideDeckInDb.CopyValues(slideDeck);
+                    //_dbContext.Update(slideDeckInDb);
+                } else {
+                    await _dbContext.SlideDecks.AddAsync(slideDeck);
+                }
                 await _dbContext.SaveChangesAsync();
                 response.SetSuccess(slideDeck);
             } catch (Exception e){

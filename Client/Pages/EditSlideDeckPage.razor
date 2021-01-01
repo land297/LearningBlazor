@@ -8,9 +8,14 @@
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
 
-<Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck" OnSave="SaveSlideDeck" Videos="Videos"></Learning.Client.Components.EditSlideDeck>
+@if (!hasLoaded) {
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+} else {
+    <Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck" OnSave="SaveSlideDeck" Videos="Videos"></Learning.Client.Components.EditSlideDeck>
 
-<MudButton OnClick="TestApa">Tet</MudButton>
+    <MudButton OnClick="TestApa">Tet</MudButton>
+}
 @code {
     [Parameter]
     public int Id { get; set; }
@@ -20,6 +25,7 @@
     private SlideDeck SlideDeck = new SlideDeck();
     private List<Media> Videos;
 
+    private bool hasLoaded = false;
     protected override async Task OnInitializedAsync() {
         var r = await VideoService.GetVideos();
         if (r.Success) {
@@ -36,6 +42,7 @@
                 Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
             }
         }
+        hasLoaded = true;
     }
     async Task TestApa() {
         var sr = await SlideDeckService.Get(3);
