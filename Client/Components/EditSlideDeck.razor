@@ -1,0 +1,41 @@
+﻿@using Learning.Shared.DbModels
+
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudText Typo="Typo.h6">SlideDeck</MudText>
+            <MudTextField @bind-Value="SlideDeck.Title" Label="Title" Variant="Variant.Text"></MudTextField>
+            <MudTextField @bind-Value="SlideDeck.Description" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
+            <MudFab Color="Color.Secondary" Icon="@Icons.Material.Add" Size="Size.Small" OnClick="AddSlide" />
+        </MudPaper>
+        @if (SlideDeck.Slides != null) {
+            @foreach (var slide in SlideDeck.Slides) {
+                <MudContainer Class="pa-2 mx-2">
+                    <Learning.Client.Components.EditSlide Slide="slide" Videos="Videos" OnDelete="DeleteSlide"></Learning.Client.Components.EditSlide>
+                </MudContainer>
+
+            }
+        }
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudIconButton Icon="@Icons.Material.Save" OnClick="(() => OnSave.InvokeAsync(SlideDeck))"></MudIconButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public SlideDeck SlideDeck { get; set; }
+    [Parameter]
+    public EventCallback<SlideDeck> OnSave { get; set; }
+    [Parameter]
+    public List<Media> Videos { get; set; }
+
+    public void AddSlide(MouseEventArgs e) {
+        SlideDeck.Slides.Add(new Slide());
+    }
+    void DeleteSlide(Slide slide) {
+        foreach (var s in SlideDeck.Slides) {
+            Console.WriteLine(slide == s);
+        }
+        SlideDeck.Slides.Remove(slide);
+    }
+}

@@ -6,27 +6,7 @@
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
 
-<MudGrid>
-    <MudItem xs="12" sm="6">
-        <MudPaper Elevation="3" Class="pa-2 mx-2">
-            <MudText Typo="Typo.h6">SlideDeck</MudText>
-            <MudTextField @bind-Value="SlideDeck.Title" Label="Title" Variant="Variant.Text"></MudTextField>
-            <MudTextField @bind-Value="SlideDeck.Description" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
-            <MudFab Color="Color.Secondary" Icon="@Icons.Material.Add" Size="Size.Small" OnClick="AddSlide" />
-        </MudPaper>
-        @if (SlideDeck.Slides != null) {
-            @foreach (var slide in SlideDeck.Slides) {
-                <MudContainer Class="pa-2 mx-2">
-                    <Learning.Client.Components.EditSlide Slide="slide" Videos="Videos" OnDelete="DeleteSlide"></Learning.Client.Components.EditSlide>
-                </MudContainer>
-
-            }
-        }
-        <MudPaper Elevation="3" Class="pa-2 mx-2">
-            <MudIconButton Icon="@Icons.Material.Save" OnClick="SaveSlideDeck"></MudIconButton>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+<Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck" OnSave="SaveSlideDeck" Videos="Videos"></Learning.Client.Components.EditSlideDeck>
 
 @code {
     private SlideDeck SlideDeck = new SlideDeck();
@@ -42,16 +22,9 @@
 
         await Task.Delay(100);
     }
-    public void AddSlide(MouseEventArgs e) {
-        SlideDeck.Slides.Add(new Slide());
-    }
 
-    void DeleteSlide(Slide slide) {
-        foreach (var s in SlideDeck.Slides) {
-            Console.WriteLine(slide == s);
-        }
-        SlideDeck.Slides.Remove(slide);
-    }
+
+
     async Task SaveSlideDeck() {
         var response = await SlideDeckService.Save(SlideDeck);
         if (response.Success) {
