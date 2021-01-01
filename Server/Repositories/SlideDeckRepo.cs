@@ -13,6 +13,7 @@ namespace Learning.Server.Repositories {
         Task<sr<SlideDeck>> Add(SlideDeck slideDeck);
         Task<sr<List<SlideDeck>>> Get();
         Task<sr<List<SlideDeck>>> GetAsContentCreator();
+        Task<sr<SlideDeck>> Get(int id);
     }
 
     public class SlideDeckRepo : ISlideDeckRepo {
@@ -24,6 +25,7 @@ namespace Learning.Server.Repositories {
         public async Task<sr<SlideDeck>> Add(SlideDeck slideDeck) {
             var response = sr<SlideDeck>.Get();
             try {
+                if (slideDeck.Id != default(int)) { 
                 await _dbContext.SlideDecks.AddAsync(slideDeck);
                 await _dbContext.SaveChangesAsync();
                 response.SetSuccess(slideDeck);
@@ -49,6 +51,20 @@ namespace Learning.Server.Repositories {
                     response.SetSuccess(list);
                 }
             } catch (Exception e) {
+                response.Message = e.Message;
+            }
+            return response;
+        }
+        public async Task<sr<SlideDeck>> Get(int id) {
+            //TODO: WTF does not id 3 work when debugging?!
+            System.Diagnostics.Debug.WriteLine(id);
+            var response = sr<SlideDeck>.Get();
+            try {
+                var sd = await _dbContext.SlideDecks.Include(sd => sd.Slides).FirstOrDefaultAsync(sd => sd.Id == id);
+                System.Diagnostics.Debug.WriteLine(sd);
+                response.SetSuccess(sd);
+            } catch (Exception e) {
+                System.Diagnostics.Debug.WriteLine(e.Message);
                 response.Message = e.Message;
             }
             return response;

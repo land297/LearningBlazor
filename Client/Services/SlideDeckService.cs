@@ -13,6 +13,7 @@ namespace Learning.Client.Services {
         Task<sr<SlideDeck>> Save(SlideDeck slideDeck);
         Task<sr<List<SlideDeck>>> GetPublished();
         Task<sr<List<SlideDeck>>> GetAsContentCreator();
+        Task<sr<SlideDeck>> Get(int id);
     }
 
     public class SlideDeckService : ISlideDeckService {
@@ -32,7 +33,21 @@ namespace Learning.Client.Services {
             }
             return sr<SlideDeck>.Get();
         }
-
+        public async Task<sr<SlideDeck>> Get(int id) {
+            //TODO: id 3 issues
+            try {
+                var response = await _http.GetAsync($"api/slideDeck/{id}");
+                if (response.IsSuccessStatusCode) {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    var slideDeck = await stream.DeserializeJsonCamelCaseAsync<SlideDeck>();
+                    return sr<SlideDeck>.GetSuccess(slideDeck);
+                }
+                return sr<SlideDeck>.Get(response.ReasonPhrase);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+                return sr<SlideDeck>.Get(e.Message);
+            }
+        }
         public async Task<sr<List<SlideDeck>>> GetPublished() {
             return await Get(true);
         }

@@ -1,0 +1,58 @@
+﻿@page "/editSlideDeck/{id:int}"
+@page "/editSlideDeck/{slug}"
+
+@using Learning.Shared.DbModels
+
+@inject Learning.Client.Services.IVideoService VideoService
+@inject Learning.Client.Services.ISlideDeckService SlideDeckService
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+
+<Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck" OnSave="SaveSlideDeck" Videos="Videos"></Learning.Client.Components.EditSlideDeck>
+
+<MudButton OnClick="TestApa">Tet</MudButton>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string Slug { get; set; }
+
+    private SlideDeck SlideDeck = new SlideDeck();
+    private List<Media> Videos;
+
+    protected override async Task OnInitializedAsync() {
+        var r = await VideoService.GetVideos();
+        if (r.Success) {
+            Videos = r.Data;
+        } else {
+            Snackbar.Add($"Could not load video source. Error: {r.Message}", Severity.Error);
+        }
+
+        if (Id != default(int)) {
+            var sr = await SlideDeckService.Get(Id);
+            if (sr.Success) {
+                SlideDeck = sr.Data;
+            } else {
+                Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+            }
+        }
+    }
+    async Task TestApa() {
+        var sr = await SlideDeckService.Get(3);
+        if (sr.Success) {
+            SlideDeck = sr.Data;
+        } else {
+            Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+        }
+    }
+
+
+    async Task SaveSlideDeck() {
+        var response = await SlideDeckService.Save(SlideDeck);
+        if (response.Success) {
+            Snackbar.Add($"Saved", Severity.Success);
+        } else {
+            Snackbar.Add($"Could not save. Error: {response.Message}", Severity.Error);
+        }
+    }
+}
