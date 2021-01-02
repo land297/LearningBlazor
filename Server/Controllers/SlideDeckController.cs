@@ -44,7 +44,9 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
-        [HttpGet("{id}")]
+
+        //TODO: refactor get methods
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
             // TODO: need to check if user can get unpublished or not
             var result = await _slideDeckRepo.Get(id);
@@ -53,6 +55,30 @@ namespace Learning.Server.Controllers {
             } else {
                 return Ok(result.Data);
             }
+        }
+        [HttpGet("{slug}")]
+        public async Task<IActionResult> Get(string slug) {
+            // TODO: need to check if user can get unpublished or not
+            var result = await _slideDeckRepo.Get(slug);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
+        private async Task<IActionResult> Get(int id, string slug) {
+            // TODO: need to check if user can get unpublished or not
+            
+            //if (id != default(int)) {
+            //    var result = await _slideDeckRepo.Get(id);
+            //} else {
+            //    var result = await _slideDeckRepo.Get(slug);
+            //}
+            //if (!result.Success) {
+            //    return BadRequest(result.Message);
+            //} else {
+            //    return Ok(result.Data);
+            //}
         }
     }
 }

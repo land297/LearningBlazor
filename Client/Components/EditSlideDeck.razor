@@ -7,7 +7,10 @@
             <MudTextField @bind-Value="SlideDeck.Title" Label="Title" Variant="Variant.Text"></MudTextField>
             <MudTextField @bind-Value="SlideDeck.Description" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
             @if (!string.IsNullOrWhiteSpace(SlideDeck.CoverImage)) {
-                <img class="rounded m-2" src="@SlideDeck.CoverImage" />
+                <div>
+                    <img src="@SlideDeck.CoverImage" class="width:100%;"/>
+
+                </div>
             }
             <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
             <MudFab HtmlTag="label"
@@ -17,7 +20,7 @@
                     for="fileInput" />
 
             <MudFab Color="Color.Secondary" Icon="@Icons.Material.Add" Size="Size.Small" OnClick="AddSlide" />
-        </MudPaper>
+</MudPaper>
         @if (SlideDeck.Slides != null) {
             @foreach (var slide in SlideDeck.Slides) {
                 <MudContainer Class="pa-2 mx-2">

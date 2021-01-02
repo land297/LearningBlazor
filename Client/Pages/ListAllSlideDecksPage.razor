@@ -30,13 +30,18 @@
     <MudGrid>
         @foreach (var slidedeck in SlideDecksAll) {
             <MudItem xs="12" sm="6">
-                <MudPaper Elevation="3" Class="pa-2 mx-2">
+                <MudPaper Elevation="3" Class="pa-2 mr-2">
                     <MudText Typo="Typo.h6">@slidedeck.Title</MudText>
+                    @if (!string.IsNullOrWhiteSpace(slidedeck.CoverImage)) {
+                        <div>
+                            <img src="@slidedeck.CoverImage" class="width:100%;" />
+
+                        </div>
+                    }
                     <MudText Typo="Typo.body1">@slidedeck.Description</MudText>
                 </MudPaper>
             </MudItem>
         }
-
     </MudGrid>
 }
 @code {

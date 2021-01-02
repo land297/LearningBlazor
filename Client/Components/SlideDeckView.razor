@@ -5,6 +5,12 @@
         <MudPaper Elevation="3" Class="pa-2 mx-2">
             <MudText Typo="Typo.h6">@SlideDeck.Title</MudText>
             <MudText Typo="Typo.body1">@SlideDeck.Description</MudText>
+            @if (!string.IsNullOrWhiteSpace(SlideDeck.CoverImage)) {
+                <div>
+                    <img src="@SlideDeck.CoverImage" class="width:100%;" />
+
+                </div>
+            }
         </MudPaper>
         @if (SlideDeck.Slides != null) {
             @foreach (var slide in SlideDeck.Slides) {

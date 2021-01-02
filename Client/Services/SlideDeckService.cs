@@ -14,6 +14,7 @@ namespace Learning.Client.Services {
         Task<sr<List<SlideDeck>>> GetPublished();
         Task<sr<List<SlideDeck>>> GetAsContentCreator();
         Task<sr<SlideDeck>> Get(int id);
+        Task<sr<SlideDeck>> Get(string slug);
     }
 
     public class SlideDeckService : ISlideDeckService {
@@ -34,9 +35,15 @@ namespace Learning.Client.Services {
             return sr<SlideDeck>.Get();
         }
         public async Task<sr<SlideDeck>> Get(int id) {
+            return await GetAny(id);
+        }
+        public async Task<sr<SlideDeck>> Get(string slug) {
+            return await GetAny(slug);
+        }
+        private async Task<sr<SlideDeck>> GetAny(object any) {
             //TODO: id 3 issues
             try {
-                var response = await _http.GetAsync($"api/slideDeck/{id}");
+                var response = await _http.GetAsync($"api/slideDeck/{any}");
                 if (response.IsSuccessStatusCode) {
                     var stream = await response.Content.ReadAsStreamAsync();
                     var slideDeck = await stream.DeserializeJsonCamelCaseAsync<SlideDeck>();

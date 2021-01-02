@@ -41,6 +41,13 @@
             } else {
                 Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
             }
+        } else if (!string.IsNullOrWhiteSpace(Slug)) {
+            var sr = await SlideDeckService.Get(Slug);
+            if (sr.Success) {
+                SlideDeck = sr.Data;
+            } else {
+                Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+            }
         }
         hasLoaded = true;
     }
