@@ -19,7 +19,8 @@
             <MudTd>@context.Description</MudTd>
             <MudTd>@context.Slides.Count</MudTd>
             <MudTd>@context.AccessLevel</MudTd>
-            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{context.Id}"))">Button test</MudButton></MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{context.Id}"))">View</MudButton></MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
 
         </RowTemplate>
     </MudTable>
