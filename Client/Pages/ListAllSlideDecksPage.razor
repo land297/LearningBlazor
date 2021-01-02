@@ -1,5 +1,6 @@
 ﻿@page "/listAllSlideDecksPage"
 @inject Learning.Client.Services.ISlideDeckService SlideDeckService
+@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @using Learning.Shared.DbModels
 
@@ -18,7 +19,7 @@
             <MudTd>@context.Description</MudTd>
             <MudTd>@context.Slides.Count</MudTd>
             <MudTd>@context.AccessLevel</MudTd>
-            <MudTd><MudButton OnClick="(() => Console.WriteLine(context.Title))">Button test</MudButton></MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{context.Id}"))">Button test</MudButton></MudTd>
 
         </RowTemplate>
     </MudTable>
@@ -34,13 +35,13 @@
                 </MudPaper>
             </MudItem>
         }
-    
+
     </MudGrid>
 }
-    @code {
-        List<SlideDeck> SlideDecksPublished;
-        List<SlideDeck> SlideDecksAll;
-                    protected override async Task OnInitializedAsync() {
+@code {
+    List<SlideDeck> SlideDecksPublished;
+    List<SlideDeck> SlideDecksAll;
+    protected override async Task OnInitializedAsync() {
         var r = await SlideDeckService.GetPublished();
         if (r.Success) {
             SlideDecksPublished = r.Data;
@@ -55,4 +56,4 @@
             Snackbar.Add($"Could not get as content creator. Error: {r.Message}", Severity.Error);
         }
     }
-    }
+}

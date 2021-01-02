@@ -1,0 +1,19 @@
+﻿@using Learning.Shared.DbModels
+
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudContainer MaxWidth="MaxWidth.Small">
+            <MudText Typo="Typo.h6">@SlideDeck.Title</MudText>
+            <MudText Typo="Typo.body1">@SlideDeck.Description</MudText>
+            @if (SlideDeck.Slides != null) {
+                @foreach (var slide in SlideDeck.Slides) {
+                    <Learning.Client.Components.SlideView Slide="slide"></Learning.Client.Components.SlideView>
+                }
+            }
+        </MudContainer>
+    </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public SlideDeck SlideDeck { get; set; }
+}
