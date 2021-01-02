@@ -6,6 +6,16 @@
             <MudText Typo="Typo.h6">SlideDeck</MudText>
             <MudTextField @bind-Value="SlideDeck.Title" Label="Title" Variant="Variant.Text"></MudTextField>
             <MudTextField @bind-Value="SlideDeck.Description" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
+            @if (!string.IsNullOrWhiteSpace(SlideDeck.CoverImage)) {
+                <img class="rounded m-2" src="@SlideDeck.CoverImage" />
+            }
+            <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
+            <MudFab HtmlTag="label"
+                    Color="Color.Secondary"
+                    Icon="@Filled.Image"
+                    Label="Load Cover Image"
+                    for="fileInput" />
+
             <MudFab Color="Color.Secondary" Icon="@Icons.Material.Add" Size="Size.Small" OnClick="AddSlide" />
         </MudPaper>
         @if (SlideDeck.Slides != null) {
@@ -37,5 +47,19 @@
             Console.WriteLine(slide == s);
         }
         SlideDeck.Slides.Remove(slide);
+    }
+    private async Task SetCoverImage(InputFileChangeEventArgs e) {
+        var maxAllowedFiles = 1;
+        var format = "image/png";
+
+        foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles)) {
+            var resizedImageFile = await imageFile.RequestImageFileAsync(format,
+                100, 100);
+            //await OnSubmit(imageFile);
+            var buffer = new byte[resizedImageFile.Size];
+            await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+            var imageDataUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            SlideDeck.CoverImage = imageDataUrl;
+        }
     }
 }
