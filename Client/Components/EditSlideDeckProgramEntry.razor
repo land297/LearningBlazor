@@ -1,0 +1,32 @@
+﻿
+@using Learning.Shared.DbModels
+
+<MudTextField @bind-Value="Entry.Duration" HelperText="Duration" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="sec" />
+<MudTextField @bind-Value="Entry.Repititions" HelperText="Repititions" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="sec" />
+<MudTextField @bind-Value="Entry.Comments" Label="Comments" Variant="Variant.Text" Lines="5"></MudTextField>
+<MudSelect T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
+    @if (AvailableSlideDecks != null) {
+        foreach (var slideDeck in AvailableSlideDecks) {
+            <MudSelectItem Value="@(slideDeck.Title)" />
+        }
+    }
+</MudSelect>
+
+@if (Entry.SlideDeck != null) { 
+    <Learning.Client.Components.SlideDeckView SlideDeck="@Entry.SlideDeck"></Learning.Client.Components.SlideDeckView>    
+}
+<MudIconButton Icon="@Icons.Material.Delete" OnClick="@(() => OnDelete.InvokeAsync(Entry))"></MudIconButton>
+@code {
+    [Parameter]
+    public SlideDeckProgramEntry Entry { get; set; }
+    [Parameter]
+    public List<SlideDeck> AvailableSlideDecks { get; set; }
+    [Parameter]
+    public EventCallback<SlideDeckProgramEntry> OnDelete { get; set; }
+
+    public void SelectedSlideDeck(string value) {
+        Entry.SlideDeck = AvailableSlideDecks.First(x => x.Title == value);
+        Entry.SlideDeckId = Entry.SlideDeck.Id;
+
+    }
+}

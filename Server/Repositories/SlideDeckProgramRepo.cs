@@ -21,8 +21,13 @@ namespace Learning.Server.Repositories {
         }
         public async Task<sr<SlideDeckProgram>> Save(SlideDeckProgram slideDeckProgram) {
             var response = sr<SlideDeckProgram>.Get();
+            // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
+            foreach (var entry in slideDeckProgram.Entries) {
+                entry.SlideDeck = null;
+            }
             try {
                 if (slideDeckProgram.Id != default(int)) {
+  
                     var slideDeckProgramInDb = await _dbContext.SlideDeckPrograms.Include(x => x.Entries).FirstOrDefaultAsync(x => x.Id == slideDeckProgram.Id);
                     // TODO: copy copy not done
                     slideDeckProgramInDb.CopyValues(slideDeckProgram);
