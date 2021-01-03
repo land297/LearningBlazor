@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Learning.Server.Repositories {
     public interface ISlideDeckRepo {
         Task<sr<SlideDeck>> Save(SlideDeck slideDeck);
-        Task<sr<List<SlideDeck>>> Get();
-        Task<sr<List<SlideDeck>>> GetAsContentCreator();
+        Task<sr<List<SlideDeck>>> GetAllAsUser();
+        Task<sr<List<SlideDeck>>> GetAllAsContentCreator();
         Task<sr<SlideDeck>> Get(int id);
         Task<sr<SlideDeck>> Get(string slug);
     }
@@ -40,10 +40,10 @@ namespace Learning.Server.Repositories {
             }
             return response;
         }
-        public async Task<sr<List<SlideDeck>>> Get() {
+        public async Task<sr<List<SlideDeck>>> GetAllAsUser() {
             return await Get(false);
         }
-        public async Task<sr<List<SlideDeck>>> GetAsContentCreator() {
+        public async Task<sr<List<SlideDeck>>> GetAllAsContentCreator() {
             return await Get(true);
         }
         private async Task<sr<List<SlideDeck>>> Get(bool getUnpublished) {

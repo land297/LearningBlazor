@@ -26,6 +26,7 @@ namespace Learning.Server {
             services.AddRazorPages();
 
             services.AddScoped<ISlideDeckRepo, SlideDeckRepo>();
+            services.AddScoped<ISlideDeckProgramRepo, SlideDeckProgramRepo>();
             services.AddScoped<IVideoRepo, VideoRepo>();
         }
 

@@ -27,8 +27,8 @@ namespace Learning.Server.Controllers {
             }
         }
         [HttpGet]
-        public async Task<IActionResult> Get() {
-            var result = await _slideDeckRepo.Get();
+        public async Task<IActionResult> GetAllAsUser() {
+            var result = await _slideDeckRepo.GetAllAsUser();
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
@@ -36,8 +36,8 @@ namespace Learning.Server.Controllers {
             }
         }
         [HttpGet("contentcreator")]
-        public async Task<IActionResult> GetAsContentCreator() {
-            var result = await _slideDeckRepo.GetAsContentCreator();
+        public async Task<IActionResult> GetAllAsContentCreator() {
+            var result = await _slideDeckRepo.GetAllAsContentCreator();
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
