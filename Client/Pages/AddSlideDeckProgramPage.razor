@@ -1,0 +1,88 @@
+﻿@page "/addSlideDeckProgram"
+@using Learning.Shared.DbModels
+
+@inject Learning.Client.Services.ISlideDeckService SlideDeckService
+@inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
+
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h6">SlideDeckProgram</MudText>
+<MudTextField @bind-Value="SlideDeckProgram.Title" Label="Title" Variant="Variant.Text"></MudTextField>
+<MudTextField @bind-Value="SlideDeckProgram.Description" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
+@if (!string.IsNullOrWhiteSpace(SlideDeckProgram.CoverImage)) {
+    <div>
+        <img src="@SlideDeckProgram.CoverImage" class="width:100%;" />
+
+    </div>
+}
+<InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
+<MudFab HtmlTag="label"
+        Color="Color.Secondary"
+        Icon="@Filled.Image"
+        Label="Load Cover Image"
+        for="fileInput" />
+
+<MudFab Color="Color.Secondary" Icon="@Icons.Material.Add" Size="Size.Small" OnClick="AddEntry" />
+
+<MudSelect T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
+    @if (SlideDecksPublished != null) {
+        foreach (var slideDeck in SlideDecksPublished) {
+            <MudSelectItem Value="@(slideDeck.Title)" />
+        }
+    }
+</MudSelect>
+<MudTextField @bind-Value="SlideDeckProgramEntry.Duration" HelperText="Duration" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="sec" />
+
+@if (SlideDeckProgram.Entries != null) {
+    @foreach (var entry in SlideDeckProgram.Entries) {
+<MudText Typo="Typo.body1">Duration: @entry.Duration</MudText>
+        <Learning.Client.Components.SlideDeckView SlideDeck="@entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
+    }
+}
+@code {
+    public SlideDeckProgram SlideDeckProgram { get; set; }
+    public SlideDeckProgramEntry SlideDeckProgramEntry { get; set; }
+    List<SlideDeck> SlideDecksPublished;
+    List<SlideDeck> SlideDecksAll;
+
+    protected override async Task OnInitializedAsync() {
+        SlideDeckProgram = new SlideDeckProgram();
+        SlideDeckProgramEntry = new SlideDeckProgramEntry();
+
+        var r = await SlideDeckService.GetPublished();
+        if (r.Success) {
+            SlideDecksPublished = r.Data;
+        } else {
+            Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
+        }
+
+        r = await SlideDeckService.GetAsContentCreator();
+        if (r.Success) {
+            SlideDecksAll = r.Data;
+        } else {
+            Snackbar.Add($"Could not get as content creator. Error: {r.Message}", Severity.Error);
+        }
+    }
+    public void SelectedSlideDeck(string value) {
+        Console.WriteLine($"SelectedSlideDeck: {value}");
+
+    }
+    public void AddEntry(MouseEventArgs e) {
+        SlideDeckProgram.Entries.Add(SlideDeckProgramEntry);
+    }
+
+    private async Task SetCoverImage(InputFileChangeEventArgs e) {
+        var maxAllowedFiles = 1;
+        var format = "image/png";
+
+        foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles)) {
+            var resizedImageFile = await imageFile.RequestImageFileAsync(format,
+                100, 100);
+            //await OnSubmit(imageFile);
+            var buffer = new byte[resizedImageFile.Size];
+            await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+            var imageDataUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            SlideDeckProgram.CoverImage = imageDataUrl;
+        }
+    }
+}

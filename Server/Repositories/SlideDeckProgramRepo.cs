@@ -24,8 +24,8 @@ namespace Learning.Server.Repositories {
             try {
                 if (slideDeckProgram.Id != default(int)) {
                     var slideDeckProgramInDb = await _dbContext.SlideDeckPrograms.Include(x => x.Entries).FirstOrDefaultAsync(x => x.Id == slideDeckProgram.Id);
+                    // TODO: copy copy not done
                     slideDeckProgramInDb.CopyValues(slideDeckProgram);
-                    //_dbContext.Update(slideDeckInDb);
                 } else {
                     await _dbContext.SlideDeckPrograms.AddAsync(slideDeckProgram);
                 }
