@@ -78,10 +78,10 @@ namespace Learning.Server.Repositories {
                 if (getUnpublished) {
                     // TODO: same as below, returns wrong type..
                     //var list = await _dbContext.SlideDeckPrograms.Where(where).Include(x => x.Entries).ToListAsync();
-                    var list = await _dbContext.SlideDeckPrograms.Where(x => !x.IsDeleted).Include(x => x.Entries).ToListAsync();
+                    var list = await _dbContext.SlideDeckPrograms.Where(x => !x.IsDeleted).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
                     response.SetSuccess(list);
                 } else {
-                    var list = await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ToListAsync();
+                    var list = await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
                     response.SetSuccess(list);
                 }
             } catch (Exception e) {
