@@ -11,8 +11,11 @@
 @if (!hasLoaded) {
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+} else if (!isCompleted) {
+    <Learning.Client.Components.ViewSlideDeckProgram SlideDeckProgram="SlideDeckProgram" OnCompleted="ProgramCompleted"></Learning.Client.Components.ViewSlideDeckProgram>
 } else {
-    <Learning.Client.Components.ViewSlideDeckProgram SlideDeckProgram="SlideDeckProgram"></Learning.Client.Components.ViewSlideDeckProgram>
+    <MudText Typo="Typo.h6">Klar med @SlideDeckProgram.Title</MudText>
+    <MudText Typo="Typo.h6">Bla bla bla, sätta poäng och allt annat grejande..</MudText>
 }
 
 @code {
@@ -24,6 +27,7 @@
     private SlideDeckProgram SlideDeckProgram = new SlideDeckProgram();
 
     private bool hasLoaded = false;
+    private bool isCompleted = false;
     protected override async Task OnInitializedAsync() {
         if (Id != default(int)) {
             var sr = await SlideDeckProgramService.Get(Id);
@@ -34,5 +38,10 @@
             }
         }
         hasLoaded = true;
+    }
+
+    public async Task ProgramCompleted(SlideDeckProgram progarm) {
+        isCompleted = true;
+        Task.Delay(0);
     }
 }

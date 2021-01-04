@@ -2,7 +2,7 @@
 @using System.Threading;
 
 <MudGrid>
-    <MudItem xs="12" sm="6">
+    <MudItem xs="12">
         <MudPaper Elevation="3" Class="pa-2 mx-2">
             <MudText Typo="Typo.h6">@SlideDeckProgram.Title</MudText>
             <MudText Typo="Typo.body1">@SlideDeckProgram.Description</MudText>
@@ -13,36 +13,55 @@
                 </div>
             }
         </MudPaper>
-
-        <MudToggleIconButton Toggled="@AlarmOn"
-                             Icon="@Icons.Material.PlayArrow" Color="@Color.Error"
-                             ToggledIcon="@Icons.Material.Pause" ToggledColor="@Color.Success"
-                             ToggledChanged="(toggleValue) => IncrementSwitchedOn(toggleValue)" />
-        @if (entry != null) {
-            <h1>@Count</h1>
-            <MudContainer Class="pa-2 mx-2">
-                <Learning.Client.Components.SlideDeckView SlideDeck="entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
+    </MudItem>
+    <MudItem xs="12">
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudContainer MaxWidth="MaxWidth.Large">
+                <MudToggleIconButton Toggled="@IsPlaying"
+                                     Icon="@Icons.Material.PlayArrow" Color="@Color.Error"
+                                     ToggledIcon="@Icons.Material.Pause" ToggledColor="@Color.Success"
+                                     ToggledChanged="(toggleValue) => IncrementSwitchedOn(toggleValue)" />
             </MudContainer>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        @if (entry != null) {
+            <h1>@Count / @entry.Duration</h1> <h1>@entryIndex / @SlideDeckProgram.Entries.Count</h1>
         }
-
+    </MudItem>>
+    <MudItem xs="12" sm="6">
+            @if (entry != null) {
+                <MudContainer Class="pa-2 mx-2">
+                    <Learning.Client.Components.SlideDeckView SlideDeck="entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
+                </MudContainer>
+            }
     </MudItem>
 </MudGrid>
 @code {
     [Parameter]
     public SlideDeckProgram SlideDeckProgram { get; set; }
+    [Parameter]
+    public EventCallback<SlideDeckProgram> OnCompleted { get; set; }
 
     SlideDeckProgramEntry entry;
-    public bool AlarmOn { get; set; }
+    public bool IsPlaying { get; private set; }
+    public bool HaveCompleted { get; private set; }
 
     int Count;
     int entryIndex;
+
+    Timer timer;
+
     IEnumerator<SlideDeckProgramEntry> entries;
+
     protected override async Task OnInitializedAsync() {
         if (SlideDeckProgram.Entries != null) {
             entries = SlideDeckProgram.Entries.GetEnumerator();
             entries.MoveNext();
             entry = entries.Current;
+            entryIndex++;
             Count = entry.Duration;
+
         }
         await Task.Delay(0);
     }
@@ -51,28 +70,40 @@
         // ...
 
         // Assignment of one-way bound parameter
-        AlarmOn = toggleValue;
+        IsPlaying = toggleValue;
 
         // And after assignment has been made
         // ...
 
-        if (AlarmOn) {
+        if (IsPlaying && timer == null) {
             StartCountdown();
         }
 
     }
     void StartCountdown() {
-        var timer = new Timer(new TimerCallback(_ => {
-            if (Count < 0) {
-                entries.MoveNext();
-                entry = entries.Current;
-                Count = entry.Duration;
+        timer = new Timer(new TimerCallback(_ => {
+            if (!IsPlaying) { return; }
+
+            if (Count <= 0) {
+
+                if (entries.MoveNext()) {
+                    entry = entries.Current;
+                    entryIndex++;
+                    Count = entry.Duration;
+                } else if (!HaveCompleted) {
+                    Task.Run(() => OnCompleted.InvokeAsync(SlideDeckProgram));
+                    HaveCompleted = true;
+                    timer.Dispose();
+                }
+            } else {
+                Count--;
             }
-            Count--;
 
             // Note that the following line is necessary because otherwise
             // Blazor would not recognize the state change and not refresh the UI
             this.StateHasChanged();
         }), null, 1000, 1000);
+
+
     }
 }
