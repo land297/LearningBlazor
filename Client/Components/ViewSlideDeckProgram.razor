@@ -1,0 +1,78 @@
+﻿@using Learning.Shared.DbModels
+@using System.Threading;
+
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudText Typo="Typo.h6">@SlideDeckProgram.Title</MudText>
+            <MudText Typo="Typo.body1">@SlideDeckProgram.Description</MudText>
+            @if (!string.IsNullOrWhiteSpace(SlideDeckProgram.CoverImage)) {
+                <div>
+                    <img src="@SlideDeckProgram.CoverImage" class="width:100%;" />
+
+                </div>
+            }
+        </MudPaper>
+
+        <MudToggleIconButton Toggled="@AlarmOn"
+                             Icon="@Icons.Material.PlayArrow" Color="@Color.Error"
+                             ToggledIcon="@Icons.Material.Pause" ToggledColor="@Color.Success"
+                             ToggledChanged="(toggleValue) => IncrementSwitchedOn(toggleValue)" />
+        @if (entry != null) {
+            <h1>@Count</h1>
+            <MudContainer Class="pa-2 mx-2">
+                <Learning.Client.Components.SlideDeckView SlideDeck="entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
+            </MudContainer>
+        }
+
+    </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public SlideDeckProgram SlideDeckProgram { get; set; }
+
+    SlideDeckProgramEntry entry;
+    public bool AlarmOn { get; set; }
+
+    int Count;
+    int entryIndex;
+    IEnumerator<SlideDeckProgramEntry> entries;
+    protected override async Task OnInitializedAsync() {
+        if (SlideDeckProgram.Entries != null) {
+            entries = SlideDeckProgram.Entries.GetEnumerator();
+            entries.MoveNext();
+            entry = entries.Current;
+            Count = entry.Duration;
+        }
+        await Task.Delay(0);
+    }
+    public void IncrementSwitchedOn(bool toggleValue) {
+        // You can do things before assignment
+        // ...
+
+        // Assignment of one-way bound parameter
+        AlarmOn = toggleValue;
+
+        // And after assignment has been made
+        // ...
+
+        if (AlarmOn) {
+            StartCountdown();
+        }
+
+    }
+    void StartCountdown() {
+        var timer = new Timer(new TimerCallback(_ => {
+            if (Count < 0) {
+                entries.MoveNext();
+                entry = entries.Current;
+                Count = entry.Duration;
+            }
+            Count--;
+
+            // Note that the following line is necessary because otherwise
+            // Blazor would not recognize the state change and not refresh the UI
+            this.StateHasChanged();
+        }), null, 1000, 1000);
+    }
+}

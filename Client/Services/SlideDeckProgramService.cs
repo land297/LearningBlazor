@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 namespace Learning.Client.Services {
     public interface ISlideDeckProgramService {
         Task<sr<SlideDeckProgram>> Save(SlideDeckProgram slideDeckProgram);
+        Task<sr<SlideDeckProgram>> Get(int id);
+        Task<sr<SlideDeckProgram>> Get(string slug);
     }
 
     public class SlideDeckProgramService : ISlideDeckProgramService {
@@ -29,6 +31,27 @@ namespace Learning.Client.Services {
                 return sr<SlideDeckProgram>.GetSuccess(slideDeckProgram);
             }
             return sr<SlideDeckProgram>.Get();
+        }
+        public async Task<sr<SlideDeckProgram>> Get(int id) {
+            return await GetAny(id);
+        }
+        public async Task<sr<SlideDeckProgram>> Get(string slug) {
+            return await GetAny(slug);
+        }
+        private async Task<sr<SlideDeckProgram>> GetAny(object any) {
+            //TODO: id 3 issues
+            try {
+                var response = await _http.GetAsync($"api/slideDeckProgram/{any}");
+                if (response.IsSuccessStatusCode) {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    var slideDeck = await stream.DeserializeJsonCamelCaseAsync<SlideDeckProgram>();
+                    return sr<SlideDeckProgram>.GetSuccess(slideDeck);
+                }
+                return sr<SlideDeckProgram>.Get(response.ReasonPhrase);
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+                return sr<SlideDeckProgram>.Get(e.Message);
+            }
         }
     }
 }
