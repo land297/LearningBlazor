@@ -11,9 +11,34 @@ using System.Threading.Tasks;
 namespace Learning.Server.Repositories {
     public interface ISlideDeckProgramRepo {
         Task<sr<SlideDeckProgram>> Save(SlideDeckProgram slideDeckProgram);
+        Task<sr<List<SlideDeckProgram>>> GetAllAsContentCreator();
+        Task<sr<List<SlideDeckProgram>>> GetAllAsUser();
     }
+    //public interface IGetter<T> {
+    //    Task<sr<List<T>>> GetAllAsContentCreator();
+    //    Task<sr<List<T>>> GetAllAsUser();
+    //}
 
-    public class SlideDeckProgramRepo : ISlideDeckProgramRepo {
+    //public static class IGetterExtensions {
+    //    public static Task<sr<List<T>>> GetAllAsContentCreator<T>(this IGetter<T> getter) {
+    //        var response = sr<List<T>>.Get();
+    //        try {
+    //            if (getUnpublished) {
+    //                // TODO: same as below, returns wrong type..
+    //                //var list = await _dbContext.SlideDeckPrograms.Where(where).Include(x => x.Entries).ToListAsync();
+    //                var list = await _dbContext.SlideDeckPrograms.Where(x => !x.IsDeleted).Include(x => x.Entries).ToListAsync();
+    //                response.SetSuccess(list);
+    //            } else {
+    //                var list = await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ToListAsync();
+    //                response.SetSuccess(list);
+    //            }
+    //        } catch (Exception e) {
+    //            response.Message = e.Message;
+    //        }
+    //        return response;
+    //    }
+    //}
+    public class SlideDeckProgramRepo : ISlideDeckProgramRepo/*, IGetter<SlideDeckProgram>*/ {
         private readonly AppDbContext _dbContext;
 
         public SlideDeckProgramRepo(AppDbContext dbContext) {
@@ -41,5 +66,44 @@ namespace Learning.Server.Repositories {
             }
             return response;
         }
+        public async Task<sr<List<SlideDeckProgram>>> GetAllAsUser() {
+            return await Get(false, null);
+        }
+        public async Task<sr<List<SlideDeckProgram>>> GetAllAsContentCreator() {
+            return await Get(true,null);
+        }
+        private async Task<sr<List<SlideDeckProgram>>> Get(bool getUnpublished, Func<SlideDeckProgram, bool> where) {
+            var response = sr<List<SlideDeckProgram>>.Get();
+            try {
+                if (getUnpublished) {
+                    // TODO: same as below, returns wrong type..
+                    //var list = await _dbContext.SlideDeckPrograms.Where(where).Include(x => x.Entries).ToListAsync();
+                    var list = await _dbContext.SlideDeckPrograms.Where(x => !x.IsDeleted).Include(x => x.Entries).ToListAsync();
+                    response.SetSuccess(list);
+                } else {
+                    var list = await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ToListAsync();
+                    response.SetSuccess(list);
+                }
+            } catch (Exception e) {
+                response.Message = e.Message;
+            }
+            return response;
+        }
+        //private async Task<sr<List<T>>> Get<T, TE>(Func<TE, bool> selection, bool getUnpublished, IQueryable<TE> dbset) where TE : class {
+        //    var response = sr<List<T>>.Get();
+        //    try {
+        //        if (getUnpublished) {
+        //            // TODO: does not work, Where is not returning IQueryable
+        //            var list = await dbset.Where(selection).Include(sd => sd.Slides).ToListAsync();
+        //            response.SetSuccess(list);
+        //        } else {
+        //            var list = await _dbContext.SlideDecks.Where(sd => sd.Published != DateTime.MinValue && !sd.IsDeleted).Include(sd => sd.Slides).ToListAsync();
+        //            response.SetSuccess(list);
+        //        }
+        //    } catch (Exception e) {
+        //        response.Message = e.Message;
+        //    }
+        //    return response;
+        //}
     }
 }
