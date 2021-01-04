@@ -13,6 +13,8 @@ namespace Learning.Server.Repositories {
         Task<sr<SlideDeckProgram>> Save(SlideDeckProgram slideDeckProgram);
         Task<sr<List<SlideDeckProgram>>> GetAllAsContentCreator();
         Task<sr<List<SlideDeckProgram>>> GetAllAsUser();
+        Task<sr<SlideDeckProgram>> GetFirst(int id);
+        Task<sr<SlideDeckProgram>> GetFirst(string slug);
     }
     //public interface IGetter<T> {
     //    Task<sr<List<T>>> GetAllAsContentCreator();
@@ -83,6 +85,26 @@ namespace Learning.Server.Repositories {
                 } else {
                     var list = await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
                     response.SetSuccess(list);
+                }
+            } catch (Exception e) {
+                response.Message = e.Message;
+            }
+            return response;
+        }
+        public async Task<sr<SlideDeckProgram>> GetFirst(int id) {
+            return await GetFirst(sd => sd.Id == id);
+        }
+        public async Task<sr<SlideDeckProgram>> GetFirst(string slug) {
+            return await GetFirst(sd => sd.Slug == slug);
+        }
+        public async Task<sr<SlideDeckProgram>> GetFirst(System.Linq.Expressions.Expression<Func<SlideDeckProgram,bool>> selector) {
+            var response = sr<SlideDeckProgram>.Get();
+            try {
+                var sd = await _dbContext.SlideDeckPrograms.Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).FirstOrDefaultAsync(selector);
+                if (sd == null) {
+                    response.Message = "Not found";
+                } else {
+                    response.SetSuccess(sd);
                 }
             } catch (Exception e) {
                 response.Message = e.Message;

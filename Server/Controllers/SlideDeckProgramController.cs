@@ -1,4 +1,5 @@
 ﻿using Learning.Server.Repositories;
+using Learning.Shared;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,26 @@ namespace Learning.Server.Controllers {
         [HttpGet("contentcreator")]
         public async Task<IActionResult> GetAllAsContentCreator() {
             var result = await _slideDeckProgramRepo.GetAllAsContentCreator();
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
+        //TODO: refactor get methods
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Get(int id) {
+            // TODO: need to check if user can get unpublished or not
+            return await Get<SlideDeckProgram>(_slideDeckProgramRepo.GetFirst(id));
+        }
+        [HttpGet("{slug}")]
+        public async Task<IActionResult> Get(string slug) {
+            // TODO: need to check if user can get unpublished or not
+            return await Get<SlideDeckProgram>(_slideDeckProgramRepo.GetFirst(slug));
+        }
+        public async Task<IActionResult> Get<T>(Task<sr<T>> taskToGetFirst) {
+            // TODO: need to check if user can get unpublished or not
+            var result = await taskToGetFirst;
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
