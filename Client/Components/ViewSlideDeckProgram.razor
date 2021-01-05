@@ -15,28 +15,44 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12">
-        <MudPaper Elevation="3" Class="pa-2 mx-2">
-            <MudContainer MaxWidth="MaxWidth.Large">
-                <MudToggleIconButton Toggled="@IsPlaying"
-                                     Icon="@Icons.Material.PlayArrow" Color="@Color.Error"
-                                     ToggledIcon="@Icons.Material.Pause" ToggledColor="@Color.Success"
-                                     ToggledChanged="(toggleValue) => IncrementSwitchedOn(toggleValue)" />
-            </MudContainer>
-        </MudPaper>
+        
+
+       
     </MudItem>
     <MudItem xs="12" sm="6">
-        @if (entry != null) {
-            <h1>@Count / @entry.Duration</h1> <h1>@entryIndex / @SlideDeckProgram.Entries.Count</h1>
-        }
-    </MudItem>>
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            @if (entry != null) {
+                <MudText Typo="Typo.body1">
+                    Entry: @entry.SlideDeck.Title
+                </MudText>
+                <MudText Typo="Typo.body1">
+                    Duration: @Count / @entry.Duration
+                </MudText>
+                <MudText Typo="Typo.body1">
+                    Entry: @entryIndex / @SlideDeckProgram.Entries.Count
+                </MudText>
+
+                <MudToggleIconButton Toggled="@IsPlaying"
+                                     Icon="@Icons.Material.PlayArrow" Color="@Color.Primary"
+                                     ToggledIcon="@Icons.Material.Pause" ToggledColor="@Color.Secondary"
+                                     ToggledChanged="(toggleValue) => IncrementSwitchedOn(toggleValue)"
+                                     Size="Size.Large"
+                                     ToggledSize="Size.Large" />
+            }
+
+        </MudPaper>
+
+    </MudItem>
+
     <MudItem xs="12" sm="6">
             @if (entry != null) {
-                <MudContainer Class="pa-2 mx-2">
+                <MudContainer Class="pa-2 mx-2 blue-grey darken-4" >
                     <Learning.Client.Components.SlideDeckView SlideDeck="entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
                 </MudContainer>
             }
     </MudItem>
 </MudGrid>
+
 @code {
     [Parameter]
     public SlideDeckProgram SlideDeckProgram { get; set; }

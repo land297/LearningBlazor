@@ -1,28 +1,24 @@
 ﻿@using Learning.Shared.DbModels
 
-<MudPaper Elevation="3">
-    <div class="m-2">
-        @((MarkupString)Slide.TextContent)
-    </div>
-    @if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
-        <img class="rounded m-2" src="@Slide.ImageUrl" />
-    }
-    @if (!string.IsNullOrWhiteSpace(Slide.VideoUrl)) {
-        <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
-                       style="max-width:400px;"
-                       controls="controls">
-            <source src="@Slide.VideoUrl" type="video/mp4" />
-        </BlazoredVideo>
-    }
-</MudPaper>
+<div class="m-2">
+    <MudText Typo="Typo.body1">@((MarkupString)Slide.TextContent)</MudText>
+</div>
+@if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
+    <img class="rounded m-2" src="@Slide.ImageUrl" />
+}
+@if (!string.IsNullOrWhiteSpace(Slide.VideoUrl)) {
+    <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
+                    style="max-width:400px;"
+                    controls="controls">
+        <source src="@Slide.VideoUrl" type="video/mp4" />
+    </BlazoredVideo>
+}
 
-    @code {
-        [Parameter]
-        public Slide Slide { get; set; }
-        BlazoredVideo MyBlazorVideo;
 
-        //<MudText Typo="Typo.body1">@Slide.TextContent</MudText>
-        //TODO : how to get the MarkupString to have same font-size as a MudText
-    }
+@code {
+    [Parameter]
+    public Slide Slide { get; set; }
+    BlazoredVideo MyBlazorVideo;
+}
 
 
