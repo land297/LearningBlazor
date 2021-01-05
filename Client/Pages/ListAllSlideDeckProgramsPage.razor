@@ -1,0 +1,66 @@
+﻿@page "/listAllSlideDeckProgramsPage"
+@inject Learning.Client.Services.ISlideDeckService SlideDeckService
+@inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@using Learning.Shared.DbModels
+
+<h3>ListAllSlideDeckProgramsPage</h3>
+
+@if (SlideDeckProgramsAll != null) {
+    <MudTable Items="@SlideDeckProgramsAll" Hover="true" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh>Title</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Page count</MudTh>
+            <MudTh>AccessLevel</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Title</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd>@context.Slides.Count</MudTd>
+            <MudTd>@context.AccessLevel</MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{context.Id}"))">View</MudButton></MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeckProgram/{context.Id}"))">Edit</MudButton></MudTd>
+
+        </RowTemplate>
+    </MudTable>
+}
+
+@if (SlideDeckProgramsPublished != null) {
+    <MudGrid>
+        @foreach (var slidedeckProgram in SlideDeckProgramsPublished) {
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="3" Class="pa-2 mr-2">
+                    <MudText Typo="Typo.h6">@slidedeckProgram.Title</MudText>
+                    @if (!string.IsNullOrWhiteSpace(slidedeckProgram.CoverImage)) {
+                        <div>
+                            <img src="@slidedeckProgram.CoverImage" class="width:100%;" />
+
+                        </div>
+                    }
+                    <MudText Typo="Typo.body1">@slidedeckProgram.Description</MudText>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+}
+@code {
+    List<SlideDeck> SlideDeckProgramsPublished;
+    List<SlideDeck> SlideDeckProgramsAll;
+    protected override async Task OnInitializedAsync() {
+        var r = await SlideDeckProgramService.GetPublished();
+        if (r.Success) {
+            SlideDecksPublished = r.Data;
+        } else {
+            Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
+        }
+
+        r = await SlideDeckProgramService.GetAsContentCreator();
+        if (r.Success) {
+            SlideDecksAll = r.Data;
+        } else {
+            Snackbar.Add($"Could not get as content creator. Error: {r.Message}", Severity.Error);
+        }
+    }
+}
