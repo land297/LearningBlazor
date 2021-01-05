@@ -72,15 +72,15 @@ namespace Learning.Server.Repositories {
             return await Get(false, null);
         }
         public async Task<sr<List<SlideDeckProgram>>> GetAllAsContentCreator() {
-            return await Get(true,null);
+            return await Get(true, x => !x.IsDeleted);
         }
-        private async Task<sr<List<SlideDeckProgram>>> Get(bool getUnpublished, Func<SlideDeckProgram, bool> where) {
+        private async Task<sr<List<SlideDeckProgram>>> Get(bool getUnpublished, System.Linq.Expressions.Expression<Func<SlideDeckProgram, bool>> where) {
             var response = sr<List<SlideDeckProgram>>.Get();
             try {
                 if (getUnpublished) {
                     // TODO: same as below, returns wrong type..
                     //var list = await _dbContext.SlideDeckPrograms.Where(where).Include(x => x.Entries).ToListAsync();
-                    var list = await _dbContext.SlideDeckPrograms.Where(x => !x.IsDeleted).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
+                    var list = await _dbContext.SlideDeckPrograms.Where(where).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
                     response.SetSuccess(list);
                 } else {
                     var list = await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();

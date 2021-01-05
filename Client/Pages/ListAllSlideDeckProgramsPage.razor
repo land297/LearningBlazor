@@ -18,7 +18,7 @@
         <RowTemplate>
             <MudTd>@context.Title</MudTd>
             <MudTd>@context.Description</MudTd>
-            <MudTd>@context.Slides.Count</MudTd>
+            <MudTd>@context.Entries.Count</MudTd>
             <MudTd>@context.AccessLevel</MudTd>
             <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{context.Id}"))">View</MudButton></MudTd>
             <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeckProgram/{context.Id}"))">Edit</MudButton></MudTd>
@@ -46,19 +46,19 @@
     </MudGrid>
 }
 @code {
-    List<SlideDeck> SlideDeckProgramsPublished;
-    List<SlideDeck> SlideDeckProgramsAll;
+    List<SlideDeckProgram> SlideDeckProgramsPublished;
+    List<SlideDeckProgram> SlideDeckProgramsAll;
     protected override async Task OnInitializedAsync() {
         var r = await SlideDeckProgramService.GetPublished();
         if (r.Success) {
-            SlideDecksPublished = r.Data;
+            SlideDeckProgramsPublished = r.Data;
         } else {
             Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
         }
 
         r = await SlideDeckProgramService.GetAsContentCreator();
         if (r.Success) {
-            SlideDecksAll = r.Data;
+            SlideDeckProgramsAll = r.Data;
         } else {
             Snackbar.Add($"Could not get as content creator. Error: {r.Message}", Severity.Error);
         }
