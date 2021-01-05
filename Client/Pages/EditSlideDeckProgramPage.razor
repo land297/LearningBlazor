@@ -1,0 +1,73 @@
+﻿@page "/editSlideDeckProgram/{id:int}"
+@page "/editSlideDeckProgram/{slug}"
+
+@using Learning.Shared.DbModels
+
+@inject Learning.Client.Services.IVideoService VideoService
+@inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+
+@if (!hasLoaded) {
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+} else {
+    <Learning.Client.Components.EditSlideDeckProgram SlideDeckProgram="SlideDeckProgram" OnSave="SaveSlideDeckProgram"></Learning.Client.Components.EditSlideDeckProgram>
+
+    <MudButton OnClick="TestApa">Tet</MudButton>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string Slug { get; set; }
+
+    private SlideDeckProgram SlideDeckProgram = new SlideDeckProgram();
+    private List<Media> Videos;
+
+    private bool hasLoaded = false;
+
+    protected override async Task OnInitializedAsync() {
+        var r = await VideoService.GetVideos();
+        if (r.Success) {
+            Videos = r.Data;
+        } else {
+            Snackbar.Add($"Could not load video source. Error: {r.Message}", Severity.Error);
+        }
+
+        if (Id != default(int)) {
+            var sr = await SlideDeckProgramService.Get(Id);
+            if (sr.Success) {
+                SlideDeckProgram = sr.Data;
+            } else {
+                Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+            }
+        } else if (!string.IsNullOrWhiteSpace(Slug)) {
+            var sr = await SlideDeckProgramService.Get(Slug);
+            if (sr.Success) {
+                SlideDeckProgram = sr.Data;
+            } else {
+                Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+            }
+        }
+        hasLoaded = true;
+    }
+    async Task TestApa() {
+        var sr = await SlideDeckProgramService.Get(3);
+        if (sr.Success) {
+            SlideDeckProgram = sr.Data;
+        } else {
+            Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+        }
+    }
+
+
+    async Task SaveSlideDeckProgram() {
+        var response = await SlideDeckProgramService.Save(SlideDeckProgram);
+        if (response.Success) {
+            Snackbar.Add($"Saved", Severity.Success);
+        } else {
+            Snackbar.Add($"Could not save. Error: {response.Message}", Severity.Error);
+        }
+    }
+}
