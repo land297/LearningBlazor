@@ -18,6 +18,7 @@ namespace Learning.Server.Repositories {
     public interface IUserRepo {
         Task<sr<int>> AddUser(User user);
         Task<sr<bool>> UsersExists(User user);
+        Task<User> GetUser(int id);
     }
 
     public class UserRepo : RepoBase, IUserRepo {
@@ -47,6 +48,9 @@ namespace Learning.Server.Repositories {
         }
         private async Task<User> GetUser(string email) {
             return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Email.ToLower() == email.ToLower());
+        }
+        public async Task<User> GetUser(int id) {
+            return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Id == id);
         }
     }
 }
