@@ -1,4 +1,6 @@
+using Blazored.LocalStorage;
 using Learning.Client.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +30,9 @@ namespace Learning.Client {
             // TODO: this will be on GithHub public for all and on the client when running?
             SyncfusionLicenseProvider.RegisterLicense("MzcyMDg2QDMxMzgyZTM0MmUzMG1zdExMNE43amJ3bGwwM0x1dHBNVDJMM2RDc0doZHA2djYyaWpzOU1QL1U9");
             builder.Services.AddSyncfusionBlazor();
+
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
             builder.Services.AddScoped<IVideoService, VideoService>();
             builder.Services.AddScoped<ISlideDeckService, SlideDeckService>();
