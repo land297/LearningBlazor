@@ -32,6 +32,10 @@ namespace Learning.Client {
             builder.Services.AddSyncfusionBlazor();
 
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore(options => {
+                options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("role1"));
+            });
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
             builder.Services.AddScoped<IVideoService, VideoService>();

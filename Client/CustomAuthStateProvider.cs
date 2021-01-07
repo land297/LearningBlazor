@@ -1,10 +1,12 @@
 ﻿using Blazored.LocalStorage;
+using Learning.Shared.DataTransferModel;
 using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -20,8 +22,18 @@ namespace Learning.Client {
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
-            string token = await localStorageService.GetItemAsStringAsync("token");
+            var login = new Login()
+            {
+                Email = "a@a.com",
+                Password = "aaa"
+            };
+            var result = await _http.PostAsJsonAsync("api/auth/login", login);
+            var t = await result.Content.ReadAsStringAsync();
 
+            string token = await localStorageService.GetItemAsStringAsync("token");
+            if (string.IsNullOrWhiteSpace(token)) {
+                token = t;
+            }
             var identity = new ClaimsIdentity();
             _http.DefaultRequestHeaders.Authorization = null;
 
