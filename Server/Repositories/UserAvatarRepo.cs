@@ -1,4 +1,5 @@
 ﻿using Learning.Server.DbContext;
+using Learning.Server.Service;
 using Learning.Shared;
 using Learning.Shared.DbModels;
 using System;
@@ -8,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public class UserAvatarRepo : RepoBase {
-        private readonly IUserRepo _userRepo;
+        private readonly IUserService _userService;
 
-        public UserAvatarRepo(AppDbContext dbContext, IUserRepo userRepo) : base(dbContext) {
-            _userRepo = userRepo;
+        public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {
+            _userService = userService;
         }
         public async Task<sr<int>> AddUserAvatar(UserAvatar userAvatar) {
-
+            //TODO: how could an "admin" user add userAvatars for another user...
+            //      this just assigned current logged in user to the userAvatar
+            userAvatar.UserId = _userService.GetUserId();
             if (!await UsersExits(user.Email)) {
                 return sr<int>.Get("User already exists");
             }

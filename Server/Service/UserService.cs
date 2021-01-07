@@ -8,14 +8,20 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Service {
-    public class UserService {
+    public interface IUserService {
+        Task<User> GetUser();
+        Task<User> GetUser(ClaimsPrincipal user);
+        int GetUserId();
+        int GetUserId(ClaimsPrincipal user);
+    }
+
+    public class UserService : IUserService {
         readonly IHttpContextAccessor _httpContext;
         readonly IUserRepo _userRepo;
         public UserService(IHttpContextAccessor httpContext, IUserRepo userRepo) {
             _httpContext = httpContext;
             _userRepo = userRepo;
         }
-
         public int GetUserId(ClaimsPrincipal user) => int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
         public async Task<User> GetUser(ClaimsPrincipal user) {
             return await _userRepo.GetUser(GetUserId(user));
