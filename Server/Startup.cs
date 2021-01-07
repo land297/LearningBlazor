@@ -67,6 +67,9 @@ namespace Learning.Server {
             app.UseStaticFiles();
 
             app.UseRouting();
+            // Added
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapRazorPages();
