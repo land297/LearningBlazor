@@ -1,4 +1,5 @@
 ﻿using Learning.Server.Repositories;
+using Learning.Shared.DataTransferModel;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,13 @@ namespace Learning.Server.Controllers {
             _userRepo = userRepo;
         }
         [HttpPost]
-        public async Task<IActionResult> AddUser(User user) {
+        public async Task<IActionResult> AddUser(UserRegistration userRegistration) {
             //TODO: check if user is authorized
-            var result = await _userRepo.AddUser(user);
+            var result = await _userRepo.AddUser(userRegistration);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
-                return Created($"api/user/{user.Id}", user);
+                return Created($"api/user/{result.Data}",result.Data);
             }
         }
     }

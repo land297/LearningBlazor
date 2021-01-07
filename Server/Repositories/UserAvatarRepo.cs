@@ -2,6 +2,7 @@
 using Learning.Server.Service;
 using Learning.Shared;
 using Learning.Shared.DbModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,24 +19,16 @@ namespace Learning.Server.Repositories {
             //TODO: how could an "admin" user add userAvatars for another user...
             //      this just assigned current logged in user to the userAvatar
             userAvatar.UserId = _userService.GetUserId();
-            if (!await UsersExits(user.Email)) {
-                return sr<int>.Get("User already exists");
-            }
+           
 
-            await _dbContext.Users.AddAsync(user);
+            await _dbContext.UserAvatars.AddAsync(userAvatar);
             await _dbContext.SaveChangesAsync();
 
-            return sr<int>.GetSuccess(user.Id);
+            return sr<int>.GetSuccess(userAvatar.Id);
         }
-        public async Task<sr<bool>> UsersExists(User user) {
-            return sr<bool>.Get(await UsersExits(user.Email));
-        }
-
-        private async Task<bool> UsersExits(string email) {
-            return await _dbContext.Users.AnyAsync(x => x.Email.ToLower() == email.ToLower());
-        }
-        private async Task<User> GetUser(string email) {
-            return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Email.ToLower() == email.ToLower());
+        private async Task<List<UserAvatar>> GetUserAvatarsInContext() {
+            var id = _userService.GetUserId();
+            return await _dbContext.UserAvatars.Where(x => x.UserId == id).ToListAsync();
         }
     }
 }
