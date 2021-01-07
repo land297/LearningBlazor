@@ -25,16 +25,14 @@ namespace Learning.Server.Repositories {
     }
 
     public class UserRepo : RepoBase, IUserRepo {
-        //private readonly AppDbContext _dbContext;
-        readonly IAuthService _authService;
-        public UserRepo(AppDbContext dbContext, IAuthService authService) : base(dbContext) {
-            _authService = authService;
+        public UserRepo(AppDbContext dbContext) : base(dbContext) {
+     
         }
         public async Task<sr<int>> AddUser(UserRegistration userRegistration) {
             if (await UsersExits(userRegistration.Email)) {
                 return sr<int>.Get("User already exists");
             }
-            _authService.CreatePasswordHash(userRegistration.Password, out byte[] hash, out byte[] salt);
+            CreatePassword.CreatePasswordHash(userRegistration.Password, out byte[] hash, out byte[] salt);
             var dbUser = new User();
             dbUser.PasswordHash = hash;
             dbUser.PasswordSalt = salt;

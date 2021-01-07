@@ -13,9 +13,16 @@ using System.Threading.Tasks;
 namespace Learning.Server.Service {
     public interface IAuthService {
         Task<sr<string>> Login(string email, string password);
-        void CreatePasswordHash(string password, out byte[] hash, out byte[] salt);
     }
 
+    public static class CreatePassword {
+        public static void CreatePasswordHash(string password, out byte[] hash, out byte[] salt) {
+            using (var hmac = new System.Security.Cryptography.HMACSHA512()) {
+                salt = hmac.Key;
+                hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+    }
     public class AuthService : IAuthService {
         readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         readonly IUserRepo _userRepo;
@@ -36,12 +43,7 @@ namespace Learning.Server.Service {
             return response;
         }
 
-        public void CreatePasswordHash(string password, out byte[] hash, out byte[] salt) {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512()) {
-                salt = hmac.Key;
-                hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
+
 
         private bool VeriFyPasswordHash(string password, byte[] hash, byte[] salt) {
             using (var hmac = new System.Security.Cryptography.HMACSHA512(salt)) {
