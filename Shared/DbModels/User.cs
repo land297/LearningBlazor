@@ -19,6 +19,9 @@ namespace Learning.Shared.DbModels {
         public byte[] PasswordSalt { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
-        public UserRole UserRoel { get; set; }
+        public UserRole UserRole { get; set; }
+        public List<UserAvatar> UserAvatars { get; set; }
+
+       
     }
 }

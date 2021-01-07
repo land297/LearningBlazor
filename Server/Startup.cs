@@ -28,6 +28,7 @@ namespace Learning.Server {
             services.AddScoped<ISlideDeckRepo, SlideDeckRepo>();
             services.AddScoped<ISlideDeckProgramRepo, SlideDeckProgramRepo>();
             services.AddScoped<IVideoRepo, VideoRepo>();
+            services.AddScoped<IUserRepo, UserRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

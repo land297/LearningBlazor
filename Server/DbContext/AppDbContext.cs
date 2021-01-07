@@ -16,6 +16,8 @@ namespace Learning.Server.DbContext {
         public DbSet<SlideDeckProgram> SlideDeckPrograms { get; set; }
         public DbSet<SlideDeckProgramEntry> SlideDeckProgramEntries { get; set; }
         public DbSet<UserAccessSlideDeckProgram> UserAccessSlideDeckPrograms { get; set; }
-  
+        public DbSet<CompletedSlideDeckProgram> CompletedSlideDeckPrograms { get; set; }
+        public DbSet<UserAvatar> UserAvatars { get; set; }
+
     }
 }

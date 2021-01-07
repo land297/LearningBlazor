@@ -11,6 +11,8 @@ namespace Learning.Shared.DbModels {
         public SlideDeckProgram SlideDeckProgram { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
+        public int? UserAvatarId { get; set; }
+        public User UserAvatar { get; set; }
         public string Comments { get; set; }
     }
 }
