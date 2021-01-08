@@ -20,20 +20,20 @@ namespace Learning.Client {
             this.localStorageService = localStorageService;
             _http = http;
         }
-
+        
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
-            var login = new Login()
-            {
-                Email = "a@a.com",
-                Password = "aaa"
-            };
-            var result = await _http.PostAsJsonAsync("api/auth/login", login);
-            var t = await result.Content.ReadAsStringAsync();
+            //var login = new Login()
+            //{
+            //    Email = "a@a.com",
+            //    Password = "aaa"
+            //};
+            //var result = await _http.PostAsJsonAsync("api/auth/login", login);
+            //var t = await result.Content.ReadAsStringAsync();
 
             string token = await localStorageService.GetItemAsStringAsync("token");
-            if (string.IsNullOrWhiteSpace(token)) {
-                token = t;
-            }
+            //if (string.IsNullOrWhiteSpace(token)) {
+            //    token = t;
+            //}
             var identity = new ClaimsIdentity();
             _http.DefaultRequestHeaders.Authorization = null;
 
@@ -45,6 +45,7 @@ namespace Learning.Client {
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
             var test = state.User.IsInRole("role1");
+            Console.WriteLine($"User is in role role1: {test}");
             NotifyAuthenticationStateChanged(Task.FromResult(state));
             return state;
         }

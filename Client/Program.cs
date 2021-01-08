@@ -41,7 +41,9 @@ namespace Learning.Client {
             builder.Services.AddScoped<IVideoService, VideoService>();
             builder.Services.AddScoped<ISlideDeckService, SlideDeckService>();
             builder.Services.AddScoped<ISlideDeckProgramService, SlideDeckProgramService>();
-            
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
 
             await builder.Build().RunAsync();
         }

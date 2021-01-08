@@ -20,7 +20,7 @@ namespace Learning.Server.Controllers {
         [HttpPost("login")]
         public async Task<IActionResult> Login(Login login) {
             var response = await _authService.Login(login.Email, login.Password);
-            return response.Success ? Created("TODO location what should this ?", response) : BadRequest(response);
+            return response.Success ? Created("TODO location what should this ?", response.Data) : BadRequest(response.Message);
         }
         [HttpPost("isAuth")]
         [Authorize]

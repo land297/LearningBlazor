@@ -1,7 +1,5 @@
 ﻿@page "/"
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Learning.Client.Services.IAuthService Auth
 
 <h1>Hello, world!</h1>
 
@@ -9,48 +7,17 @@ Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
+<Learning.Client.Components.Login />
 
-<button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
-
-<p>@_authMessage</p>
-
-@if (_claims.Count() > 0) {
-    <ul>
-        @foreach (var claim in _claims) {
-            <li>@claim.Type: @claim.Value</li>
-        }
-    </ul>
-}
-
-<AuthorizeView>
-    <Authorized>
-        <h1>Hello, @context.User.Identity.Name!</h1>
-        <p>You can only see this content if you're authorized.</p>
-        
-    </Authorized>
-    <NotAuthorized>
-        <h1>Authentication Failure!</h1>
-        <p>You're not signed in.</p>
-    </NotAuthorized>
-</AuthorizeView>
+<MudButton OnClick="LogOut">Log out</MudButton>
 
 
 @code {
-    private string _authMessage;
-    private string _surnameMessage;
-    private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
 
-    private async Task GetClaimsPrincipalData() {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+    async Task LogOut() {
+        
+        var response = await Auth.Logout();
+        
 
-        if (user.Identity.IsAuthenticated) {
-            _authMessage = $"{user.Identity.Name} is authenticated.";
-            _claims = user.Claims;
-            _surnameMessage =
-                $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
-        } else {
-            _authMessage = "The user is NOT authenticated.";
-        }
     }
 }

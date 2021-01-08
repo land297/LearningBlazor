@@ -30,6 +30,7 @@ namespace Learning.Server {
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            //TODO: Check token event https://forums.asp.net/t/2138711.aspx?Invalidate+JWT+token
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(options => {
                  options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
