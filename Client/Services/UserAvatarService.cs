@@ -23,8 +23,8 @@ namespace Learning.Client.Services {
 
         public async Task<sr<UserAvatar>> Save(UserAvatar userAvatar) {
             var response = await _http.PostAsJsonAsync("api/userAvatar", userAvatar);
-            var stream = await response.Content.ReadAsStreamAsync();
             if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
                 userAvatar = await stream.DeserializeJsonCamelCaseAsync<UserAvatar>();
                 return sr<UserAvatar>.GetSuccess(userAvatar);
             } else {

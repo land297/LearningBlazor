@@ -2,19 +2,22 @@
 @using Learning.Shared.DbModels
 
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
+@inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal
 @inject ISnackbar Snackbar
 
 <Learning.Client.Components.UserAvatarEdit UserAvatar="UserAvatar" OnSave="SaveUserAvatar" />
 
 @if (CurrentUserAvatars.Count > 0) {
     foreach (var item in CurrentUserAvatars) {
-        <MudText Typo="Typo.body1">@item.Name</MudText>
+        <MudButton Typo="Typo.body1" OnClick="(async () => await SetAvatarActive(item.Name))">Set @item.Name active</MudButton>
         <div>
             <img src="@item.CoverImage" class="width:100%;" />
 
         </div>
     }
 }
+
+<Learning.Client.Components.UserAvatarActiveView/>
 
 @code {
 
@@ -29,7 +32,9 @@
             Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
         }
     }
-
+    async Task SetAvatarActive(string name) {
+        await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
+    }
     async Task SaveUserAvatar() {
         var response = await UserAvatars.Save(UserAvatar);
         if (response.Success) {

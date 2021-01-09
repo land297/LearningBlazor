@@ -1,0 +1,22 @@
+﻿@using Learning.Shared.DbModels
+@inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal
+
+<MudText Typo="Typo.caption">@AvatarName</MudText>
+
+@code {
+        [Parameter]
+        public UserAvatar UserAvatar { get; set; }
+
+        string AvatarName { get { return UserAvatar == null ? "xxx" : UserAvatar.Name; } }
+
+    protected override async Task OnInitializedAsync() {
+        UserAvatarLocal.OnChange += ActiveUserAvatarChange;
+        await Task.Delay(0);
+    }
+    async void ActiveUserAvatarChange() {
+       
+        UserAvatar = await UserAvatarLocal.Get();
+       
+        StateHasChanged();
+    }
+}

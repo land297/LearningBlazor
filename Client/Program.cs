@@ -46,7 +46,7 @@ namespace Learning.Client {
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserAvatarService, UserAvatarService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
-
+            builder.Services.AddScoped<IUserAvatarLocalService, UserAvatarLocalService>();
 
             await builder.Build().RunAsync();
         }
