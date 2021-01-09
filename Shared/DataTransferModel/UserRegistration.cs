@@ -13,5 +13,7 @@ namespace Learning.Shared.DataTransferModel {
         public string Bio { get; set; }
         [Required]
         public string Password { get; set; }
+        [Compare("Password", ErrorMessage = "The passwords do not match")]
+        public string Password2 { get; set; }
     }
 }

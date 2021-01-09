@@ -18,8 +18,7 @@ namespace Learning.Server.Controllers {
             _userRepo = userRepo;
         }
         [HttpPost]
-        public async Task<IActionResult> UserRegistration(UserRegistration userRegistration) {
-            //TODO: check if user is authorized
+        public async Task<IActionResult> UserRegistration(UserRegistration userRegistration) {           
             var result = await _userRepo.AddUser(userRegistration);
             if (!result.Success) {
                 return BadRequest(result.Message);

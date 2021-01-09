@@ -1,0 +1,56 @@
+﻿@page "/userRegistration"
+
+@inject Learning.Client.Services.IUserService UserService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardContent>
+            <MudTextField Label="First name"
+                          @bind-Value="model.FirstName" For="@(() => model.FirstName)" />
+            <MudTextField Label="Email" Class="mt-3"
+                          @bind-Value="model.Email" For="@(() => model.Email)" />
+            <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                          @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+            <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                          @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+        </MudCardActions>
+    </MudCard>
+    <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+        Fill out the form correctly to see the success message.
+    </MudText>
+
+    <MudExpansionPanels>
+        <MudExpansionPanel Text="Show Validation Summary">
+            @if (success) {
+                <MudText Color="Color.Success">Success</MudText>
+            } else {
+                <MudText Color="@Color.Error">
+                    <ValidationSummary />
+                </MudText>
+            }
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+</EditForm>
+
+@code {
+    bool success;
+    Learning.Shared.DataTransferModel.UserRegistration model = new Learning.Shared.DataTransferModel.UserRegistration();
+    private async Task OnValidSubmit(EditContext context) {
+        success = true;
+        var response = await UserService.Register(model);
+        if (response.Success) {
+            NavigationManager.NavigateTo("/");
+        } else {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            Snackbar.Add($"{response.Message} - ingenting gick bra!!", Severity.Error, config => {
+                config.ShowCloseIcon = false; config.VisibleStateDuration = 2000;
+            });
+        }
+    }
+}
