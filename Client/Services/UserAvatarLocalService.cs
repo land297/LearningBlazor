@@ -8,7 +8,7 @@ using Blazored.LocalStorage;
 namespace Learning.Client.Services {
     public interface IUserAvatarLocalService {
         Task<UserAvatar> Get();
-
+        UserAvatar Active { get; }
         Task Set(UserAvatar userAvatar);
         event Action OnChange;
     }

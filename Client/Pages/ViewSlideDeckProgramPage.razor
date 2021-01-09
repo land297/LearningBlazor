@@ -5,6 +5,8 @@
 
 @inject Learning.Client.Services.IVideoService VideoService
 @inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
+@inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal
+@inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedProgram
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
 
@@ -14,34 +16,54 @@
 } else if (!isCompleted) {
     <Learning.Client.Components.ViewSlideDeckProgram SlideDeckProgram="SlideDeckProgram" OnCompleted="ProgramCompleted"></Learning.Client.Components.ViewSlideDeckProgram>
 } else {
-    <MudText Typo="Typo.h6">Klar med @SlideDeckProgram.Title</MudText>
+    <MudText Typo="Typo.h6">@UserAvatarLocal.Active.Name är klar med @SlideDeckProgram.Title</MudText>
     <MudText Typo="Typo.h6">Bla bla bla, sätta poäng och allt annat grejande..</MudText>
+    <MudTextField @bind-Value="CompletedDescription" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
+    <MudRating @bind-SelectedValue="selectedVal"></MudRating>
+    <MudButton OnClick="Save">Save</MudButton>
 }
-
-@code {
-    [Parameter]
-    public int Id { get; set; }
-    [Parameter]
-    public string Slug { get; set; }
-
-    private SlideDeckProgram SlideDeckProgram = new SlideDeckProgram();
-
-    private bool hasLoaded = false;
-    private bool isCompleted = false;
-    protected override async Task OnInitializedAsync() {
-        if (Id != default(int)) {
-            var sr = await SlideDeckProgramService.Get(Id);
-            if (sr.Success) {
-                SlideDeckProgram = sr.Data;
-            } else {
-                Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+    @code {
+        [Parameter]
+        public int Id { get; set; }
+        [Parameter]
+        public string Slug { get; set; }
+        private SlideDeckProgram SlideDeckProgram=new SlideDeckProgram();
+        private bool hasLoaded=false;
+        private bool isCompleted=false;
+        protected override async Task OnInitializedAsync() {
+            if (Id !=default(int)) {
+                var sr=await SlideDeckProgramService.Get(Id);
+                if (sr.Success) {
+                    SlideDeckProgram=sr.Data;
+                } else {
+                    Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
+                }
             }
+            hasLoaded=true;
         }
-        hasLoaded = true;
-    }
 
-    public async Task ProgramCompleted(SlideDeckProgram progarm) {
-        isCompleted = true;
-        await Task.Delay(0);
-    }
+        string CompletedDescription;
+        int selectedVal = 0;
+        public async Task Save() {
+            isCompleted = true;
+            var completed = new CompletedSlideDeckProgram();
+            completed.SlideDeckProgramId = SlideDeckProgram.Id;
+            completed.UserAvatarId = UserAvatarLocal.Active.Id;
+            completed.Comment = CompletedDescription;
+            completed.CompletedOn = DateTime.UtcNow;
+            completed.UserAvatarFeedback = selectedVal;
+
+            var sr = await CompletedProgram.Save(completed);
+            if (sr.Success) {
+                //SlideDeckProgram = sr.Data;
+            } else {
+                Snackbar.Add($"Could not save completed program source. Error: {sr.Message}", Severity.Error);
+            }
+            await Task.Delay(0);
+        }
+        public async Task ProgramCompleted(SlideDeckProgram progarm) {
+            isCompleted=true;
+
+            await Task.Delay(0);
+        }
 }

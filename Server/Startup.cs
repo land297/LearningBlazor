@@ -50,7 +50,8 @@ namespace Learning.Server {
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IUserAvatarRepo, UserAvatarRepo>();
             services.AddScoped<IUserService, UserService>();
-            
+            services.AddScoped<ICompletedSlideDeckProgramRepo, CompletedSlideDeckProgramRepo>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

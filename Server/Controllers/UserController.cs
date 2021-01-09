@@ -26,5 +26,14 @@ namespace Learning.Server.Controllers {
                 return Created($"api/user/{result.Data}",result.Data);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> SaveCompletedSlideDeckProgram(UserRegistration userRegistration) {
+            var result = await _userRepo.AddUser(userRegistration);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Created($"api/user/{result.Data}", result.Data);
+            }
+        }
     }
 }

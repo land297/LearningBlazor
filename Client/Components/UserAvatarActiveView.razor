@@ -11,6 +11,7 @@
 
     protected override async Task OnInitializedAsync() {
         UserAvatarLocal.OnChange += ActiveUserAvatarChange;
+        ActiveUserAvatarChange();
         await Task.Delay(0);
     }
     async void ActiveUserAvatarChange() {
