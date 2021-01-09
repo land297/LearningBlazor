@@ -48,6 +48,7 @@ namespace Learning.Server {
             services.AddScoped<ISlideDeckProgramRepo, SlideDeckProgramRepo>();
             services.AddScoped<IVideoRepo, VideoRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
+            services.AddScoped<IUserAvatarRepo, UserAvatarRepo>();
             services.AddScoped<IUserService, UserService>();
             
         }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Learning.Shared.DataTransferModel {
     public class UserRegistration {
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string Bio { get; set; }

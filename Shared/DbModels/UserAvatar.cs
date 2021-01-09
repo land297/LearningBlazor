@@ -6,7 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Shared.DbModels {
-    public class UserAvatar {
+    // TODO remove interace from this file
+    public interface ICoverImageable {
+        public string CoverImage { get; set; }
+    }
+    public class UserAvatar : ICoverImageable {
         public int Id { get; set; }
         [Required]
         public int UserId { get; set; }

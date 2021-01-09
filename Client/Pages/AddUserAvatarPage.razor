@@ -1,0 +1,42 @@
+﻿@page "/addUserAvatar"
+@using Learning.Shared.DbModels
+
+@inject Learning.Client.Services.IUserAvatarService UserAvatars
+@inject ISnackbar Snackbar
+
+<Learning.Client.Components.UserAvatarEdit UserAvatar="UserAvatar" OnSave="SaveUserAvatar" />
+
+@if (CurrentUserAvatars.Count > 0) {
+    foreach (var item in CurrentUserAvatars) {
+        <MudText Typo="Typo.body1">@item.Name</MudText>
+        <div>
+            <img src="@item.CoverImage" class="width:100%;" />
+
+        </div>
+    }
+}
+
+@code {
+
+    UserAvatar UserAvatar = new UserAvatar();
+    List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
+
+    protected override async Task OnInitializedAsync() {
+        var response = await UserAvatars.GetAll();
+        if (response.Success) {
+            CurrentUserAvatars = response.Data;
+        } else {
+            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+        }
+    }
+
+    async Task SaveUserAvatar() {
+        var response = await UserAvatars.Save(UserAvatar);
+        if (response.Success) {
+            Snackbar.Add($"Saved", Severity.Success);
+            CurrentUserAvatars.Add(response.Data);
+        } else {
+            Snackbar.Add($"Could not save. Error: {response.Message}", Severity.Error);
+        }
+    }
+}

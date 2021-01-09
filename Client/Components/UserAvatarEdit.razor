@@ -1,0 +1,46 @@
+﻿@using Learning.Shared.DbModels
+@inject Learning.Client.Services.CoverImageService CoverImage
+
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudText Typo="Typo.h6">User Avatar</MudText>
+            <MudTextField @bind-Value="UserAvatar.Name" Label="Title" Variant="Variant.Text"></MudTextField>
+            <MudTextField @bind-Value="UserAvatar.Description" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
+            @if (!string.IsNullOrWhiteSpace(UserAvatar.CoverImage)) {
+                <div>
+                    <img src="@UserAvatar.CoverImage" class="width:100%;" />
+
+                </div>
+            }
+            <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
+            <MudFab HtmlTag="label"
+                    Color="Color.Secondary"
+                    Icon="@Filled.Image"
+                    Label="Load Cover Image"
+                    for="fileInput" />
+
+        </MudPaper>
+        @if (UserAvatar.CompletedSlideDeckPrograms != null) {
+            @foreach (var slideDeckProgram in UserAvatar.CompletedSlideDeckPrograms) {
+                <MudContainer Class="pa-2 mx-2">
+                    <MudText Typo="Typo.body1">@slideDeckProgram.Title</MudText>
+                </MudContainer>
+            }
+        }
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudIconButton Icon="@Icons.Material.Save" OnClick="(() => OnSave.InvokeAsync(UserAvatar))"></MudIconButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public UserAvatar UserAvatar { get; set; }
+    [Parameter]
+    public EventCallback<UserAvatar> OnSave { get; set; }
+
+    private async Task SetCoverImage(InputFileChangeEventArgs e) {
+        await CoverImage.SetCoverImage(e, UserAvatar);
+
+    }
+}

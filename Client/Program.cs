@@ -37,11 +37,14 @@ namespace Learning.Client {
                 options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("role1"));
             });
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-
+            
+            builder.Services.AddScoped(x => new CoverImageService());
+            
             builder.Services.AddScoped<IVideoService, VideoService>();
             builder.Services.AddScoped<ISlideDeckService, SlideDeckService>();
             builder.Services.AddScoped<ISlideDeckProgramService, SlideDeckProgramService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserAvatarService, UserAvatarService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
 

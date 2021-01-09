@@ -9,26 +9,41 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
-    public class UserAvatarRepo : RepoBase {
+    public interface IUserAvatarRepo {
+        Task<sr<int>> SaveInContext(UserAvatar userAvatar);
+        Task<sr<UserAvatar>> GetInContext(int id);
+        Task<sr<IList<UserAvatar>>> GetAllInContext();
+    }
+
+    public class UserAvatarRepo : RepoBase, IUserAvatarRepo {
         private readonly IUserService _userService;
 
         public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {
             _userService = userService;
         }
-        public async Task<sr<int>> AddUserAvatar(UserAvatar userAvatar) {
+        public async Task<sr<int>> SaveInContext(UserAvatar userAvatar) {
             //TODO: how could an "admin" user add userAvatars for another user...
             //      this just assigned current logged in user to the userAvatar
             userAvatar.UserId = _userService.GetUserId();
-           
+
 
             await _dbContext.UserAvatars.AddAsync(userAvatar);
             await _dbContext.SaveChangesAsync();
 
             return sr<int>.GetSuccess(userAvatar.Id);
         }
-        private async Task<List<UserAvatar>> GetUserAvatarsInContext() {
-            var id = _userService.GetUserId();
-            return await _dbContext.UserAvatars.Where(x => x.UserId == id).ToListAsync();
+        public async Task<sr<UserAvatar>> GetInContext(int id) {
+            var userId = _userService.GetUserId();
+            var data = await _dbContext.UserAvatars.SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
+
+            return sr<UserAvatar>.GetSuccess(data);
         }
+        public async Task<sr<IList<UserAvatar>>> GetAllInContext() {
+            var userId = _userService.GetUserId();
+            var data = await _dbContext.UserAvatars.Where(x => x.UserId == userId).ToListAsync();
+            return sr<IList<UserAvatar>>.GetSuccess(data);
+        }
+
+
     }
 }
