@@ -12,6 +12,7 @@ namespace Learning.Server.Repositories {
     public interface IUserAvatarRepo {
         Task<sr<int>> SaveInContext(UserAvatar userAvatar);
         Task<sr<UserAvatar>> GetInContext(int id);
+        Task<sr<UserAvatar>> Get(int id);
         Task<sr<IList<UserAvatar>>> GetAllInContext();
     }
 
@@ -55,6 +56,11 @@ namespace Learning.Server.Repositories {
             var userId = _userService.GetUserId();
             var data = await _dbContext.UserAvatars.Where(x => x.UserId == userId).ToListAsync();
             return sr<IList<UserAvatar>>.GetSuccess(data);
+        }
+        public async Task<sr<UserAvatar>> Get(int id) {
+            var data = await _dbContext.UserAvatars.SingleOrDefaultAsync(x => x.Id == id);
+
+            return sr<UserAvatar>.GetSuccess(data);
         }
 
 

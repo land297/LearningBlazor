@@ -18,10 +18,20 @@ namespace Learning.Server.Controllers {
         }
 
         //TODO: refactor get methods
-        [HttpGet]
-        public async Task<IActionResult> Get(UserAvatar ua) {
+        [HttpGet("userAvatar")]
+        public async Task<IActionResult> GetViaUserAvatar(UserAvatar ua) {
             // TODO: need to check if user can get unpublished or not
             var result = await _userAccessSlideDeckProgramRepo.Get(ua);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
+        [HttpGet("user")]
+        public async Task<IActionResult> GetViaUser(User u) {
+            // TODO: need to check if user can get unpublished or not
+            var result = await _userAccessSlideDeckProgramRepo.Get(u);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {

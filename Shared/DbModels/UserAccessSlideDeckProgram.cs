@@ -16,7 +16,7 @@ namespace Learning.Shared.DbModels {
         public int UserId { get; set; }
         public User User { get; set; }
         public int? UserAvatarId { get; set; }
-        public User UserAvatar { get; set; }
+        public UserAvatar UserAvatar { get; set; }
         public string Comments { get; set; }
 
         public override void CopyValues(UserAccessSlideDeckProgram source, ref UserAccessSlideDeckProgram copy) {
