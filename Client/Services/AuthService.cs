@@ -13,6 +13,7 @@ namespace Learning.Client.Services {
     public interface IAuthService {
         Task<sr<string>> Login(Login login);
         Task<sr<string>> Logout();
+        Task<sr<bool>> IsLocalTokenValid();
     }
 
     public class AuthService : IAuthService {
@@ -45,6 +46,14 @@ namespace Learning.Client.Services {
             await _authStateProvider.GetAuthenticationStateAsync();
             return sr<string>.GetSuccess("Loguut");
 
+        }
+        public async Task<sr<bool>> IsLocalTokenValid() {
+            var response = await _http.GetAsync("api/auth/isAuth");
+            if (response.IsSuccessStatusCode) {
+                return sr<bool>.GetSuccess(true);
+            } else {
+                return sr<bool>.Get(false);
+            }
         }
     }
 }

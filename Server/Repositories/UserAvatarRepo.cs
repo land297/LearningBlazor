@@ -34,7 +34,7 @@ namespace Learning.Server.Repositories {
         }
         public async Task<sr<UserAvatar>> GetInContext(int id) {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.UserAvatars.SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
+            var data = await _dbContext.UserAvatars.Include(x => x.CompletedSlideDeckPrograms).SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
 
             return sr<UserAvatar>.GetSuccess(data);
         }

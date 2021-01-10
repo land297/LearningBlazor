@@ -38,8 +38,8 @@ namespace Learning.Client.Services {
             }
         }
         public async Task<sr<UserAvatar>> Get(int id) {
-            var response = await _http.GetAsync($"api/userAvatar/{id}");
-
+            var response = await _http.GetAsync($"api/useravatar/{id}");
+            
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
                 var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();

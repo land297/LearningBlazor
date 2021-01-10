@@ -18,6 +18,7 @@
     
 }
 <MudButton OnClick="LoginUser">Login a@a.com</MudButton>
+<MudButton OnClick="TestToken">Test local Token</MudButton>
 <AuthorizeView>
     <Authorized>
         <h1>Hello, @context.User.Identity.Name!</h1>
@@ -45,6 +46,15 @@
                 $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
         } else {
             _authMessage = "The user is NOT authenticated.";
+        }
+    }
+
+    async Task TestToken() {
+        var response = await Auth.IsLocalTokenValid();
+        if (response.Success) {
+            await GetClaimsPrincipalData();
+        } else {
+            Snackbar.Add($"Could not login. Error: {response.Message}", Severity.Error);
         }
     }
 

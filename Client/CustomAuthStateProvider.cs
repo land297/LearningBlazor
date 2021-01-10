@@ -38,9 +38,23 @@ namespace Learning.Client {
             _http.DefaultRequestHeaders.Authorization = null;
 
             if (!string.IsNullOrEmpty(token)) {
+
+
                 identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-                // adding the token to all http calls
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var expClaim = identity.Claims.First(x => x.Type == "exp").Value;
+                Console.WriteLine(expClaim);
+                var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                var expireDateTime = epoch.AddSeconds(double.Parse(expClaim));
+                if (expireDateTime < DateTime.UtcNow) {
+                    identity = new ClaimsIdentity();
+                    Console.WriteLine("has expired");
+                } else {
+                    Console.WriteLine("token is valid");
+                    // adding the token to all http calls
+                    _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+                
             }
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
