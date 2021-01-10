@@ -51,6 +51,7 @@ namespace Learning.Server {
             services.AddScoped<IUserAvatarRepo, UserAvatarRepo>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICompletedSlideDeckProgramRepo, CompletedSlideDeckProgramRepo>();
+            services.AddScoped<IUserAccessSlideDeckProgramRepo, UserAccessSlideDeckProgramRepo>();
 
         }
 

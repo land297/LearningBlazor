@@ -5,8 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Shared.DbModels {
-    public class UserAccessSlideDeckProgram {
+    public abstract class IdEntity<T> {
         public int Id { get; set; }
+        public abstract void CopyValues(T source, ref T copy);
+    }
+    public class UserAccessSlideDeckProgram : IdEntity<UserAccessSlideDeckProgram> {
+        //public int Id { get; set; }
         public int SlideDeckProgramId { get; set; }
         public SlideDeckProgram SlideDeckProgram { get; set; }
         public int UserId { get; set; }
@@ -14,5 +18,9 @@ namespace Learning.Shared.DbModels {
         public int? UserAvatarId { get; set; }
         public User UserAvatar { get; set; }
         public string Comments { get; set; }
+
+        public override void CopyValues(UserAccessSlideDeckProgram source, ref UserAccessSlideDeckProgram copy) {
+            throw new NotImplementedException();
+        }
     }
 }

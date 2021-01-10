@@ -26,7 +26,7 @@
 <MudOverlay Visible="isVisible" DarkBackground="true">
     <MudPaper>
         <MudText Typo="Typo.body2">@Name</MudText>
-        <MudTable Items="@OverlayUser." Hover="true" Breakpoint="Breakpoint.Sm">
+        <MudTable Items="@OverlayUser.UserAvatars" Hover="true" Breakpoint="Breakpoint.Sm">
             <HeaderContent>
                 <MudTh>Title</MudTh>
                 <MudTh>Description</MudTh>
@@ -35,8 +35,8 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd>@context.Id</MudTd>
-                <MudTd>@context.Email</MudTd>
-                <MudTd><MudButton OnClick="@(() => OpenOverlay(context.Email))">View</MudButton></MudTd>
+                <MudTd>@context.Name</MudTd>
+                
                 <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
 
             </RowTemplate>

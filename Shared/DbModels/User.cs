@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using static Learning.Shared.Models.Enums;
 
 namespace Learning.Shared.DbModels {
-    public class User {
-        public int Id { get; set; }
+    public class User : IdEntity<User> {
+        //public int Id { get; set; }
         [Required, EmailAddress]
         public string Email { get; set; }
         [StringLength(16, ErrorMessage = "Your username is too long (16 characters max)")]
@@ -22,6 +22,8 @@ namespace Learning.Shared.DbModels {
         public UserRole UserRole { get; set; }
         public List<UserAvatar> UserAvatars { get; set; }
 
-       
+        public override void CopyValues(User source, ref User copy) {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
@@ -16,7 +17,17 @@ namespace Learning.Server.Repositories {
             _dbContext = dbContext;
         }
     }
-    public abstract class RepoBase2<T> where T : class {
+
+    public interface IRepoBase2<T> where T : IdEntity<T> {
+        DbSet<T> DbSet { get; }
+        Task<sr<T>> Get(Expression<Func<T, bool>> predicate);
+        Task<sr<IList<T>>> Get(Task<List<T>> task);
+        Task<sr<T>> Get(Task<T> task);
+        Task<sr<IList<T>>> GetAll();
+        Task<sr<T>> Save(T entity);
+    }
+
+    public abstract class RepoBase2<T> : IRepoBase2<T> where T : IdEntity<T> {
         protected readonly AppDbContext _dbContext;
         public DbSet<T> DbSet { get; private set; }
         public RepoBase2(AppDbContext dbContext) {
@@ -24,7 +35,7 @@ namespace Learning.Server.Repositories {
             DbSet = _dbContext.Set<T>();
         }
 
-        public async Task<sr<T>> Get(Task<T>  task) {
+        public async Task<sr<T>> Get(Task<T> task) {
             try {
                 var result = await task;
                 return sr<T>.GetSuccess(result);
@@ -38,6 +49,38 @@ namespace Learning.Server.Repositories {
                 return sr<IList<T>>.GetSuccess(result);
             } catch {
                 return sr<IList<T>>.Get();
+            }
+        }
+        public async Task<sr<IList<T>>> GetAll() {
+            try {
+                var result = await DbSet.ToListAsync();
+                return sr<IList<T>>.GetSuccess(result);
+            } catch {
+                return sr<IList<T>>.Get();
+            }
+        }
+        public async Task<sr<T>> Get(Expression<Func<T, bool>> predicate) {
+            try {
+                var result = await DbSet.SingleOrDefaultAsync(predicate);
+                return sr<T>.GetSuccess(result);
+            } catch {
+                return sr<T>.Get();
+            }
+        }
+        public async Task<sr<T>> Save(T entity) {
+            try {
+                if (entity.Id != default(int)) {
+                    var result = await Get(x => x.Id == entity.Id);
+                    if (result.Success) {
+                        result.Data.CopyValues(result.Data, ref entity);
+                    }
+                } else {
+                    await DbSet.AddAsync(entity);
+                }
+                await _dbContext.SaveChangesAsync();
+                return sr<T>.GetSuccess(entity);
+            } catch (Exception e) {
+                return sr<T>.Get(e);
             }
         }
     }
@@ -87,8 +130,8 @@ namespace Learning.Server.Repositories {
         public async Task<User> GetUser(int id) {
             return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Id == id);
         }
-        public async Task<sr<IList<User>>> GetAll() {
-            return await Get(DbSet.ToListAsync());
-        }
+        //public async Task<sr<IList<User>>> GetAll() {
+        //    return await Get(DbSet.ToListAsync());
+        //}
     }
 }
