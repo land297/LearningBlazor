@@ -1,0 +1,43 @@
+﻿@page "/allUserAvatars"
+@using Learning.Shared.DbModels
+
+@inject Learning.Client.Services.IUserAvatarService UserAvatars
+@inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+@if (CurrentUserAvatars.Count != 0) {
+    <MudTable Items="@CurrentUserAvatars" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh>View</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Picture</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd><Learning.Client.Components.UserAvatarView UserAvatar="@context" /></MudTd>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd> <img src="@context.CoverImage" class="width:100%;" /></MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewUserAvatar/{context.Id}"))">View</MudButton></MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"addUserAvatar/{context.Id}"))">Edit</MudButton></MudTd>
+
+        </RowTemplate>
+    </MudTable>
+
+
+}
+}
+
+@code {
+    List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
+
+    protected override async Task OnInitializedAsync() {
+        var response = await UserAvatars.GetAll();
+        if (response.Success) {
+            CurrentUserAvatars = response.Data;
+        } else {
+            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+        }
+    }
+}

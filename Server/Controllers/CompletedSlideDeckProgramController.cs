@@ -17,12 +17,30 @@ namespace Learning.Server.Controllers {
             _completedProgramRepo = completedProgramRepo;
         }
         [HttpPost]
-        public async Task<IActionResult> UserRegistration(CompletedSlideDeckProgram completedProgram) {
+        public async Task<IActionResult> Post(CompletedSlideDeckProgram completedProgram) {
             var result = await _completedProgramRepo.Save(completedProgram);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
                 return Created($"api/user/{result.Data}", result.Data);
+            }
+        }
+        [HttpGet("/all")]
+        public async Task<IActionResult> GetAll() {
+            var result = await _completedProgramRepo.GetAll();
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
+        [HttpGet("/all/{id}")]
+        public async Task<IActionResult> GetAll(int id) {
+            var result = await _completedProgramRepo.GetAllForUserAvatar(id);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Learning.Server.DbContext;
+using Learning.Server.Service;
 using Learning.Shared;
 using Learning.Shared.DbModels;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +11,16 @@ using System.Threading.Tasks;
 namespace Learning.Server.Repositories {
     public interface ICompletedSlideDeckProgramRepo {
         Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram);
+        Task<sr<IList<CompletedSlideDeckProgram>>> GetAll();
+        Task<sr<IList<CompletedSlideDeckProgram>>> GetAllForUserAvatar(int id);
     }
 
     public class CompletedSlideDeckProgramRepo : ICompletedSlideDeckProgramRepo {
         private readonly AppDbContext _dbContext;
-        public CompletedSlideDeckProgramRepo(AppDbContext dbContext) {
+        readonly IUserService _userService;
+        public CompletedSlideDeckProgramRepo(AppDbContext dbContext, IUserService userService) {
             _dbContext = dbContext;
+            _userService = userService;
         }
         public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
             var response = sr<CompletedSlideDeckProgram>.Get();
@@ -37,6 +42,16 @@ namespace Learning.Server.Repositories {
                 response.Message = e.Message;
             }
             return response;
+        }
+        public async Task<sr<IList<CompletedSlideDeckProgram>>> GetAll() {
+            var userId = _userService.GetUserId();
+            var data = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.UserAvatar.UserId == userId).ToListAsync();
+            return sr<IList<CompletedSlideDeckProgram>>.GetSuccess(data);
+        }
+        public async Task<sr<IList<CompletedSlideDeckProgram>>> GetAllForUserAvatar(int id) {
+            var userId = _userService.GetUserId();
+            var data = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.UserAvatar.UserId == userId && x.UserAvatar.Id == id).ToListAsync();
+            return sr<IList<CompletedSlideDeckProgram>>.GetSuccess(data);
         }
     }
 }

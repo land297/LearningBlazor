@@ -1,0 +1,30 @@
+﻿@using Learning.Shared.DbModels
+
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="3" Class="pa-2 mx-2">
+            <MudText Typo="Typo.h6">User Avatar</MudText>
+            <MudText Typo="Typo.body1">@UserAvatar.Name</MudText>
+            <MudText Typo="Typo.body1">@UserAvatar.Description</MudText>
+            @if (!string.IsNullOrWhiteSpace(UserAvatar.CoverImage)) {
+                <div>
+                    <img src="@UserAvatar.CoverImage" class="width:100%;" />
+
+                </div>
+            }
+           
+        </MudPaper>
+        @if (UserAvatar.CompletedSlideDeckPrograms != null) {
+            @foreach (var slideDeckProgram in UserAvatar.CompletedSlideDeckPrograms) {
+                <MudContainer Class="pa-2 mx-2">
+                    <MudText Typo="Typo.body1">@slideDeckProgram.Title</MudText>
+                </MudContainer>
+            }
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public UserAvatar UserAvatar { get; set; }
+}

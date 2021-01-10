@@ -25,8 +25,13 @@ namespace Learning.Client.Services {
             var response = await _http.PostAsJsonAsync("api/userAvatar", userAvatar);
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
-                userAvatar = await stream.DeserializeJsonCamelCaseAsync<UserAvatar>();
-                return sr<UserAvatar>.GetSuccess(userAvatar);
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
+                if (t.Success) {
+                    return sr<UserAvatar>.GetSuccess(t.Data);
+                } else {
+                    var s = await response.Content.ReadAsStringAsync();
+                    return sr<UserAvatar>.Get(s);
+                }
             } else {
                 var error = await response.Content.ReadAsStringAsync();
                 return sr<UserAvatar>.Get(error);
@@ -37,8 +42,13 @@ namespace Learning.Client.Services {
 
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
-                var userAvatar = await stream.DeserializeJsonCamelCaseAsync<UserAvatar>();
-                return sr<UserAvatar>.GetSuccess(userAvatar);
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
+                if (t.Success) {
+                    return sr<UserAvatar>.GetSuccess(t.Data);
+                } else {
+                    var s = await response.Content.ReadAsStringAsync();
+                    return sr<UserAvatar>.Get(s);
+                }
             } else {
                 var error = await response.Content.ReadAsStringAsync();
                 return sr<UserAvatar>.Get(error);

@@ -26,7 +26,7 @@ namespace Learning.Server.Controllers {
                 return Created("uri purri prutt", userAvatar);
             }
         }
-        [HttpGet]
+        [HttpGet("{id}}")]
         public async Task<IActionResult> Get(int id) {
             var result = await _userAvatarRepo.GetInContext(id);
             if (!result.Success) {

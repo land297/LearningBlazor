@@ -1,4 +1,5 @@
 ﻿@page "/addUserAvatar"
+@page "/addUserAvatar/{id:int}"
 @using Learning.Shared.DbModels
 
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
@@ -17,9 +18,11 @@
     }
 }
 
-<Learning.Client.Components.UserAvatarActiveView/>
+<Learning.Client.Components.UserAvatarActiveView />
 
 @code {
+    [Parameter]
+    public int Id { get; set; }
 
     UserAvatar UserAvatar = new UserAvatar();
     List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
@@ -31,6 +34,14 @@
         } else {
             Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
         }
+
+        var response2 = await UserAvatars.Get(Id);
+        if (response2.Success) {
+            UserAvatar = response2.Data;
+        } else {
+            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+        }
+
     }
     async Task SetAvatarActive(string name) {
         await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
