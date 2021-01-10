@@ -1,0 +1,83 @@
+﻿@page "/admin/usersList"
+<h3>UsersListPage</h3>
+@inject Learning.Client.Services.IUserService UsersService
+@inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@using Learning.Shared.DbModels
+
+@if (Users != null) {
+    <MudTable Items="@Users" Hover="true" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh>Title</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Page count</MudTh>
+            <MudTh>AccessLevel</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.Email</MudTd>
+            <MudTd><MudButton OnClick="@(() => OpenOverlay(context.Email))">View</MudButton></MudTd>
+            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
+
+        </RowTemplate>
+    </MudTable>
+}
+<MudOverlay Visible="isVisible" DarkBackground="true">
+    <MudPaper>
+        <MudText Typo="Typo.body2">@Name</MudText>
+        <MudTable Items="@OverlayUser." Hover="true" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>Title</MudTh>
+                <MudTh>Description</MudTh>
+                <MudTh>Page count</MudTh>
+                <MudTh>AccessLevel</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Id</MudTd>
+                <MudTd>@context.Email</MudTd>
+                <MudTd><MudButton OnClick="@(() => OpenOverlay(context.Email))">View</MudButton></MudTd>
+                <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
+
+            </RowTemplate>
+        </MudTable>
+
+        <MudButton OnClick="@(() => OpenOverlay(""))">
+            View>
+
+        </MudButton>
+    </MudPaper>
+
+</MudOverlay>
+@code {
+    bool isVisible = false;
+    string Name;
+
+    List<User> Users;
+    List<SlideDeckProgram> SlideDeckPrograms;
+    User OverlayUser;
+    protected override async Task OnInitializedAsync() {
+        var r = await UsersService.GetAll();
+        if (r.Success) {
+            Users = r.Data;
+        } else {
+            Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
+        }
+
+        var r2 = await SlideDeckProgramService.GetPublished();
+        if (r2.Success) {
+            SlideDeckPrograms = r2.Data;
+        } else {
+            Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
+        }
+       
+
+    }
+    public async void OpenOverlay(string name) {
+        OverlayUser = Users.First(x => x.Email == name);
+        Name = name;
+        isVisible = !isVisible;
+
+        await Task.Delay(0);
+    }
+}

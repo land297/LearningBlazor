@@ -16,15 +16,41 @@ namespace Learning.Server.Repositories {
             _dbContext = dbContext;
         }
     }
+    public abstract class RepoBase2<T> where T : class {
+        protected readonly AppDbContext _dbContext;
+        public DbSet<T> DbSet { get; private set; }
+        public RepoBase2(AppDbContext dbContext) {
+            _dbContext = dbContext;
+            DbSet = _dbContext.Set<T>();
+        }
+
+        public async Task<sr<T>> Get(Task<T>  task) {
+            try {
+                var result = await task;
+                return sr<T>.GetSuccess(result);
+            } catch {
+                return sr<T>.Get();
+            }
+        }
+        public async Task<sr<IList<T>>> Get(Task<List<T>> task) {
+            try {
+                var result = await task;
+                return sr<IList<T>>.GetSuccess(result);
+            } catch {
+                return sr<IList<T>>.Get();
+            }
+        }
+    }
 
     public interface IUserRepo {
         Task<sr<int>> AddUser(UserRegistration user);
         Task<sr<bool>> UsersExists(User user);
         Task<User> GetUser(int id);
         Task<User> GetUser(string email);
+        Task<sr<IList<User>>> GetAll();
     }
 
-    public class UserRepo : RepoBase, IUserRepo {
+    public class UserRepo : RepoBase2<User>, IUserRepo {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
      
         }
@@ -55,10 +81,14 @@ namespace Learning.Server.Repositories {
             return await _dbContext.Users.AnyAsync(x => x.Id == id);
         }
         public async Task<User> GetUser(string email) {
+           
             return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Email.ToLower() == email.ToLower());
         }
         public async Task<User> GetUser(int id) {
             return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Id == id);
+        }
+        public async Task<sr<IList<User>>> GetAll() {
+            return await Get(DbSet.ToListAsync());
         }
     }
 }

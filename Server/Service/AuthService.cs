@@ -57,7 +57,7 @@ namespace Learning.Server.Service {
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username ?? "null"),
-                new Claim(ClaimTypes.Role,"role1"),
+                new Claim(ClaimTypes.Role,"admin"),
                 new Claim(ClaimTypes.Role,"role2")
             };
 

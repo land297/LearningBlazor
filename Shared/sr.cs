@@ -9,6 +9,7 @@ namespace Learning.Shared {
         public T Data { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
+        public Exception Exception { get; set; }
         public void SetSuccess(T data) {
             Data = data;
             Success = true;
@@ -20,6 +21,11 @@ namespace Learning.Shared {
         public static sr<T> Get(string message) {
             var s = new sr<T>();
             s.Message = message;
+            return s;
+        }
+        public static sr<T> Get(Exception exception) {
+            var s = new sr<T>();
+            s.Exception = exception;
             return s;
         }
         public static sr<T> Get(T data) {

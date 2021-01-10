@@ -35,5 +35,14 @@ namespace Learning.Server.Controllers {
                 return Created($"api/user/{result.Data}", result.Data);
             }
         }
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll() {
+            var result = await _userRepo.GetAll();
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
     }
 }

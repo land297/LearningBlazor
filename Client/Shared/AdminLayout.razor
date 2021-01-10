@@ -1,0 +1,21 @@
+﻿@inherits LayoutComponentBase
+<div class="page">
+    <div class="main">
+        <div class="top-row px-4">
+            <Learning.Client.Components.UserAvatarActiveView />
+            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        </div>
+        <AuthorizeView Roles="admin, superuser">
+            <Authorized>
+                <div class="content px-4">
+                    @Body
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <p>You can only see this if you're an admin or superuser.</p>
+            </NotAuthorized>
+        </AuthorizeView>
+
+  
+    </div>
+</div>
