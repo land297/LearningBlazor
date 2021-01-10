@@ -1,4 +1,5 @@
 ﻿@using Learning.Shared.DbModels
+@inject NavigationManager NavigationManager
 
 <MudGrid>
     <MudItem xs="12" sm="6">
@@ -12,13 +13,17 @@
 
                 </div>
             }
-           
+
         </MudPaper>
         @if (UserAvatar.CompletedSlideDeckPrograms != null) {
-            @foreach (var slideDeckProgram in UserAvatar.CompletedSlideDeckPrograms) {
+            @foreach (var cslp in UserAvatar.CompletedSlideDeckPrograms) {
                 <MudContainer Class="pa-2 mx-2">
-                    <MudText Typo="Typo.body1">@slideDeckProgram.Title</MudText>
+                    <MudText Typo="Typo.body1">@cslp.SlideDeckProgram.Title</MudText>
+                    <MudText Typo="Typo.body1">@cslp.Comment</MudText>
+                    <MudRating SelectedValue=@cslp.UserAvatarFeedback ReadOnly="true"></MudRating>
+                    <MudButton OnClick="@(() => NavigationManager.NavigateTo($"sharedCompletedProgram/{cslp.Id}"))">Share</MudButton>
                 </MudContainer>
+
             }
         }
     </MudItem>

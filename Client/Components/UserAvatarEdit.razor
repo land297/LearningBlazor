@@ -21,13 +21,7 @@
                     for="fileInput" />
 
         </MudPaper>
-        @if (UserAvatar.CompletedSlideDeckPrograms != null) {
-            @foreach (var slideDeckProgram in UserAvatar.CompletedSlideDeckPrograms) {
-                <MudContainer Class="pa-2 mx-2">
-                    <MudText Typo="Typo.body1">@slideDeckProgram.Title</MudText>
-                </MudContainer>
-            }
-        }
+
         <MudPaper Elevation="3" Class="pa-2 mx-2">
             <MudIconButton Icon="@Icons.Material.Save" OnClick="(() => OnSave.InvokeAsync(UserAvatar))"></MudIconButton>
         </MudPaper>

@@ -13,6 +13,7 @@ namespace Learning.Server.Repositories {
         Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram);
         Task<sr<IList<CompletedSlideDeckProgram>>> GetAll();
         Task<sr<IList<CompletedSlideDeckProgram>>> GetAllForUserAvatar(int id);
+        Task<sr<CompletedSlideDeckProgram>> GetShared(int id);
     }
 
     public class CompletedSlideDeckProgramRepo : ICompletedSlideDeckProgramRepo {
@@ -50,8 +51,17 @@ namespace Learning.Server.Repositories {
         }
         public async Task<sr<IList<CompletedSlideDeckProgram>>> GetAllForUserAvatar(int id) {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.UserAvatar.UserId == userId && x.UserAvatar.Id == id).ToListAsync();
+            var data = await _dbContext.CompletedSlideDeckPrograms.Include(x => x.SlideDeckProgram).Where(x => x.UserAvatar.UserId == userId && x.UserAvatar.Id == id).ToListAsync();
             return sr<IList<CompletedSlideDeckProgram>>.GetSuccess(data);
+        }
+        public async Task<sr<CompletedSlideDeckProgram>> GetShared(int id) {
+            var userId = _userService.GetUserId();
+            var data = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).SingleOrDefaultAsync();
+            if (data != null) {
+                return sr<CompletedSlideDeckProgram>.GetSuccess(data);
+            } else {
+                return sr<CompletedSlideDeckProgram>.Get("Not found");
+            }
         }
     }
 }

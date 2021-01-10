@@ -25,7 +25,7 @@ namespace Learning.Server.Controllers {
                 return Created($"api/user/{result.Data}", result.Data);
             }
         }
-        [HttpGet("/all")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
             var result = await _completedProgramRepo.GetAll();
             if (!result.Success) {
@@ -34,9 +34,18 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
-        [HttpGet("/all/{id}")]
+        [HttpGet("all/{id}")]
         public async Task<IActionResult> GetAll(int id) {
             var result = await _completedProgramRepo.GetAllForUserAvatar(id);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
+        [HttpGet("shared/{id}")]
+        public async Task<IActionResult> GetShared(int id) {
+            var result = await _completedProgramRepo.GetShared(id);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {

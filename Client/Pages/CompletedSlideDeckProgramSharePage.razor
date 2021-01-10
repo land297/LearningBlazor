@@ -1,0 +1,33 @@
+﻿@layout MyCoolLayout
+
+@page "/sharedCompletedProgram/{id:int}"
+@inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedPrograms
+@using Learning.Shared.DbModels
+@inject ISnackbar Snackbar
+
+<h3>CompletedSlideDeckProgramSharePage</h3>
+@if (csdp != null) {
+    <MudContainer Class="pa-2 mx-2">
+        <MudText Typo="Typo.body1">@csdp.UserAvatar.Name</MudText>
+        <MudText Typo="Typo.body1">@csdp.SlideDeckProgram.Title</MudText>
+        <MudText Typo="Typo.body1">@csdp.Comment</MudText>
+        <MudRating SelectedValue=@csdp.UserAvatarFeedback ReadOnly="true"></MudRating>
+    </MudContainer>
+}
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    CompletedSlideDeckProgram csdp;
+
+    protected override async Task OnInitializedAsync() {
+        var response2 = await CompletedPrograms.GetShared(Id);
+        if (response2.Success) {
+            csdp = response2.Data;
+        } else {
+            Snackbar.Add($"Could not get stuff from server. Error: {response2.Message}", Severity.Error);
+        }
+
+    }
+}

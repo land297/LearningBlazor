@@ -1,15 +1,16 @@
 ﻿@page "/viewUserAvatar/{id:int}"
 @using Learning.Shared.DbModels
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
+@inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedPrograms
 @inject ISnackbar Snackbar
 
-<Learning.Client.Components.UserAvatarView UserAvatar="UserAvatar"/>
+<Learning.Client.Components.UserAvatarView UserAvatar="UserAvatar" />
 
 @code {
-    [Parameter]
-    public int Id { get; set; }
+        [Parameter]
+        public int Id { get; set; }
 
-    UserAvatar UserAvatar = new UserAvatar();
+        UserAvatar UserAvatar = new UserAvatar();
 
     protected override async Task OnInitializedAsync() {
         var response2 = await UserAvatars.Get(Id);
@@ -17,6 +18,14 @@
             UserAvatar = response2.Data;
         } else {
             Snackbar.Add($"Could not get stuff from server. Error: {response2.Message}", Severity.Error);
+        }
+        if (UserAvatar != default(UserAvatar)) {
+            var response3 = await CompletedPrograms.GetAll(UserAvatar);
+            if (response3.Success) {
+                UserAvatar.CompletedSlideDeckPrograms = response3.Data;
+            } else {
+                Snackbar.Add($"Could not get stuff from server. Error: {response3.Message}", Severity.Error);
+            }
         }
 
     }

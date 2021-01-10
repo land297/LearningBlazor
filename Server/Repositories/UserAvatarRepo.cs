@@ -25,16 +25,29 @@ namespace Learning.Server.Repositories {
             //TODO: how could an "admin" user add userAvatars for another user...
             //      this just assigned current logged in user to the userAvatar
             userAvatar.UserId = _userService.GetUserId();
+            if (userAvatar.Id != default(int)) {
+                //update
+                var dbUserAvatar = await _dbContext.UserAvatars.FirstOrDefaultAsync(x => x.Id == userAvatar.Id && x.UserId == userAvatar.UserId);
+                if (dbUserAvatar == null) {
+                    //TODO: trying to access 
+                } else {
+                    dbUserAvatar.Name = userAvatar.Name;
+                    dbUserAvatar.Description = userAvatar.Description;
+                    dbUserAvatar.CoverImage = userAvatar.CoverImage;
+                  
+                }
+            } else {
+                await _dbContext.UserAvatars.AddAsync(userAvatar);
+            }
 
-
-            await _dbContext.UserAvatars.AddAsync(userAvatar);
+           
             await _dbContext.SaveChangesAsync();
 
             return sr<int>.GetSuccess(userAvatar.Id);
         }
         public async Task<sr<UserAvatar>> GetInContext(int id) {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.UserAvatars.Include(x => x.CompletedSlideDeckPrograms).SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
+            var data = await _dbContext.UserAvatars.SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
 
             return sr<UserAvatar>.GetSuccess(data);
         }

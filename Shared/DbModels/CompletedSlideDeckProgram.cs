@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Learning.Shared.DbModels {
@@ -10,6 +11,7 @@ namespace Learning.Shared.DbModels {
         public int Id { get; set; }
         [Required]
         public int UserAvatarId { get; set; }
+  
         public UserAvatar UserAvatar { get; set; }
         [Required]
         public int SlideDeckProgramId { get; set; }
