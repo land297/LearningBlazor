@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 namespace Learning.Shared.DbModels {
     // TODO remove interace from this file
     public interface ICoverImageable {
-        public string CoverImage { get; set; }
+        public string CoverImage { get; }
+        public Blob Blob { get; set; }
     }
     public class UserAvatar : ICoverImageable {
         public int Id { get; set; }
@@ -18,7 +20,13 @@ namespace Learning.Shared.DbModels {
         public User User { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string CoverImage { get; set; }
+
+        [NotMapped]
+        public string CoverImage { get { return Blob != null ? Blob.Data : string.Empty; } }
+        
+        public int? BlobId { get; set; }
+        public Blob Blob { get; set; }
+        
         public bool IsDeleted { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         //TODO: is this a good..

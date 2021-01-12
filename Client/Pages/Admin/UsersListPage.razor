@@ -2,6 +2,7 @@
 <h3>UsersListPage</h3>
 @inject Learning.Client.Services.IUserService UsersService
 @inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
+@inject Learning.Client.Services.IUserAccessSlideDeckProgramService UserAccessSlideDeckProgramService
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @using Learning.Shared.DbModels
@@ -30,22 +31,31 @@
             <HeaderContent>
                 <MudTh>Title</MudTh>
                 <MudTh>Description</MudTh>
-                <MudTh>Page count</MudTh>
+                <MudTh>Assigned Programs</MudTh>
                 <MudTh>AccessLevel</MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>@context.Id</MudTd>
                 <MudTd>@context.Name</MudTd>
-                
+                <MudTd>
+                    @if (UserAccessList != null) {
+                        foreach (var slideDeck in UserAccessList) {
+                            <MudSelectItem Value="@(slideDeck.SlideDeckProgram.Title)" />
+                        }
+                    }
+                </MudTd>
                 <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
 
             </RowTemplate>
         </MudTable>
-
-        <MudButton OnClick="@(() => OpenOverlay(""))">
-            View>
-
-        </MudButton>
+        <MudSelect T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
+            @if (SlideDeckPrograms != null) {
+                foreach (var slideDeck in SlideDeckPrograms) {
+                    <MudSelectItem Value="@(slideDeck.Title)" />
+                }
+            }
+        </MudSelect>
+        <MudButton OnClick="@(() => OpenOverlay(""))">** Close **></MudButton>
     </MudPaper>
 
 </MudOverlay>
@@ -56,6 +66,8 @@
     List<User> Users;
     List<SlideDeckProgram> SlideDeckPrograms;
     User OverlayUser;
+    List<UserAccessSlideDeckProgram> UserAccessList;
+
     protected override async Task OnInitializedAsync() {
         var r = await UsersService.GetAll();
         if (r.Success) {
@@ -70,14 +82,29 @@
         } else {
             Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
         }
-       
+
+
+
 
     }
     public async void OpenOverlay(string name) {
         OverlayUser = Users.First(x => x.Email == name);
+        var r3 = await UserAccessSlideDeckProgramService.GetViaUser(OverlayUser.Id);
+        if (r3.Success) {
+            UserAccessList = r3.Data;
+        } else {
+            Snackbar.Add($"Could not get publushed. Error: {r3.Message}", Severity.Error);
+        }
+
         Name = name;
         isVisible = !isVisible;
 
         await Task.Delay(0);
+    }
+
+    public void SelectedSlideDeck(string value) {
+        //OverlayUser.SlideDeckPrograms.First(x => x.Title == value);
+        //Entry.SlideDeckId = Entry.SlideDeck.Id;
+
     }
 }

@@ -28,13 +28,16 @@ namespace Learning.Server.Repositories {
             userAvatar.UserId = _userService.GetUserId();
             if (userAvatar.Id != default(int)) {
                 //update
-                var dbUserAvatar = await _dbContext.UserAvatars.FirstOrDefaultAsync(x => x.Id == userAvatar.Id && x.UserId == userAvatar.UserId);
+                var dbUserAvatar = await _dbContext.UserAvatars.Include(x => x.Blob).FirstOrDefaultAsync(x => x.Id == userAvatar.Id && x.UserId == userAvatar.UserId);
                 if (dbUserAvatar == null) {
                     //TODO: trying to access 
                 } else {
                     dbUserAvatar.Name = userAvatar.Name;
                     dbUserAvatar.Description = userAvatar.Description;
-                    dbUserAvatar.CoverImage = userAvatar.CoverImage;
+                    if (dbUserAvatar.Blob == null) {
+                        dbUserAvatar.Blob = new Blob();
+                    }
+                    dbUserAvatar.Blob.Data = userAvatar.CoverImage;
                   
                 }
             } else {
@@ -48,17 +51,17 @@ namespace Learning.Server.Repositories {
         }
         public async Task<sr<UserAvatar>> GetInContext(int id) {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.UserAvatars.SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
+            var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
 
             return sr<UserAvatar>.GetSuccess(data);
         }
         public async Task<sr<IList<UserAvatar>>> GetAllInContext() {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.UserAvatars.Where(x => x.UserId == userId).ToListAsync();
+            var data = await _dbContext.UserAvatars.Include(x => x.Blob).Where(x => x.UserId == userId).ToListAsync();
             return sr<IList<UserAvatar>>.GetSuccess(data);
         }
         public async Task<sr<UserAvatar>> Get(int id) {
-            var data = await _dbContext.UserAvatars.SingleOrDefaultAsync(x => x.Id == id);
+            var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.Id == id);
 
             return sr<UserAvatar>.GetSuccess(data);
         }

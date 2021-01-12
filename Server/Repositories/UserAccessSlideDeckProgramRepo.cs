@@ -21,6 +21,7 @@ namespace Learning.Server.Repositories {
         }
 
         public async Task<sr<IList<UserAccessSlideDeckProgram>>> Get(UserAvatar userAvatar) {
+            //TODO: not include the image-attribute
             var programs =  await Get(DbSet.Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).Where(x => x.UserAvatarId == userAvatar.Id).ToListAsync());
             //if (programs.Success) {
             //    foreach (var program in programs.Data) {
@@ -30,6 +31,14 @@ namespace Learning.Server.Repositories {
             //        }
             //    }
             //}
+            //var p = await DbSet.Select(x => new UserAccessSlideDeckProgram { Id = x.Id, UserAvatar = x.UserAvatar }).ToListAsync();
+
+        //    return _context.Tenders.Select(t => new TenderViewModel
+        //    {
+        //        Id = t.Id,
+        //        Creator = t.Creator,
+        //        TenderCircles = t.TenderCircles.Select(tc => new TenderCircle { CirlceId = tc.CircleId, TenderId = tc.TenderId }).ToList();
+        //}).ToList();
 
             return programs;
         }

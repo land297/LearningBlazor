@@ -49,6 +49,7 @@ namespace Learning.Client {
             builder.Services.AddScoped<IUserAvatarLocalService, UserAvatarLocalService>();
 
             builder.Services.AddScoped<ICompletedSlideDeckProgramService, CompletedSlideDeckProgramService>();
+            builder.Services.AddScoped<IUserAccessSlideDeckProgramService, UserAccessSlideDeckProgramService>();
 
             await builder.Build().RunAsync();
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using static Learning.Shared.Models.Enums;
 
@@ -15,7 +16,9 @@ namespace Learning.Shared.DbModels {
         public string Username { get; set; }
         public string Bio { get; set; }
         public bool IsConfirmed { get; set; }
+        [JsonIgnore]
         public byte[] PasswordHash { get; set; }
+        [JsonIgnore]
         public byte[] PasswordSalt { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;

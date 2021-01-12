@@ -20,7 +20,10 @@ namespace Learning.Client.Services {
                 var buffer = new byte[resizedImageFile.Size];
                 await resizedImageFile.OpenReadStream().ReadAsync(buffer);
                 var imageDataUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
-                coverImageable.CoverImage = imageDataUrl;
+                if (coverImageable.Blob == null) {
+                    coverImageable.Blob = new Blob();
+                }
+                coverImageable.Blob.Data = imageDataUrl;
             }
         }
     }

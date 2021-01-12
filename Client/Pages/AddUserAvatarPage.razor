@@ -21,11 +21,11 @@
 <Learning.Client.Components.UserAvatarActiveView />
 
 @code {
-    [Parameter]
-    public int Id { get; set; }
+        [Parameter]
+        public int Id { get; set; }
 
-    UserAvatar UserAvatar = new UserAvatar();
-    List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
+        UserAvatar UserAvatar = new UserAvatar();
+        List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
 
     protected override async Task OnInitializedAsync() {
         var response = await UserAvatars.GetAll();
@@ -35,11 +35,13 @@
             Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
         }
 
-        var response2 = await UserAvatars.Get(Id);
-        if (response2.Success) {
-            UserAvatar = response2.Data;
-        } else {
-            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+        if (Id != default(int)) {
+            var response2 = await UserAvatars.Get(Id);
+            if (response2.Success) {
+                UserAvatar = response2.Data;
+            } else {
+                Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+            }
         }
 
     }
