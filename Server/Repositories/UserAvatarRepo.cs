@@ -14,6 +14,7 @@ namespace Learning.Server.Repositories {
         Task<sr<UserAvatar>> GetInContext(int id);
         Task<sr<UserAvatar>> Get(int id);
         Task<sr<IList<UserAvatar>>> GetAllInContext();
+        Task<sr<IList<UserAvatar>>> GetAllForUser_NoBlob(User user);
     }
 
     public class UserAvatarRepo : RepoBase, IUserAvatarRepo {
@@ -58,6 +59,10 @@ namespace Learning.Server.Repositories {
         public async Task<sr<IList<UserAvatar>>> GetAllInContext() {
             var userId = _userService.GetUserId();
             var data = await _dbContext.UserAvatars.Include(x => x.Blob).Where(x => x.UserId == userId).ToListAsync();
+            return sr<IList<UserAvatar>>.GetSuccess(data);
+        }
+        public async Task<sr<IList<UserAvatar>>> GetAllForUser_NoBlob(User user) {
+            var data = await _dbContext.UserAvatars.Where(x => x.UserId == user.Id).ToListAsync();
             return sr<IList<UserAvatar>>.GetSuccess(data);
         }
         public async Task<sr<UserAvatar>> Get(int id) {

@@ -44,6 +44,15 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
+        [HttpPost("foruser")]
+        public async Task<IActionResult> GetForUser(User user) {
+            var result = await _userAvatarRepo.GetAllForUser_NoBlob(user);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
             //TODO: check if user is authorized

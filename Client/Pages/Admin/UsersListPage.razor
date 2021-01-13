@@ -3,6 +3,7 @@
 @inject Learning.Client.Services.IUserService UsersService
 @inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
 @inject Learning.Client.Services.IUserAccessSlideDeckProgramService UserAccessSlideDeckProgramService
+@inject Learning.Client.Services.IUserAvatarService UserAvatars
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @using Learning.Shared.DbModels
@@ -10,16 +11,27 @@
 @if (Users != null) {
     <MudTable Items="@Users" Hover="true" Breakpoint="Breakpoint.Sm">
         <HeaderContent>
-            <MudTh>Title</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>Page count</MudTh>
+            <MudTh>Id</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Avatars</MudTh>
             <MudTh>AccessLevel</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Id</MudTd>
             <MudTd>@context.Email</MudTd>
+            <MudTd>
+                <MudTable Items="@context.UserAvatars">
+                    <HeaderContent>
+                        <MudTh>UserAvatar Id</MudTh>
+                        <MudTh>UserAvatar Name</MudTh>
+                    </HeaderContent>
+                    <RowTemplate Context="uaContext">
+                        <MudTd>@uaContext.Id</MudTd>
+                        <MudTd>@uaContext.Name</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTd>
             <MudTd><MudButton OnClick="@(() => OpenOverlay(context.Email))">View</MudButton></MudTd>
-            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
 
         </RowTemplate>
     </MudTable>
@@ -82,6 +94,21 @@
         } else {
             Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
         }
+
+        foreach (var user in Users) {
+            var r3 = await UserAvatars.GetAllFor(user);
+            if (r3.Success) {
+                Console.WriteLine("adding");
+                foreach (var item in r3.Data) {
+                    Console.WriteLine(item.Name);
+                }
+                Console.WriteLine("to user " + user.Email);
+                user.UserAvatars = r3.Data;
+            } else {
+                Snackbar.Add($"Could not get publushed. Error: {r3.Message}", Severity.Error);
+            }
+        }
+
 
 
 

@@ -13,6 +13,7 @@ namespace Learning.Client.Services {
         Task<sr<UserAvatar>> Get(int id);
         Task<sr<List<UserAvatar>>> GetAll();
         Task<sr<UserAvatar>> Save(UserAvatar userAvatar);
+        Task<sr<List<UserAvatar>>> GetAllFor(User user);
     }
 
     public class UserAvatarService : IUserAvatarService {
@@ -56,6 +57,18 @@ namespace Learning.Client.Services {
         }
         public async Task<sr<List<UserAvatar>>> GetAll() {
             var response = await _http.GetAsync($"api/userAvatar/all");
+
+            if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var userAvatar = await stream.DeserializeJsonCamelCaseAsync<List<UserAvatar>>();
+                return sr<List<UserAvatar>>.GetSuccess(userAvatar);
+            } else {
+                var error = await response.Content.ReadAsStringAsync();
+                return sr<List<UserAvatar>>.Get(error);
+            }
+        }
+        public async Task<sr<List<UserAvatar>>> GetAllFor(User user) {
+            var response = await _http.PostAsJsonAsync<User>("$api/userAvatar", user);
 
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
