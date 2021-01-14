@@ -19,7 +19,7 @@ namespace Learning.Client.Services {
             _http = http;
         }
         public async Task<sr<List<UserAccessSlideDeckProgram>>> GetViaUserAvatar(int id) {
-            var response = await _http.GetAsync($"api/UserAccessSlideDeckProgram/useravatar/{id}");
+            var response = await _http.GetAsync($"api/UserAccessSlideDeckProgram/userAvatar/{id}");
 
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
@@ -28,11 +28,16 @@ namespace Learning.Client.Services {
                     return sr<List<UserAccessSlideDeckProgram>>.GetSuccess(t.Data);
                 } else {
                     var s = await response.Content.ReadAsStringAsync();
-                    return sr<List<UserAccessSlideDeckProgram>>.Get(this.ToString() + s);
+                    
+                    Console.WriteLine(s);
+                    Console.WriteLine(response.RequestMessage.RequestUri);
+                    Console.WriteLine(response.RequestMessage.Content);
+
+                    return sr<List<UserAccessSlideDeckProgram>>.Get(response.Headers.Location + " " + s);
                 }
             } else {
                 var error = await response.Content.ReadAsStringAsync();
-                return sr<List<UserAccessSlideDeckProgram>>.Get(this.ToString() + error);
+                return sr<List<UserAccessSlideDeckProgram>>.Get(response.Headers.Location + error);
             }
         }
         public async Task<sr<List<UserAccessSlideDeckProgram>>> GetViaUser(int id) {

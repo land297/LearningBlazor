@@ -32,5 +32,8 @@ namespace Learning.Shared.DbModels {
         //TODO: is this a good..
         [JsonIgnore]
         public List<CompletedSlideDeckProgram> CompletedSlideDeckPrograms { get; set; }
+
+        [NotMapped]
+        public List<UserAccessSlideDeckProgram> PersonalProgramAccess { get; set; }
     }
 }

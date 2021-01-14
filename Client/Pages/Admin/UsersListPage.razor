@@ -24,10 +24,23 @@
                     <HeaderContent>
                         <MudTh>UserAvatar Id</MudTh>
                         <MudTh>UserAvatar Name</MudTh>
+                        <MudTh>Program Access</MudTh>
                     </HeaderContent>
                     <RowTemplate Context="uaContext">
                         <MudTd>@uaContext.Id</MudTd>
                         <MudTd>@uaContext.Name</MudTd>
+                        <MudTd>
+                            <MudTable Items="@uaContext.PersonalProgramAccess">
+                                <HeaderContent>
+                                    <MudTh>Program Id</MudTh>
+                                    <MudTh>Program Name</MudTh>
+                                </HeaderContent>
+                                <RowTemplate Context="ppaContext">
+                                    <MudTd>@ppaContext.Id</MudTd>
+                                    <MudTd>@ppaContext.SlideDeckProgram.Title</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudTd>
                     </RowTemplate>
                 </MudTable>
             </MudTd>
@@ -88,6 +101,7 @@
             Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
         }
 
+
         var r2 = await SlideDeckProgramService.GetPublished();
         if (r2.Success) {
             SlideDeckPrograms = r2.Data;
@@ -106,6 +120,23 @@
                 user.UserAvatars = r3.Data;
             } else {
                 Snackbar.Add($"Could not get publushed. Error: {r3.Message}", Severity.Error);
+            }
+        }
+
+        foreach (var user in Users) {
+            foreach (var userAvatar in user.UserAvatars) {
+                var r4 = await UserAccessSlideDeckProgramService.GetViaUserAvatar(userAvatar.Id);
+                if (r4.Success) {
+                    Console.WriteLine("adding");
+                    foreach (var item in r4.Data) {
+                        Console.WriteLine(item.SlideDeckProgram.Title);
+                    }
+                    Console.WriteLine("to user " + user.Email);
+                    userAvatar.PersonalProgramAccess = r4.Data;
+                } else {
+                    Snackbar.Add($"Could not get publushed. Error: {r4.Message}", Severity.Error);
+                }
+
             }
         }
 

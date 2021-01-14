@@ -68,15 +68,15 @@ namespace Learning.Client.Services {
             }
         }
         public async Task<sr<List<UserAvatar>>> GetAllFor(User user) {
-            var response = await _http.PostAsJsonAsync<User>("$api/userAvatar", user);
-
+             var response = await _http.PostAsJsonAsync<User>($"api/userAvatar/foruser", user);
+            
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
                 var userAvatar = await stream.DeserializeJsonCamelCaseAsync<List<UserAvatar>>();
                 return sr<List<UserAvatar>>.GetSuccess(userAvatar);
             } else {
                 var error = await response.Content.ReadAsStringAsync();
-                return sr<List<UserAvatar>>.Get(error);
+                return sr<List<UserAvatar>>.Get(error + " " + response.StatusCode + " " + response.RequestMessage.RequestUri);
             }
         }
     }

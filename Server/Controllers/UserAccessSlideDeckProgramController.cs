@@ -19,10 +19,22 @@ namespace Learning.Server.Controllers {
         }
 
         //TODO: refactor get methods
-        [HttpGet("userAvatar")]
-        public async Task<IActionResult> GetViaUserAvatar(UserAvatar ua) {
+        [HttpGet("userAvatar/{id:int}")]
+        //public async Task<IActionResult> GetViaUserAvatar([FromBody] UserAvatar ua) {
+        public async Task<IActionResult> GetViaUserAvatar(int id) {
             // TODO: need to check if user can get unpublished or not
-            var result = await _userAccessSlideDeckProgramRepo.Get(ua);
+            var result = await _userAccessSlideDeckProgramRepo.Get(new UserAvatar() { Id = id });
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
+        [HttpGet("t/userAvatar/{id:int}")]
+        //public async Task<IActionResult> GetViaUserAvatar([FromBody] UserAvatar ua) {
+        public async Task<IActionResult> tGetViaUserAvatar(int id) {
+            // TODO: need to check if user can get unpublished or not
+            var result = await _userAccessSlideDeckProgramRepo.Get(new UserAvatar() { Id = id });
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
