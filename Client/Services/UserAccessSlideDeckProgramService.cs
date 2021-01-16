@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace Learning.Client.Services {
@@ -12,6 +13,7 @@ namespace Learning.Client.Services {
         Task<sr<List<UserAccessSlideDeckProgram>>> GetViaUser(int id);
         Task<sr<List<UserAccessSlideDeckProgram>>> GetViaUserAvatar(int id);
         Task<sr<bool>> DeleteAccessWithId(int id);
+        Task<sr<UserAccessSlideDeckProgram>> PostToUserAvatar(UserAccessSlideDeckProgram ua);
     }
 
     public abstract class ClientServiceBase<T> {
@@ -21,6 +23,28 @@ namespace Learning.Client.Services {
         }
         public async Task<sr<T>> Get(string uri) {
             var response = await _http.GetAsync(uri);
+
+            if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<T>();
+                if (t.Success) {
+                    return sr<T>.GetSuccess(t.Data);
+                } else {
+                    var s = await response.Content.ReadAsStringAsync();
+
+                    Console.WriteLine(s);
+                    Console.WriteLine(response.RequestMessage.RequestUri);
+                    Console.WriteLine(response.RequestMessage.Content);
+
+                    return sr<T>.Get(response.RequestMessage.RequestUri + " " + response.Headers.Location + " " + s);
+                }
+            } else {
+                var error = await response.Content.ReadAsStringAsync();
+                return sr<T>.Get(response.Headers.Location + error);
+            }
+        }
+        public async Task<sr<T>> Post<TJson>(string uri, TJson json) {
+            var response = await _http.PostAsJsonAsync(uri, json);
 
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
@@ -102,6 +126,10 @@ namespace Learning.Client.Services {
         }
         public async Task<sr<bool>> DeleteAccessWithId(int id) {
             return await Delete($"api/UserAccessSlideDeckProgram/{id}");
+        }
+
+        public async Task<sr<UserAccessSlideDeckProgram>> PostToUserAvatar(UserAccessSlideDeckProgram ua) {
+            return await Post<UserAccessSlideDeckProgram>($"api/UserAccessSlideDeckProgram", ua);
         }
     }
 }

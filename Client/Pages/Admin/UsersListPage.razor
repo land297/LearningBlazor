@@ -29,7 +29,7 @@
                     <RowTemplate Context="uaContext">
                         <MudTd>@uaContext.Id</MudTd>
                         <MudTd>@uaContext.Name</MudTd>
-                        <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Add program</MudButton></MudTd>
+                        <MudTd><MudButton OnClick="@(() => ShowAddProgramsForUserAvatar(uaContext.Id,context.Id))">Add program</MudButton></MudTd>
                         <MudTd>
                             <MudTable Items="@uaContext.PersonalProgramAccess">
                                 <HeaderContent>
@@ -50,53 +50,90 @@
 
         </RowTemplate>
     </MudTable>
+
+    <MudSelect class="ma-10" T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
+        @if (SlideDeckPrograms != null) {
+            foreach (var slideDeck in SlideDeckPrograms) {
+                <MudSelectItem Value="@(slideDeck.Title)" />
+            }
+        }
+    </MudSelect>
 }
 <MudOverlay Visible="isVisible" DarkBackground="true">
-    <MudPaper>
-        <MudText Typo="Typo.body2">@Name</MudText>
-        <MudTable Items="@OverlayUser.UserAvatars" Hover="true" Breakpoint="Breakpoint.Sm">
-            <HeaderContent>
-                <MudTh>Title</MudTh>
-                <MudTh>Description</MudTh>
-                <MudTh>Assigned Programs</MudTh>
-                <MudTh>AccessLevel</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd>@context.Id</MudTd>
-                <MudTd>@context.Name</MudTd>
-                
-                <MudTd>
-                    @if (UserAccessList != null) {
-                    <MudSelect  T="string">
-                        @foreach (var slideDeck in UserAccessList) {
-                        <MudSelectItem Value="@(slideDeck.SlideDeckProgram.Title)" />
+    @if (addProgramAccessToAvatarIsVisible) {
+    <div style="width: 400px; height: 300px;">
+        <MudPaper>
+            <MudContainer MaxWidth="MaxWidth.Small">
+                <MudText Typo="Typo.body2">Add program</MudText>
+
+                <MudSelect class="ma-10 pa-4" T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
+                    @if (SlideDeckPrograms != null) {
+                        foreach (var slideDeck in SlideDeckPrograms) {
+                            <MudSelectItem Value="@(slideDeck.Title)" />
                         }
-                    </MudSelect>
                     }
-                </MudTd>
-                <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
+                </MudSelect>
+                <MudTextField @bind-Value="AcessComment" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
+                <MudButton OnClick="@(() => SaveProgramToUserAvatar())">Save</MudButton>
+            </MudContainer>
+        </MudPaper>
+    </div>
+            
+    } else {
 
-            </RowTemplate>
-        </MudTable>
-        <MudSelect T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
-            @if (SlideDeckPrograms != null) {
-                foreach (var slideDeck in SlideDeckPrograms) {
-                    <MudSelectItem Value="@(slideDeck.Title)" />
+
+        <MudPaper>
+            <MudText Typo="Typo.body2">@Name</MudText>
+            <MudTable Items="@OverlayUser.UserAvatars" Hover="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Title</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh>Assigned Programs</MudTh>
+                    <MudTh>AccessLevel</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Id</MudTd>
+                    <MudTd>@context.Name</MudTd>
+
+                    <MudTd>
+                        @if (UserAccessList != null) {
+                            <MudSelect T="string">
+                                @foreach (var slideDeck in UserAccessList) {
+                                    <MudSelectItem Value="@(slideDeck.SlideDeckProgram.Title)" />
+                                    }
+                            </MudSelect>
+                            }
+                    </MudTd>
+                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
+
+                </RowTemplate>
+            </MudTable>
+            <MudSelect T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
+                @if (SlideDeckPrograms != null) {
+                    foreach (var slideDeck in SlideDeckPrograms) {
+                        <MudSelectItem Value="@(slideDeck.Title)" />
+                    }
                 }
-            }
-        </MudSelect>
-        <MudButton OnClick="@(() => OpenOverlay(""))">** Close **></MudButton>
-    </MudPaper>
-
+            </MudSelect>
+            <MudButton OnClick="@(() => OpenOverlay(""))">** Close **></MudButton>
+        </MudPaper>
+    }
 </MudOverlay>
 @code {
     bool isVisible = false;
+    bool addProgramAccessToAvatarIsVisible = false;
+
     string Name;
 
     List<User> Users;
     List<SlideDeckProgram> SlideDeckPrograms;
     User OverlayUser;
     List<UserAccessSlideDeckProgram> UserAccessList;
+
+    
+    UserAvatar UserAvatar;
+    SlideDeckProgram SelectedSlideDeckProgram;
+    String AcessComment;
 
     protected override async Task OnInitializedAsync() {
         var r = await UsersService.GetAll();
@@ -107,7 +144,7 @@
         }
 
 
-        var r2 = await SlideDeckProgramService.GetPublished();
+        var r2 = await SlideDeckProgramService.GetAsContentCreator();
         if (r2.Success) {
             SlideDeckPrograms = r2.Data;
         } else {
@@ -150,6 +187,40 @@
 
 
     }
+
+    public void ShowAddProgramsForUserAvatar(int userAvatarId, int userId) {
+        OverlayUser = Users.First(x => x.Id == userId);
+        UserAvatar = OverlayUser.UserAvatars.First(x => x.Id == userAvatarId);
+        isVisible = true;
+        addProgramAccessToAvatarIsVisible = true;
+    }
+
+    public async Task SaveProgramToUserAvatar() {
+        if (SelectedSlideDeckProgram != null) {
+            //TODO: chance to ID
+            var userAcess = new UserAccessSlideDeckProgram()
+            {
+                SlideDeckProgramId = SelectedSlideDeckProgram.Id,
+                UserAvatarId = UserAvatar.Id,
+                UserId = OverlayUser.Id,
+                Comments = AcessComment
+            };
+
+            var result = await UserAccessSlideDeckProgramService.PostToUserAvatar(userAcess);
+            if (result.Success) {
+                //TODO. solve somehow
+                UserAvatar.PersonalProgramAccess.Add(result.Data);
+            } else {
+                Snackbar.Add($"Could not get save to user. Error: {result.Message}", Severity.Error);
+            }
+            isVisible = false;
+            addProgramAccessToAvatarIsVisible = false;
+
+        }
+
+
+    }
+
     public async void OpenOverlay(string name) {
         OverlayUser = Users.First(x => x.Email == name);
         var r3 = await UserAccessSlideDeckProgramService.GetViaUser(OverlayUser.Id);
@@ -166,14 +237,15 @@
     }
 
     public void SelectedSlideDeck(string value) {
-        //OverlayUser.SlideDeckPrograms.First(x => x.Title == value);
+        SelectedSlideDeckProgram = SlideDeckPrograms.First(x => x.Title == value);
         //Entry.SlideDeckId = Entry.SlideDeck.Id;
 
     }
 
-    public async Task RemoveProgramAccessFromUserAvatar(int programId,int userAvatarId, int userId) {
+    public async Task RemoveProgramAccessFromUserAvatar(int programId, int userAvatarId, int userId) {
         var r = await UserAccessSlideDeckProgramService.DeleteAccessWithId(programId);
         if (r.Success) {
+            //TODO : untested
             var avatarprograms = Users.First(x => x.Id == userId).UserAvatars.First(x => x.Id == userAvatarId).PersonalProgramAccess;
             var program = avatarprograms.First(x => x.Id == programId);
             avatarprograms.Remove(program);

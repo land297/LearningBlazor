@@ -44,6 +44,15 @@ namespace Learning.Server.Repositories {
                 return sr<T>.Get(e);
             }
         }
+        public async Task<sr<T>> Remove(T entity) {
+            try {
+                DbSet.Remove(entity);
+                await _dbContext.SaveChangesAsync();
+                return sr<T>.GetSuccess(entity);
+            } catch (Exception e) {
+                return sr<T>.Get(e);
+            }
+        }
         public async Task<sr<T>> Get(Task<T> task) {
             try {
                 var result = await task;
@@ -79,7 +88,7 @@ namespace Learning.Server.Repositories {
                 return sr<T>.Get();
             }
         }
-        public async Task<sr<T>> Save(T entity) {
+        public virtual async Task<sr<T>> Save(T entity) {
             try {
                 if (entity.Id != default(int)) {
                     var result = await Get(x => x.Id == entity.Id);
