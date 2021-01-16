@@ -34,10 +34,22 @@ namespace Learning.Server.Repositories {
             _dbContext = dbContext;
             DbSet = _dbContext.Set<T>();
         }
-
+        public async Task<sr<T>> Remove(Task<T> task) {
+            try {
+                var result = await task;
+                DbSet.Remove(result);
+                await _dbContext.SaveChangesAsync();
+                return sr<T>.GetSuccess(result);
+            } catch (Exception e) {
+                return sr<T>.Get(e);
+            }
+        }
         public async Task<sr<T>> Get(Task<T> task) {
             try {
                 var result = await task;
+                if (result == null) {
+                    return sr<T>.Get("Null");
+                }
                 return sr<T>.GetSuccess(result);
             } catch {
                 return sr<T>.Get();

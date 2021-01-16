@@ -20,7 +20,7 @@
             <MudTd>@context.Id</MudTd>
             <MudTd>@context.Email</MudTd>
             <MudTd>
-                <MudTable Items="@context.UserAvatars">
+                <MudTable Items="@context.UserAvatars" Class="green lighten-3">
                     <HeaderContent>
                         <MudTh>UserAvatar Id</MudTh>
                         <MudTh>UserAvatar Name</MudTh>
@@ -29,6 +29,7 @@
                     <RowTemplate Context="uaContext">
                         <MudTd>@uaContext.Id</MudTd>
                         <MudTd>@uaContext.Name</MudTd>
+                        <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Add program</MudButton></MudTd>
                         <MudTd>
                             <MudTable Items="@uaContext.PersonalProgramAccess">
                                 <HeaderContent>
@@ -38,6 +39,7 @@
                                 <RowTemplate Context="ppaContext">
                                     <MudTd>@ppaContext.Id</MudTd>
                                     <MudTd>@ppaContext.SlideDeckProgram.Title</MudTd>
+                                    <MudTd><MudButton OnClick="@(() => RemoveProgramAccessFromUserAvatar(ppaContext.Id, uaContext.Id, context.Id))">X</MudButton></MudTd>
                                 </RowTemplate>
                             </MudTable>
                         </MudTd>
@@ -62,11 +64,14 @@
             <RowTemplate>
                 <MudTd>@context.Id</MudTd>
                 <MudTd>@context.Name</MudTd>
+                
                 <MudTd>
                     @if (UserAccessList != null) {
-                        foreach (var slideDeck in UserAccessList) {
-                            <MudSelectItem Value="@(slideDeck.SlideDeckProgram.Title)" />
+                    <MudSelect  T="string">
+                        @foreach (var slideDeck in UserAccessList) {
+                        <MudSelectItem Value="@(slideDeck.SlideDeckProgram.Title)" />
                         }
+                    </MudSelect>
                     }
                 </MudTd>
                 <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{context.Id}"))">Edit</MudButton></MudTd>
@@ -164,5 +169,17 @@
         //OverlayUser.SlideDeckPrograms.First(x => x.Title == value);
         //Entry.SlideDeckId = Entry.SlideDeck.Id;
 
+    }
+
+    public async Task RemoveProgramAccessFromUserAvatar(int programId,int userAvatarId, int userId) {
+        var r = await UserAccessSlideDeckProgramService.DeleteAccessWithId(programId);
+        if (r.Success) {
+            var avatarprograms = Users.First(x => x.Id == userId).UserAvatars.First(x => x.Id == userAvatarId).PersonalProgramAccess;
+            var program = avatarprograms.First(x => x.Id == programId);
+            avatarprograms.Remove(program);
+            //StateHasChanged();
+        } else {
+            Snackbar.Add($"Could not get delete. Error: {r.Message}", Severity.Error);
+        }
     }
 }

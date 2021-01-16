@@ -29,12 +29,20 @@ namespace Learning.Server.Controllers {
             } else {
                 return Ok(result.Data);
             }
+        
         }
-        [HttpGet("t/userAvatar/{id:int}")]
-        //public async Task<IActionResult> GetViaUserAvatar([FromBody] UserAvatar ua) {
-        public async Task<IActionResult> tGetViaUserAvatar(int id) {
-            // TODO: need to check if user can get unpublished or not
-            var result = await _userAccessSlideDeckProgramRepo.Get(new UserAvatar() { Id = id });
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> RemoveAccessWithId(int id) {
+            var result = await _userAccessSlideDeckProgramRepo.RemoveWithId(id);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return NoContent();
+            }
+        }
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetAccessWithId(int id) {
+            var result = await _userAccessSlideDeckProgramRepo.Get(id);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
