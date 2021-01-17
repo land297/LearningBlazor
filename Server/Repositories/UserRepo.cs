@@ -15,7 +15,7 @@ namespace Learning.Server.Repositories {
     public interface IUserRepo {
         Task<sr<int>> AddUser(UserRegistration user);
         Task<sr<bool>> UsersExists(User user);
-        Task<User> GetUser(int id);
+        Task<sr<User>> Get(int id);
         Task<User> GetUser(string email);
         Task<sr<IList<User>>> GetAll();
     }
@@ -23,9 +23,6 @@ namespace Learning.Server.Repositories {
     public class UserRepo : RepoBase2<User>, IUserRepo,IRepoBase3<User,UserRegistration> {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
      
-        }
-        public override Task<sr<int>> Save(User entity) {
-            return base.Save(entity);
         }
         public async Task<sr<int>> Save(UserRegistration dto) {
             return await AddUser(dto);
@@ -41,6 +38,7 @@ namespace Learning.Server.Repositories {
             dbUser.Email = userRegistration.Email;
             dbUser.Bio = userRegistration.Bio;
             dbUser.Username = userRegistration.FirstName;
+
             return  await base.Save(dbUser);
             //await _dbContext.Users.AddAsync(dbUser);
             //await _dbContext.SaveChangesAsync();
@@ -60,8 +58,8 @@ namespace Learning.Server.Repositories {
         public async Task<User> GetUser(string email) {
             return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Email.ToLower() == email.ToLower());
         }
-        public async Task<User> GetUser(int id) {
-            return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Id == id);
-        }
+        //public async Task<User> GetUser(int id) {
+        //    return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Id == id);
+        //}
     }
 }

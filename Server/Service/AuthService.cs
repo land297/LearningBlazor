@@ -26,9 +26,11 @@ namespace Learning.Server.Service {
     public class AuthService : IAuthService {
         readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         readonly IUserRepo _userRepo;
-        public AuthService(IUserRepo userRepo, Microsoft.Extensions.Configuration.IConfiguration configuration) {
+        readonly IUserService _userService;
+        public AuthService(IUserRepo userRepo, Microsoft.Extensions.Configuration.IConfiguration configuration, IUserService userService) {
             _userRepo = userRepo;
             _configuration = configuration;
+            _userService = userService; 
         }
 
         public async Task<sr<string>> Login(string email, string password) {
@@ -57,7 +59,7 @@ namespace Learning.Server.Service {
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username ?? "null"),
-                new Claim(ClaimTypes.Role,"admin"),
+                new Claim(ClaimTypes.Role,user.UserRole.ToString()),
                 new Claim(ClaimTypes.Role,"role2")
             };
 

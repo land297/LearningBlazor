@@ -9,15 +9,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories.Base {
-    public interface IRepoBase2<T> where T : IdEntity<T> {
-        DbSet<T> DbSet { get; }
-        Task<sr<T>> Get(Expression<Func<T, bool>> predicate);
-        Task<sr<IList<T>>> Get(Task<List<T>> task);
-        Task<sr<T>> Get(Task<T> task);
-        Task<sr<IList<T>>> GetAll();
-        Task<sr<int>> Save(T entity);
-        Task<sr<T>> Remove(Task<T> task);
-    }
     public interface IRepoBase3<Tentiy,Kdto> where Tentiy : IdEntity<Tentiy> {
         DbSet<Tentiy> DbSet { get; }
         Task<sr<Tentiy>> Get(Expression<Func<Tentiy, bool>> predicate);
