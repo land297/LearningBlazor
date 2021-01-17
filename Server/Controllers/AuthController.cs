@@ -23,7 +23,6 @@ namespace Learning.Server.Controllers {
             return response.Success ? Created("TODO location what should this ?", response.Data) : BadRequest(response.Message);
         }
         [HttpPost("isAuth")]
-        [Authorize]
         public IActionResult IsAuth() {
             return Ok();
         }
