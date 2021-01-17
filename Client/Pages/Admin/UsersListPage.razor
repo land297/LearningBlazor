@@ -35,10 +35,12 @@
                                 <HeaderContent>
                                     <MudTh>Program Id</MudTh>
                                     <MudTh>Program Name</MudTh>
+                                    <MudTh>Comments</MudTh>
                                 </HeaderContent>
                                 <RowTemplate Context="ppaContext">
                                     <MudTd>@ppaContext.Id</MudTd>
                                     <MudTd>@ppaContext.SlideDeckProgram.Title</MudTd>
+                                    <MudTd>@ppaContext.Comments</MudTd>
                                     <MudTd><MudButton OnClick="@(() => RemoveProgramAccessFromUserAvatar(ppaContext.Id, uaContext.Id, context.Id))">X</MudButton></MudTd>
                                 </RowTemplate>
                             </MudTable>
@@ -46,7 +48,7 @@
                     </RowTemplate>
                 </MudTable>
             </MudTd>
-            <MudTd><MudButton OnClick="@(() => OpenOverlay(context.Email))">View</MudButton></MudTd>
+        
 
         </RowTemplate>
     </MudTable>
