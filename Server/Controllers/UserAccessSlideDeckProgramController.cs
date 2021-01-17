@@ -67,7 +67,7 @@ namespace Learning.Server.Controllers {
         public async Task<IActionResult> Post(UserAccessSlideDeckProgram userAccess) {
             // TODO: need to check if user can get unpublished or not
             
-            var result = await _userAccessSlideDeckProgramRepo.Save(userAccess);
+            var result = await _userAccessSlideDeckProgramRepo.SaveReturnEntity(userAccess);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {

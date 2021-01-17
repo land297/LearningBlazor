@@ -24,7 +24,7 @@ namespace Learning.Server.Repositories {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
      
         }
-        public override Task<sr<User>> Save(User entity) {
+        public override Task<sr<int>> Save(User entity) {
             return base.Save(entity);
         }
         public async Task<sr<int>> Save(UserRegistration dto) {
@@ -40,11 +40,12 @@ namespace Learning.Server.Repositories {
             dbUser.PasswordSalt = salt;
             dbUser.Email = userRegistration.Email;
             dbUser.Bio = userRegistration.Bio;
+            dbUser.Username = userRegistration.FirstName;
+            return  await base.Save(dbUser);
+            //await _dbContext.Users.AddAsync(dbUser);
+            //await _dbContext.SaveChangesAsync();
 
-            await _dbContext.Users.AddAsync(dbUser);
-            await _dbContext.SaveChangesAsync();
-
-            return sr<int>.GetSuccess(dbUser.Id);
+            //return sr<int>.GetSuccess(dbUser.Id);
         }
         public async Task<sr<bool>> UsersExists(User user) {
             return sr<bool>.Get(await UsersExits(user.Email));

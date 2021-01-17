@@ -1,6 +1,9 @@
 using Learning.Server.DbContext;
 using Learning.Server.Repositories;
+using Learning.Server.Repositories.Base;
 using Learning.Server.Service;
+using Learning.Shared.DataTransferModel;
+using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -52,6 +55,7 @@ namespace Learning.Server {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICompletedSlideDeckProgramRepo, CompletedSlideDeckProgramRepo>();
             services.AddScoped<IUserAccessSlideDeckProgramRepo, UserAccessSlideDeckProgramRepo>();
+            services.AddScoped<IRepoBase3<User, UserRegistration>, UserRepo>();
 
         }
 

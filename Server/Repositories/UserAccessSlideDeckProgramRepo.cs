@@ -12,7 +12,7 @@ namespace Learning.Server.Repositories {
     public interface IUserAccessSlideDeckProgramRepo {
         Task<sr<IList<UserAccessSlideDeckProgram>>> Get(UserAvatar userAvatar);
         Task<sr<IList<UserAccessSlideDeckProgram>>> Get(User user);
-        Task<sr<UserAccessSlideDeckProgram>> Save(UserAccessSlideDeckProgram entity);
+        Task<sr<UserAccessSlideDeckProgram>> SaveReturnEntity(UserAccessSlideDeckProgram entity);
         Task<sr<UserAccessSlideDeckProgram>> RemoveWithId(int id);
         Task<sr<UserAccessSlideDeckProgram>> Get(int id);
     }
@@ -58,7 +58,7 @@ namespace Learning.Server.Repositories {
             return await Remove(DbSet.FirstOrDefaultAsync(x => x.Id == id));
         }
 
-        public override async Task<sr<UserAccessSlideDeckProgram>> Save(UserAccessSlideDeckProgram ua) {
+        public override async Task<sr<UserAccessSlideDeckProgram>> SaveReturnEntity(UserAccessSlideDeckProgram ua) {
             if (ua.UserAvatar != null) {
                 ua.UserAvatarId = ua.UserAvatar.Id;
                 ua.UserAvatar = null;
@@ -71,7 +71,7 @@ namespace Learning.Server.Repositories {
                 ua.UserId = ua.User.Id;
                 ua.User = null;
             }
-            var sr = await base.Save(ua);
+            var sr = await base.SaveReturnEntity(ua);
             if (sr.Success) {
                 var sr2 = await _slideDeckProgramRepo.GetFirst(ua.SlideDeckProgramId);
                 if (sr2.Success) {
