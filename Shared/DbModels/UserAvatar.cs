@@ -13,8 +13,8 @@ namespace Learning.Shared.DbModels {
         public string CoverImage { get; }
         public Blob Blob { get; set; }
     }
-    public class UserAvatar : ICoverImageable {
-        public int Id { get; set; }
+    public class UserAvatar : IdEntity<UserAvatar>, ICoverImageable {
+        //public int Id { get; set; }
         [Required]
         public int UserId { get; set; }
         public User User { get; set; }
@@ -35,5 +35,8 @@ namespace Learning.Shared.DbModels {
 
         [NotMapped]
         public List<UserAccessSlideDeckProgram> PersonalProgramAccess { get; set; }
+        public override void CopyValues(UserAvatar source, ref UserAvatar copy) {
+            throw new NotImplementedException();
+        }
     }
 }

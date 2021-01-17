@@ -22,7 +22,7 @@ namespace Learning.Client.Services {
         }
 
         public async Task<sr<string>> Register(UserRegistration userRegistration) {
-            var response = await _http.PostAsJsonAsync<UserRegistration>("api/user", userRegistration);
+            var response = await _http.PostAsJsonAsync<UserRegistration>("api/user/add", userRegistration);
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode) {
                 return sr<string>.GetSuccess(content);

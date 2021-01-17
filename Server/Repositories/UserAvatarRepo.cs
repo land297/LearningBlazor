@@ -1,4 +1,5 @@
 ﻿using Learning.Server.DbContext;
+using Learning.Server.Repositories.Base;
 using Learning.Server.Service;
 using Learning.Shared;
 using Learning.Shared.DbModels;
@@ -17,7 +18,7 @@ namespace Learning.Server.Repositories {
         Task<sr<IList<UserAvatar>>> GetAllForUser_NoBlob(User user);
     }
 
-    public class UserAvatarRepo : RepoBase, IUserAvatarRepo {
+    public class UserAvatarRepo : RepoBase2<UserAvatar>, IUserAvatarRepo {
         private readonly IUserService _userService;
 
         public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {

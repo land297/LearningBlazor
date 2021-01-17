@@ -1,4 +1,5 @@
 ﻿using Learning.Server.DbContext;
+using Learning.Server.Repositories.Base;
 using Learning.Shared;
 using Learning.Shared.DbModels;
 using Microsoft.EntityFrameworkCore;
