@@ -51,7 +51,7 @@ namespace Learning.Server.Repositories {
         public async Task<sr<IList<UserAccessSlideDeckProgram>>> Get(User user) {
             return await Get(DbSet.Include(x => x.SlideDeckProgram).Where(x => x.UserId == user.Id).ToListAsync());
         }
-        public async Task<sr<UserAccessSlideDeckProgram>> Get(int id) {
+        new public async Task<sr<UserAccessSlideDeckProgram>> Get(int id) {
             return await Get(DbSet.Include(x => x.SlideDeckProgram).FirstOrDefaultAsync(x => x.Id == id));
         }
         public async Task<sr<UserAccessSlideDeckProgram>> RemoveWithId(int id) {

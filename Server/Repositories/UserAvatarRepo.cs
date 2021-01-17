@@ -66,10 +66,10 @@ namespace Learning.Server.Repositories {
             var data = await _dbContext.UserAvatars.Where(x => x.UserId == user.Id).ToListAsync();
             return sr<IList<UserAvatar>>.GetSuccess(data);
         }
-        public async Task<sr<UserAvatar>> Get(int id) {
-            var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.Id == id);
+        new public async Task<sr<UserAvatar>> Get(int id) {
+            var data = await  Get(DbSet.Include(x => x.Blob).SingleOrDefaultAsync(x => x.Id == id));
 
-            return sr<UserAvatar>.GetSuccess(data);
+            return sr<UserAvatar>.GetSuccess(data.Data);
         }
 
 
