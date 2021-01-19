@@ -1,6 +1,7 @@
 ﻿@page "/listAllSlideDeckProgramsPage"
 @inject Learning.Client.Services.ISlideDeckService SlideDeckService
 @inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
+@inject Learning.Client.Services.IAuthService Auth
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @using Learning.Shared.DbModels
@@ -46,8 +47,8 @@
     </MudGrid>
 }
 @code {
-    List<SlideDeckProgram> SlideDeckProgramsPublished;
-    List<SlideDeckProgram> SlideDeckProgramsAll;
+        List<SlideDeckProgram> SlideDeckProgramsPublished;
+        List<SlideDeckProgram> SlideDeckProgramsAll;
     protected override async Task OnInitializedAsync() {
         var r = await SlideDeckProgramService.GetPublished();
         if (r.Success) {
@@ -56,11 +57,13 @@
             Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
         }
 
-        r = await SlideDeckProgramService.GetAsContentCreator();
-        if (r.Success) {
-            SlideDeckProgramsAll = r.Data;
-        } else {
-            Snackbar.Add($"Could not get as content creator. Error: {r.Message}", Severity.Error);
+        if (await Auth.IsContentCreator() || await Auth.IsAdmin()) {
+            r = await SlideDeckProgramService.GetAsContentCreator();
+            if (r.Success) {
+                SlideDeckProgramsAll = r.Data;
+            } else {
+                Snackbar.Add($"Could not get as content creator. Error: {r.Message}", Severity.Error);
+            }
         }
     }
 }

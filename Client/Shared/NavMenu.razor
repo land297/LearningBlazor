@@ -23,14 +23,18 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/admin/usersList">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> /admin/usersList
-            </NavLink>
-        </li>
-        <AuthorizeView>
+        <AuthorizeView Roles="Admin">
             <Authorized>
-                >
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="/admin/usersList">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> /admin/usersList
+                    </NavLink>
+                </li>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin, ContentCreator">
+            <Authorized>
+
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="addSlideDeck">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Add SlideDeck
@@ -51,16 +55,8 @@
                         <span class="oi oi-list-rich" aria-hidden="true"></span> View SlideDeckProgram 4
                     </NavLink>
                 </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="listAllSlideDeckProgramsPage">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> List all listAllSlideDeckProgramsPage
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="addUserAvatar">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> addUserAvatar
-                    </NavLink>
-                </li>
+ 
+
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="allUserAvatars">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> list UserAvatar
@@ -69,16 +65,33 @@
 
             </Authorized>
             <NotAuthorized>
+
+            </NotAuthorized>
+        </AuthorizeView>
+        <AuthorizeView>
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="listAllSlideDeckProgramsPage">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> List all listAllSlideDeckProgramsPage
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="addUserAvatar">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> 3 addUserAvatar
+                    </NavLink>
+                </li>
+            </Authorized>
+            <NotAuthorized>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="userRegistration">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> userRegistration
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> x userRegistration
                     </NavLink>
                 </li>
             </NotAuthorized>
         </AuthorizeView>
 
 
-    </ul>
+</ul>
 </div>
 
 @code {

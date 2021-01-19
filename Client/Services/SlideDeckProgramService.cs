@@ -62,18 +62,23 @@ namespace Learning.Client.Services {
             return await Get(false);
         }
         private async Task<sr<List<SlideDeckProgram>>> Get(bool onlyPublished) {
-            HttpResponseMessage response;
-            if (onlyPublished) {
-                response = await _http.GetAsync("api/slideDeckProgram");
-            } else {
-                response = await _http.GetAsync("api/slideDeckProgram/contentcreator");
+            try {
+                HttpResponseMessage response;
+                if (onlyPublished) {
+                    response = await _http.GetAsync("api/slideDeckProgram");
+                } else {
+                    response = await _http.GetAsync("api/slideDeckProgram/contentcreator");
+                }
+                if (response.IsSuccessStatusCode) {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    var data = await stream.DeserializeJsonCamelCaseAsync<List<SlideDeckProgram>>();
+                    return sr<List<SlideDeckProgram>>.GetSuccess(data);
+                }
+                return sr<List<SlideDeckProgram>>.Get();
+            } catch (Exception e) {
+                return sr<List<SlideDeckProgram>>.Get(e);
             }
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var data = await stream.DeserializeJsonCamelCaseAsync<List<SlideDeckProgram>>();
-                return sr<List<SlideDeckProgram>>.GetSuccess(data);
-            }
-            return sr<List<SlideDeckProgram>>.Get();
+            
         }
     }
 }

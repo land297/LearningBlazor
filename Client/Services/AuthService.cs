@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Learning.Client.Services {
@@ -14,6 +15,8 @@ namespace Learning.Client.Services {
         Task<sr<string>> Login(Login login);
         Task<sr<string>> Logout();
         Task<sr<bool>> IsLocalTokenValid();
+        Task<bool> IsAdmin();
+        Task<bool> IsContentCreator();
     }
 
     public class AuthService : IAuthService {
@@ -53,6 +56,29 @@ namespace Learning.Client.Services {
                 return sr<bool>.GetSuccess(true);
             } else {
                 return sr<bool>.Get(false);
+            }
+        }
+
+        public async Task<bool> IsAdmin() {
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity.IsAuthenticated) {
+                var response = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role && x.Value == "Admin");
+                return response != null;
+            } else {
+                return false;
+            }
+        }
+        public async Task<bool> IsContentCreator() {
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity.IsAuthenticated) {
+                var response = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role && x.Value == "ContentCreator");
+                return response != null;
+            } else {
+                return false;
             }
         }
     }
