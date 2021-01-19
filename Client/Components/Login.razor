@@ -17,7 +17,10 @@
     </ul>
     
 }
-<MudButton OnClick="LoginUser">Login a@a.com</MudButton>
+<MudButton OnClick="(() => LoginUser(1))">Login ADMIN a@a.com</MudButton>
+<MudButton OnClick="(() => LoginUser(2))">Login Sanna Anna</MudButton>
+<MudButton OnClick="(() => LoginUser(3))">Login Tomten</MudButton>
+<MudButton OnClick="(() => LoginUser(1))">Login ADMIN a@a.com</MudButton>
 <MudButton OnClick="TestToken">Test local Token</MudButton>
 <AuthorizeView>
     <Authorized>
@@ -58,12 +61,25 @@
         }
     }
 
-    async Task LoginUser() {
-        var login = new Learning.Shared.DataTransferModel.Login()
+    async Task LoginUser(int who) {
+        var login = new Learning.Shared.DataTransferModel.Login();
+        switch(who)
         {
-            Email = "a@a.com",
-            Password = "aaa"
+            case 1 :
+                login.Email = "a@a.com";
+                login.Password = "aaa";
+                break;
+            case 2:
+                login.Email = "sa@a.com";
+                login.Password = "123";
+                break;
+            case 3:
+                login.Email = "t@a.com";
+                login.Password = "123";
+                break;
+
         };
+
         var response = await Auth.Login(login);
         if (response.Success) {
             await GetClaimsPrincipalData();
