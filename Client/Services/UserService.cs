@@ -13,6 +13,7 @@ namespace Learning.Client.Services {
     public interface IUserService {
         Task<sr<string>> Register(UserRegistration userRegistration);
         Task<sr<List<User>>> GetAll();
+        Task<sr<User>> GetLogedInSelf();
     }
 
     public abstract class ServiceBase {
@@ -20,11 +21,26 @@ namespace Learning.Client.Services {
         public ServiceBase(HttpClient http) {
             _http = http;
         }
+
+        protected async Task<sr<T>> Get<T>(string uri) {
+            try {
+                var response = await _http.GetAsync("api/user/self");
+                if (response.IsSuccessStatusCode) {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    var obj = await stream.DeserializeJsonCamelCaseAsync<T>();
+                    return sr<T>.GetSuccess(obj);
+                } else {
+                    var message = await response.Content.ReadAsStringAsync();
+                    return sr<T>.Get(message);
+                }
+            } catch (Exception e) {
+                return sr<T>.Get(e);
+            }
+        }
     }
-    public class UserService : IUserService {
-        readonly HttpClient _http;
-        public UserService(HttpClient http) {
-            _http = http;
+
+    public class UserService : ServiceBase, IUserService {
+        public UserService(HttpClient http) : base(http) {
         }
 
         public async Task<sr<string>> Register(UserRegistration userRegistration) {
@@ -37,34 +53,10 @@ namespace Learning.Client.Services {
             }
         }
         public async Task<sr<List<User>>> GetAll() {
-            var response = await _http.GetAsync("api/user/all");
-
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var possibleData = await stream.TryDeserializeJsonCamelCaseAsync<List<User>>();
-                if (possibleData.Success) { 
-                    return sr<List<User>>.GetSuccess(possibleData.Data);
-                }
-            } 
-            var message = await response.Content.ReadAsStringAsync();
-            return sr<List<User>>.Get(message);
+            return await Get<List<User>>("api/user/all");
         }
-        public async Task<sr<List<User>>> GetLogedInSelf() {
-            try {
-                var response = await _http.GetAsync("api/user/self");
-
-                if (response.IsSuccessStatusCode) {
-                    var stream = await response.Content.ReadAsStreamAsync();
-                    var possibleData = await stream.TryDeserializeJsonCamelCaseAsync<List<User>>();
-                    if (possibleData.Success) {
-                        return sr<List<User>>.GetSuccess(possibleData.Data);
-                    }
-                }
-                var message = await response.Content.ReadAsStringAsync();
-                return sr<List<User>>.Get(message);
-            } catch (Exception e) {
-                return sr<List<User>>.Get(e);
-            }
+        public async Task<sr<User>> GetLogedInSelf() {
+            return await Get<User>("api/user/self");
         }
     }
 }
