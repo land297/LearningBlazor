@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Learning.Server.Repositories.Base {
     public interface IRepoBase3<Tentiy,Kdto> where Tentiy : IdEntity<Tentiy> {
         DbSet<Tentiy> DbSet { get; }
-        Task<sr<Tentiy>> Get(Expression<Func<Tentiy, bool>> predicate);
+        Task<sr<Tentiy>> GetFirst(Expression<Func<Tentiy, bool>> predicate);
         Task<sr<IList<Tentiy>>> Get(Task<List<Tentiy>> task);
         Task<sr<Tentiy>> Get(Task<Tentiy> task);
         Task<sr<Tentiy>> Get(int id);
@@ -79,9 +79,9 @@ namespace Learning.Server.Repositories.Base {
             }
         }
 
-        public async Task<sr<T>> Get(Expression<Func<T, bool>> predicate) {
+        public async Task<sr<T>> GetFirst(Expression<Func<T, bool>> predicate) {
             try {
-                var result = await DbSet.SingleOrDefaultAsync(predicate);
+                var result = await DbSet.FirstOrDefaultAsync(predicate);
                 return sr<T>.GetSuccess(result);
             } catch (Exception e) {
                 return sr<T>.Get(e);
@@ -98,7 +98,7 @@ namespace Learning.Server.Repositories.Base {
         public virtual async Task<sr<int>> Save(T entity) {
             try {
                 if (entity.Id != default(int)) {
-                    var result = await Get(x => x.Id == entity.Id);
+                    var result = await GetFirst(x => x.Id == entity.Id);
                     if (result.Success) {
                         result.Data.CopyValues(result.Data, ref entity);
                     }
@@ -114,7 +114,7 @@ namespace Learning.Server.Repositories.Base {
         public virtual async Task<sr<T>> SaveReturnEntity(T entity) {
             try {
                 if (entity.Id != default(int)) {
-                    var result = await Get(x => x.Id == entity.Id);
+                    var result = await GetFirst(x => x.Id == entity.Id);
                     if (result.Success) {
                         result.Data.CopyValues(result.Data, ref entity);
                     }

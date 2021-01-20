@@ -50,13 +50,14 @@ namespace Learning.Server.Repositories {
         }
 
         public async Task<bool> UsersExits(string email) {
-            return await _dbContext.Users.AnyAsync(x => x.Email.ToLower() == email.ToLower());
+            return await DbSet.AnyAsync(x => x.Email.ToLower() == email.ToLower());
         }
         public async Task<bool> UsersExits(int id) {
-            return await _dbContext.Users.AnyAsync(x => x.Id == id);
+            return await DbSet.AnyAsync(x => x.Id == id);
         }
         public async Task<User> GetUser(string email) {
-            return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Email.ToLower() == email.ToLower());
+            var response = await GetFirst(x => x.Email.ToLower() == email.ToLower());
+            return response.Data;
         }
         //public async Task<User> GetUser(int id) {
         //    return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Id == id);

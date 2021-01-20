@@ -15,6 +15,12 @@ namespace Learning.Client.Services {
         Task<sr<List<User>>> GetAll();
     }
 
+    public abstract class ServiceBase {
+        protected HttpClient _http;
+        public ServiceBase(HttpClient http) {
+            _http = http;
+        }
+    }
     public class UserService : IUserService {
         readonly HttpClient _http;
         public UserService(HttpClient http) {
@@ -42,6 +48,23 @@ namespace Learning.Client.Services {
             } 
             var message = await response.Content.ReadAsStringAsync();
             return sr<List<User>>.Get(message);
+        }
+        public async Task<sr<List<User>>> GetLogedInSelf() {
+            try {
+                var response = await _http.GetAsync("api/user/self");
+
+                if (response.IsSuccessStatusCode) {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    var possibleData = await stream.TryDeserializeJsonCamelCaseAsync<List<User>>();
+                    if (possibleData.Success) {
+                        return sr<List<User>>.GetSuccess(possibleData.Data);
+                    }
+                }
+                var message = await response.Content.ReadAsStringAsync();
+                return sr<List<User>>.Get(message);
+            } catch (Exception e) {
+                return sr<List<User>>.Get(e);
+            }
         }
     }
 }
