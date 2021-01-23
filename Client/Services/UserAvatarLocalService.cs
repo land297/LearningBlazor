@@ -29,16 +29,16 @@ namespace Learning.Client.Services {
         }
 
         public async Task Set(UserAvatar userAvatar) {
-            var id = _userService.GetUserId();
-            await _localStorageService.SetItemAsync("activeUserAvatar" + id, userAvatar);
+            //var id = _userService.GetUserId();
+            await _localStorageService.SetItemAsync("activeUserAvatar", userAvatar);
             OnChange?.Invoke();
         }
 
         public async Task<UserAvatar> Get() {
-            var id = _userService.GetUserId();
-            if (string.IsNullOrEmpty(id)) { return null; }
+            //var id = _userService.GetUserId();
+            //if (string.IsNullOrEmpty(id)) { return null; }
 
-            Active = await _localStorageService.GetItemAsync<UserAvatar>("activeUserAvatar" + id);
+            Active = await _localStorageService.GetItemAsync<UserAvatar>("activeUserAvatar");
             Console.WriteLine("!! returning active avatar " + Active.Name);
             return Active;
         }
