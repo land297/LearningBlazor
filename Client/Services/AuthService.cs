@@ -17,20 +17,25 @@ namespace Learning.Client.Services {
         Task<sr<bool>> IsLocalTokenValid();
         Task<bool> IsAdmin();
         Task<bool> IsContentCreator();
+        event Action LoggedIn;
+        event Action LoggedOut;
+        bool IsLoggedIn { get; }
     }
 
     public class AuthService : IAuthService {
         readonly HttpClient _http;
         private readonly ILocalStorageService _localStorageService;
-        private readonly IUserAvatarLocalService _userAvatarLocalService;
         private readonly AuthenticationStateProvider _authStateProvider;
 
+        public event Action LoggedIn;
+        public event Action LoggedOut;
+        public bool IsLoggedIn { get; private set; }
+
         public AuthService(HttpClient http, ILocalStorageService localStorageService, 
-            AuthenticationStateProvider authStateProvider, IUserAvatarLocalService userAvatarLocalService) {
+            AuthenticationStateProvider authStateProvider) {
             _http = http;
             _localStorageService = localStorageService;
             _authStateProvider = authStateProvider;
-            _userAvatarLocalService = userAvatarLocalService;
         }
 
         public async Task<sr<string>> Login(Login login) {
@@ -38,12 +43,14 @@ namespace Learning.Client.Services {
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode) {
                 await _localStorageService.SetItemAsync("token", content);
-                var state = await _authStateProvider.GetAuthenticationStateAsync();
-                var user = state.User;
-                // get active user avatar from database
+  
+                IsLoggedIn = true;
+                LoggedIn?.Invoke();
                 return sr<string>.GetSuccess(content);
             } else {
                 await _localStorageService.SetItemAsync("token", string.Empty);
+                IsLoggedIn = false;
+                LoggedOut?.Invoke();
                 return sr<string>.Get(content);
             }
         }
@@ -51,7 +58,9 @@ namespace Learning.Client.Services {
             //TODO: totaly fake, only delets token from localStorage.
             //      if saved, it could still be used
             await _localStorageService.SetItemAsync("token", string.Empty);
-            await _userAvatarLocalService.Set(null);
+
+            IsLoggedIn = false;
+            LoggedOut?.Invoke();
             await _authStateProvider.GetAuthenticationStateAsync();
             return sr<string>.GetSuccess("Loguut");
 

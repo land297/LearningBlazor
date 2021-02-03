@@ -26,6 +26,15 @@ namespace Learning.Server.Controllers {
                 return Created("uri purri prutt", userAvatar);
             }
         }
+        [HttpPut("setactive/{id}")]
+        public async Task<IActionResult> SetActive(int id) {
+            var result = await _userAvatarRepo.SetActiveInContext(id);
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
         //[HttpGet("test/{id:int}")]
         //public async Task<IActionResult> GetTest(int id) {
         //    var result = await _userAvatarRepo.GetInContext(id);
@@ -53,7 +62,15 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
-      
+        [HttpPost("foruserActive")]
+        public async Task<IActionResult> GetActiveForUser() {
+            var result = await _userAvatarRepo.GetActiveInContext();
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
             //TODO: check if user is authorized

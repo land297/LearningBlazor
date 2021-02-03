@@ -16,6 +16,8 @@ namespace Learning.Server.Repositories {
         Task<sr<UserAvatar>> Get(int id);
         Task<sr<IList<UserAvatar>>> GetAllInContext();
         Task<sr<IList<UserAvatar>>> GetAllForUser_NoBlob(User user);
+        Task<sr<UserAvatar>> SetActiveInContext(int id);
+        Task<sr<UserAvatar>> GetActiveInContext();
     }
 
     public class UserAvatarRepo : RepoBase2<UserAvatar>, IUserAvatarRepo {
@@ -50,6 +52,26 @@ namespace Learning.Server.Repositories {
             await _dbContext.SaveChangesAsync();
 
             return sr<int>.GetSuccess(userAvatar.Id);
+        }
+        public async Task<sr<UserAvatar>> SetActiveInContext(int id) {
+            var userId = _userService.GetUserId();
+            var data = await _dbContext.UserAvatars.Where(x => x.UserId == userId).ToListAsync();
+            UserAvatar active = null;
+            foreach (var avatar in data) {
+                if (avatar.Id == id) {
+                    avatar.IsActive = true;
+                    active = avatar;
+                } else {
+                    avatar.IsActive = false;
+                }
+            }
+
+            return sr<UserAvatar>.GetSuccess(active);
+        }
+        public async Task<sr<UserAvatar>> GetActiveInContext() {
+            var userId = _userService.GetUserId();
+            var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.IsActive);
+            return sr<UserAvatar>.GetSuccess(data);
         }
         public async Task<sr<UserAvatar>> GetInContext(int id) {
             var userId = _userService.GetUserId();

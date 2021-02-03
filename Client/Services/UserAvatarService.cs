@@ -14,7 +14,9 @@ namespace Learning.Client.Services {
         Task<sr<List<UserAvatar>>> GetAll();
         Task<sr<UserAvatar>> Save(UserAvatar userAvatar);
         Task<sr<List<UserAvatar>>> GetAllFor(User user);
-    }
+        Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar);
+        Task<sr<UserAvatar>> GetActive();
+        }
 
     public class UserAvatarService : IUserAvatarService {
         readonly HttpClient _http;
@@ -24,6 +26,39 @@ namespace Learning.Client.Services {
 
         public async Task<sr<UserAvatar>> Save(UserAvatar userAvatar) {
             var response = await _http.PostAsJsonAsync("api/userAvatar", userAvatar);
+            if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
+                if (t.Success) {
+                    return sr<UserAvatar>.GetSuccess(t.Data);
+                } else {
+                    var s = await response.Content.ReadAsStringAsync();
+                    return sr<UserAvatar>.Get(s);
+                }
+            } else {
+                var error = await response.Content.ReadAsStringAsync();
+                return sr<UserAvatar>.Get(error);
+            }
+        }
+        public async Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar) {
+            var response = await _http.PutAsJsonAsync($"api/userAvatar/setactive/{userAvatar.Id}", userAvatar.Id);
+            if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
+                if (t.Success) {
+                    return sr<UserAvatar>.GetSuccess(t.Data);
+                } else {
+                    var s = await response.Content.ReadAsStringAsync();
+                    return sr<UserAvatar>.Get(s);
+                }
+            } else {
+                var error = await response.Content.ReadAsStringAsync();
+                return sr<UserAvatar>.Get(error);
+            }
+        }
+        public async Task<sr<UserAvatar>> GetActive() {
+            var response = await _http.GetAsync($"api/foruserActive");
+
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
                 var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();

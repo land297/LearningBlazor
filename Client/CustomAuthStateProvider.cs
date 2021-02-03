@@ -22,6 +22,7 @@ namespace Learning.Client {
         }
         
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
+            Console.WriteLine("!! CustomAuthStateProvider - GetAuthenticationStateAsync");
             //var login = new Login()
             //{
             //    Email = "a@a.com",

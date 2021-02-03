@@ -53,9 +53,10 @@ namespace Learning.Client.Services {
         }
 
         private async void _authStateProvider_AuthenticationStateChanged(Task<AuthenticationState> task) {
+            Console.WriteLine("!! UserService - _authStateProvider_AuthenticationStateChanged");
             var t = await task;
             UserClaims = t.User;
-            Console.WriteLine("!! AuthState");
+            
             OnChange?.Invoke();
         }
 

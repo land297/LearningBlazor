@@ -26,7 +26,7 @@ namespace Learning.Shared.DbModels {
         
         public int? BlobId { get; set; }
         public Blob Blob { get; set; }
-        
+        public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         //TODO: is this a good..
