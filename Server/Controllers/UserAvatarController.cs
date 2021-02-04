@@ -62,7 +62,7 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
-        [HttpPost("foruserActive")]
+        [HttpGet("foruserActive")]
         public async Task<IActionResult> GetActiveForUser() {
             var result = await _userAvatarRepo.GetActiveInContext();
             if (!result.Success) {

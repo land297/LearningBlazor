@@ -16,7 +16,7 @@
 } else if (!isCompleted) {
     <Learning.Client.Components.ViewSlideDeckProgram SlideDeckProgram="SlideDeckProgram" OnCompleted="ProgramCompleted"></Learning.Client.Components.ViewSlideDeckProgram>
 } else {
-    <MudText Typo="Typo.h6">@UserAvatarLocal.Active.Name är klar med @SlideDeckProgram.Title</MudText>
+    <MudText Typo="Typo.h6">@UserAvatarLocal.ActiveUserAvatar.Name är klar med @SlideDeckProgram.Title</MudText>
     <MudText Typo="Typo.h6">Bla bla bla, sätta poäng och allt annat grejande..</MudText>
     <MudTextField @bind-Value="CompletedDescription" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
     <MudRating @bind-SelectedValue="selectedVal"></MudRating>
@@ -48,7 +48,7 @@
             isCompleted = true;
             var completed = new CompletedSlideDeckProgram();
             completed.SlideDeckProgramId = SlideDeckProgram.Id;
-            completed.UserAvatarId = UserAvatarLocal.Active.Id;
+            completed.UserAvatarId = UserAvatarLocal.ActiveUserAvatar.Id;
             completed.Comment = CompletedDescription;
             completed.CompletedOn = DateTime.UtcNow;
             completed.UserAvatarFeedback = selectedVal;

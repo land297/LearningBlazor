@@ -16,7 +16,7 @@ namespace Learning.Client.Services {
         Task<sr<string>> Register(UserRegistration userRegistration);
         Task<sr<List<User>>> GetAll();
         Task<sr<User>> GetLogedInSelf();
-        public event Action OnChange;
+        public event Action AuthenticatedUserChanged;
         string GetUserId();
     }
 
@@ -44,7 +44,7 @@ namespace Learning.Client.Services {
     }
 
     public class UserService : ServiceBase, IUserService {
-        public event Action OnChange;
+        public event Action AuthenticatedUserChanged;
         private readonly AuthenticationStateProvider _authStateProvider;
         public ClaimsPrincipal UserClaims;
         public UserService(HttpClient http, AuthenticationStateProvider authStateProvider) : base(http) {
@@ -53,11 +53,11 @@ namespace Learning.Client.Services {
         }
 
         private async void _authStateProvider_AuthenticationStateChanged(Task<AuthenticationState> task) {
-            Console.WriteLine("!! UserService - _authStateProvider_AuthenticationStateChanged");
+            Console.WriteLine("!! ********************** ");
             var t = await task;
             UserClaims = t.User;
-            
-            OnChange?.Invoke();
+            Console.WriteLine("!! UserService - _authStateProvider_AuthenticationStateChanged - " + GetUserId());
+            AuthenticatedUserChanged?.Invoke();
         }
 
         public async Task<sr<string>> Register(UserRegistration userRegistration) {

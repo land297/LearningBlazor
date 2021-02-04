@@ -15,13 +15,17 @@
     string AvatarName { get { return UserAvatar == null ? "xxx" : UserAvatar.Name; } }
 
     protected override async Task OnInitializedAsync() {
-        UserAvatarLocal.OnChange += ActiveUserAvatarChange;
-        ActiveUserAvatarChange();
+        UserAvatarLocal.UserAvatarChanged += ActiveUserAvatarChange;
+        ActiveUserAvatarChange(null);
         await Task.Delay(0);
     }
-    async void ActiveUserAvatarChange() {
-        Console.WriteLine("!! ActiveUserAvatarChange");
-        UserAvatar = await UserAvatarLocal.Get();
+    async void ActiveUserAvatarChange(UserAvatar userAvatar) {
+        Console.WriteLine("!! UserAvatarActiveView - ActiveUserAvatarChange");
+        if (userAvatar == null) {
+            UserAvatar = await UserAvatarLocal.Get(false);
+        } else {
+            UserAvatar = userAvatar;
+        }
 
         StateHasChanged();
     }

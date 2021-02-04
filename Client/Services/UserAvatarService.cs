@@ -57,7 +57,7 @@ namespace Learning.Client.Services {
             }
         }
         public async Task<sr<UserAvatar>> GetActive() {
-            var response = await _http.GetAsync($"api/foruserActive");
+            var response = await _http.GetAsync($"api/useravatar/foruserActive");
 
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();

@@ -7,25 +7,26 @@ using Blazored.LocalStorage;
 
 namespace Learning.Client.Services {
     public interface IUserAvatarLocalService {
-        Task<UserAvatar> Get();
-        UserAvatar Active { get; }
+        Task<UserAvatar> Get(bool raiseEvent);
+        UserAvatar ActiveUserAvatar { get; }
         Task Set(UserAvatar userAvatar);
-        event Action OnChange;
+        event Action<UserAvatar> UserAvatarChanged;
     }
 
     public class UserAvatarLocalService : IUserAvatarLocalService {
-        public event Action OnChange;
-        public UserAvatar Active { get; private set; }
+        public event Action<UserAvatar> UserAvatarChanged;
+        public UserAvatar ActiveUserAvatar { get; private set; }
+
         readonly IUserService _userService;
         readonly ILocalStorageService _localStorageService;
-        private readonly IAuthService _authService;
+        readonly IAuthService _authService;
         readonly IUserAvatarService _userAvatarService;
 
         public UserAvatarLocalService(IUserService userService,
             ILocalStorageService localStorageService, IAuthService authService,
             IUserAvatarService userAvatarService1) {
             _userService = userService;
-            _userService.OnChange += _userAvatarService_OnChange;
+            _userService.AuthenticatedUserChanged += _userAvatarService_OnChange;
 
             _localStorageService = localStorageService;
             
@@ -53,29 +54,33 @@ namespace Learning.Client.Services {
 
         public async Task Set(UserAvatar userAvatar) {
             //var id = _userService.GetUserId();
-            await _localStorageService.SetItemAsync("activeUserAvatar", userAvatar);
+            await _localStorageService.SetItemAsync("activeUserAvatar" + _userService.GetUserId(), userAvatar);
             if (userAvatar != null) {
                 await _userAvatarService.SetActive(userAvatar);
             }
-            OnChange?.Invoke();
+            ActiveUserAvatar = userAvatar;
+
+            UserAvatarChanged?.Invoke(ActiveUserAvatar);
         }
 
-        public async Task<UserAvatar> Get() {
+        public async Task<UserAvatar> Get(bool raiseEvent = true) {
+            if (_userService.GetUserId() == string.Empty) { return null; }
             //var id = _userService.GetUserId();
             //if (string.IsNullOrEmpty(id)) { return null; }
-
-            Active = await _localStorageService.GetItemAsync<UserAvatar>("activeUserAvatar");
-            if (Active != null) {
-                Console.WriteLine("!! returning active avatar " + Active.Name);
+            Console.WriteLine("!! UserAvatarLocalService Get");
+            ActiveUserAvatar = await _localStorageService.GetItemAsync<UserAvatar>("activeUserAvatar" + _userService.GetUserId());
+            if (ActiveUserAvatar != null && ActiveUserAvatar.UserId.ToString() == _userService.GetUserId()) {
+                Console.WriteLine("!! returning active avatar " + ActiveUserAvatar.Name);
             } else {
                 var response = await _userAvatarService.GetActive();
                 if (response.Success) {
-                    Active = response.Data;
-                    await _localStorageService.SetItemAsync("activeUserAvatar", Active);
+                    await Set(response.Data);
                 }
             }
-
-            return Active;
+            if (raiseEvent) {
+                UserAvatarChanged?.Invoke(ActiveUserAvatar);
+            }
+            return ActiveUserAvatar;
         }
     }
 }
