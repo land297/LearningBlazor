@@ -29,7 +29,7 @@
                     <RowTemplate Context="uaContext">
                         <MudTd>@uaContext.Id</MudTd>
                         <MudTd>@uaContext.Name</MudTd>
-                        <MudTd><MudButton OnClick="@(() => ShowAddProgramsForUserAvatar(uaContext.Id,context.Id))">Add program</MudButton></MudTd>
+                        <MudTd Class="blue lighten-3"><MudButton Class="indigo lighten-3" OnClick="@(() => ShowAddProgramsForUserAvatar(uaContext.Id,context.Id))">Add program</MudButton></MudTd>
                         <MudTd Class="blue lighten-3">
                             <MudTable Items="@uaContext.PersonalProgramAccess">
                                 <HeaderContent>
