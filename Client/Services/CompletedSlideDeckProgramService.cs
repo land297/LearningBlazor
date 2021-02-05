@@ -35,8 +35,8 @@ namespace Learning.Client.Services {
             var response = await _http.GetAsync($"api/CompletedSlideDeckProgram/all/{userAvatar.Id}");
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
-                var result = await stream.DeserializeJsonCamelCaseAsync<List<CompletedSlideDeckProgram>>();
-                return sr<List<CompletedSlideDeckProgram>>.GetSuccess(result);
+                var result = await stream.TryDeserializeJsonCamelCaseAsync<List<CompletedSlideDeckProgram>>();
+                return result;
             } else {
                 var error = await response.Content.ReadAsStringAsync();
                 return sr<List<CompletedSlideDeckProgram>>.Get(error);

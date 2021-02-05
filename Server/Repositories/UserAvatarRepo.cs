@@ -65,7 +65,7 @@ namespace Learning.Server.Repositories {
                     avatar.IsActive = false;
                 }
             }
-
+            await _dbContext.SaveChangesAsync();
             return sr<UserAvatar>.GetSuccess(active);
         }
         public async Task<sr<UserAvatar>> GetActiveInContext() {

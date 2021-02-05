@@ -132,7 +132,7 @@
     User OverlayUser;
     List<UserAccessSlideDeckProgram> UserAccessList;
 
-    
+
     UserAvatar UserAvatar;
     SlideDeckProgram SelectedSlideDeckProgram;
     String AcessComment;
@@ -143,6 +143,10 @@
             Users = r.Data;
         } else {
             Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
+        }
+
+        if (Users == null) {
+            Snackbar.Add($"No users found", Severity.Error);
         }
 
 

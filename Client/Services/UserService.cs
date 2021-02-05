@@ -28,7 +28,7 @@ namespace Learning.Client.Services {
 
         protected async Task<sr<T>> Get<T>(string uri) {
             try {
-                var response = await _http.GetAsync("api/user/self");
+                var response = await _http.GetAsync(uri);
                 if (response.IsSuccessStatusCode) {
                     var stream = await response.Content.ReadAsStreamAsync();
                     var obj = await stream.DeserializeJsonCamelCaseAsync<T>();
