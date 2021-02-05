@@ -23,9 +23,10 @@ namespace Learning.Client.Services {
         public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
             var response = await _http.PostAsJsonAsync("api/CompletedSlideDeckProgram", completedProgram);
             if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                completedProgram = await stream.DeserializeJsonCamelCaseAsync<CompletedSlideDeckProgram>();
-                return sr<CompletedSlideDeckProgram>.GetSuccess(completedProgram);
+                //var stream = await response.Content.ReadAsStreamAsync();
+                //var result = await stream.TryDeserializeJsonCamelCaseAsync<CompletedSlideDeckProgram>();
+                //return result;
+                return await ServiceExtensions.ReturnSerializedContentOrError<CompletedSlideDeckProgram>(response);
             } else {
                 var error = await response.Content.ReadAsStringAsync();
                 return sr<CompletedSlideDeckProgram>.Get(error);

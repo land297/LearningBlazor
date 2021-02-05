@@ -30,7 +30,7 @@
                         <MudTd>@uaContext.Id</MudTd>
                         <MudTd>@uaContext.Name</MudTd>
                         <MudTd><MudButton OnClick="@(() => ShowAddProgramsForUserAvatar(uaContext.Id,context.Id))">Add program</MudButton></MudTd>
-                        <MudTd>
+                        <MudTd Class="blue lighten-3">
                             <MudTable Items="@uaContext.PersonalProgramAccess">
                                 <HeaderContent>
                                     <MudTh>Program Id</MudTh>
