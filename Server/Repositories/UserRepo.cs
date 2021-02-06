@@ -20,12 +20,20 @@ namespace Learning.Server.Repositories {
         Task<sr<IList<User>>> GetAll();
     }
 
-    public class UserRepo : RepoBase2<User>, IUserRepo,IRepoBase3<User,UserRegistration> {
+    public class UserRepo : RepoBase2<User>, IUserRepo,IRepoBase3<User> {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
      
         }
-        public Task<sr<int>> Save(UserRegistration dto) {
-            return AddUser(dto);
+        public override Task<sr<int>> Save(object obj) {
+            var dto = obj as UserRegistration;
+            if (dto != null) {
+                return AddUser(dto);
+            } else {
+                return null;
+            }
+        }
+        public override Task<sr<User>> SaveReturnEntity(object obj) {
+            throw new NotImplementedException();
         }
         public async Task<sr<int>> AddUser(UserRegistration userRegistration) {
             if (await UsersExits(userRegistration.Email)) {

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories.Base {
-    public interface IRepoBase3<Tentiy,Kdto> where Tentiy : IdEntity<Tentiy> {
+    public interface IRepoBase3<Tentiy> where Tentiy : IdEntity<Tentiy> {
         DbSet<Tentiy> DbSet { get; }
         Task<sr<Tentiy>> GetFirst(Expression<Func<Tentiy, bool>> predicate);
         Task<sr<IList<Tentiy>>> Get(Task<List<Tentiy>> task);
@@ -17,8 +17,9 @@ namespace Learning.Server.Repositories.Base {
         Task<sr<Tentiy>> Get(int id);
         Task<sr<IList<Tentiy>>> GetAll();
         Task<sr<int>> Save(Tentiy entity);
+        Task<sr<int>> Save(object dto);
         Task<sr<Tentiy>> SaveReturnEntity(Tentiy entity);
-        Task<sr<int>> Save(Kdto dto);
+        Task<sr<Tentiy>> SaveReturnEntity(object dto);
         Task<sr<Tentiy>> Remove(Task<Tentiy> task);
     }
 
@@ -95,6 +96,7 @@ namespace Learning.Server.Repositories.Base {
                 return sr<IList<T>>.Get(e);
             }
         }
+        public abstract Task<sr<int>> Save(object obj);
         public virtual async Task<sr<int>> Save(T entity) {
             try {
                 if (entity.Id != default(int)) {
@@ -111,6 +113,7 @@ namespace Learning.Server.Repositories.Base {
                 return sr<int>.Get(e);
             }
         }
+        public abstract Task<sr<T>> SaveReturnEntity(object obj);
         public virtual async Task<sr<T>> SaveReturnEntity(T entity) {
             try {
                 if (entity.Id != default(int)) {

@@ -40,15 +40,7 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
-        //[HttpGet("test/{id:int}")]
-        //public async Task<IActionResult> GetTest(int id) {
-        //    var result = await _userAvatarRepo.GetInContext(id);
-        //    if (!result.Success) {
-        //        return BadRequest(result.Message);
-        //    } else {
-        //        return Ok(result.Data);
-        //    }
-        //}
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
             var result = await _userAvatarRepo.GetInContext(id);

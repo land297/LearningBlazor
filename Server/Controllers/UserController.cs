@@ -11,36 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Learning.Server.Controllers.Base;
 
 namespace Learning.Server.Controllers {
-    public abstract class ControllerBase2<TEntity,TDto> : ControllerBase where TEntity : IdEntity<TEntity> {
-        protected IRepoBase3<TEntity,TDto> Repo;
-        public ControllerBase2(IRepoBase3<TEntity, TDto> repo) {
-            Repo = repo;
-        }
-        public async Task<IActionResult> Ok<T>(Task<sr<T>> task) {
-            var result = await task;
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
-        }
-        public async Task<IActionResult> Created<T>(Task<sr<T>> task, string uri) {
-            var result = await task;
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Created($"{uri}{result.Data}", result.Data);
-            }
-        }
-    }
+
 
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase2<User,UserRegistration> {
+    public class UserController : ControllerBase2<User> {
         IUserService _userService;
-        public UserController(IUserService userService, IRepoBase3<User, UserRegistration> repo3) : base(repo3) {
+        public UserController(IUserService userService, IRepoBase3<User> repo3) : base(repo3) {
             _userService = userService;
         }
         [HttpPost("add")]
