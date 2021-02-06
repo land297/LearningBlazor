@@ -15,6 +15,7 @@ namespace Learning.Client.Services {
         Task<sr<UserAvatar>> Save(UserAvatar userAvatar);
         Task<sr<List<UserAvatar>>> GetAllFor(User user);
         Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar);
+        Task<sr<UserAvatar>> Delete(UserAvatar userAvatar);
         Task<sr<UserAvatar>> GetActive();
         }
 
@@ -24,8 +25,26 @@ namespace Learning.Client.Services {
             _http = http;
         }
 
+        
         public async Task<sr<UserAvatar>> Save(UserAvatar userAvatar) {
             var response = await _http.PostAsJsonAsync("api/userAvatar", userAvatar);
+            if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<int>();
+                if (t.Success) {
+                    userAvatar.Id = t.Data;
+                    return sr<UserAvatar>.GetSuccess(userAvatar);
+                } else {
+                    var s = await response.Content.ReadAsStringAsync();
+                    return sr<UserAvatar>.Get(s);
+                }
+            } else {
+                var error = await response.Content.ReadAsStringAsync();
+                return sr<UserAvatar>.Get(error);
+            }
+        }
+        public async Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar) {
+            var response = await _http.PutAsJsonAsync($"api/userAvatar/setactive/{userAvatar.Id}", userAvatar.Id);
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
                 var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
@@ -40,8 +59,8 @@ namespace Learning.Client.Services {
                 return sr<UserAvatar>.Get(error);
             }
         }
-        public async Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar) {
-            var response = await _http.PutAsJsonAsync($"api/userAvatar/setactive/{userAvatar.Id}", userAvatar.Id);
+        public async Task<sr<UserAvatar>> Delete(UserAvatar userAvatar) {
+            var response = await _http.DeleteAsync($"api/userAvatar/{userAvatar.Id}");
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
                 var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();

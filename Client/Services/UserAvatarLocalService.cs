@@ -10,6 +10,7 @@ namespace Learning.Client.Services {
         Task<UserAvatar> Get(bool raiseEvent);
         UserAvatar ActiveUserAvatar { get; }
         Task Set(UserAvatar userAvatar);
+        Task Delete(UserAvatar userAvatar);
         event Action<UserAvatar> UserAvatarChanged;
     }
 
@@ -62,7 +63,11 @@ namespace Learning.Client.Services {
 
             UserAvatarChanged?.Invoke(ActiveUserAvatar);
         }
-
+        public async Task Delete(UserAvatar userAvatar) {
+            if (userAvatar != null) {
+                await _userAvatarService.Delete(userAvatar);
+            }
+        }
         public async Task<UserAvatar> Get(bool raiseEvent = true) {
             if (_userService.GetUserId() == string.Empty) { return null; }
             //var id = _userService.GetUserId();

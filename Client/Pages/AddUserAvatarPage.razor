@@ -11,21 +11,23 @@
 @if (CurrentUserAvatars.Count > 0) {
     foreach (var item in CurrentUserAvatars) {
         <MudButton Typo="Typo.body1" OnClick="(async () => await SetAvatarActive(item.Name))">Set @item.Name active</MudButton>
+
         <div>
             <img src="@item.CoverImage" class="width:100%;" />
 
         </div>
+        <MudButton Typo="Typo.body1" OnClick="(async () => await DeleteAvatar(item.Name))">Delete @item.Name</MudButton>
     }
 }
 
-<Learning.Client.Components.UserAvatarActiveView />
+
 
 @code {
-        [Parameter]
-        public int Id { get; set; }
+    [Parameter]
+    public int Id { get; set; }
 
-        UserAvatar UserAvatar = new UserAvatar();
-        List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
+    UserAvatar UserAvatar = new UserAvatar();
+    List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
 
     protected override async Task OnInitializedAsync() {
         var response = await UserAvatars.GetAll();
@@ -47,6 +49,15 @@
     }
     async Task SetAvatarActive(string name) {
         await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
+    }
+    async Task DeleteAvatar(string name) {
+        await UserAvatarLocal.Delete(CurrentUserAvatars.First(x => x.Name == name));
+        var response = await UserAvatars.GetAll();
+        if (response.Success) {
+            CurrentUserAvatars = response.Data;
+        } else {
+            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+        }
     }
     async Task SaveUserAvatar() {
         var response = await UserAvatars.Save(UserAvatar);

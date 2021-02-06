@@ -17,6 +17,7 @@ namespace Learning.Server.Repositories {
         Task<sr<IList<UserAvatar>>> GetAllInContext();
         Task<sr<IList<UserAvatar>>> GetAllForUser_NoBlob(User user);
         Task<sr<UserAvatar>> SetActiveInContext(int id);
+        Task<sr<UserAvatar>> Delete(int id);
         Task<sr<UserAvatar>> GetActiveInContext();
     }
 
@@ -65,6 +66,33 @@ namespace Learning.Server.Repositories {
 
             return sr<int>.GetSuccess(userAvatar.Id);
         }
+        public async Task<sr<UserAvatar>> Delete(int id) {
+            //TODO: how could an "admin" user add userAvatars for another user...
+            //      this just assigned current logged in user to the userAvatar
+                   //update
+            var dbUserAvatar = await _dbContext.UserAvatars.Include(x => x.Blob).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id && x.UserId == _userService.GetUserId());
+            var completedProgarms = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.UserAvatarId == dbUserAvatar.Id).ToListAsync();
+            var userAccessProgarms = await _dbContext.UserAccessSlideDeckPrograms.Where(x => x.UserAvatarId == dbUserAvatar.Id).ToListAsync();
+            if (dbUserAvatar == null) {
+                //TODO: trying to access 
+            } else {
+                foreach (var item in userAccessProgarms) {
+                    _dbContext.UserAccessSlideDeckPrograms.Remove(item);
+                }
+                foreach (var item in completedProgarms) {
+                    _dbContext.CompletedSlideDeckPrograms.Remove(item);
+                }
+                await _dbContext.SaveChangesAsync();
+
+                _dbContext.UserAvatars.Remove(dbUserAvatar);
+                await _dbContext.SaveChangesAsync();
+
+                return sr<UserAvatar>.GetSuccess(dbUserAvatar);
+            }
+            return sr<UserAvatar>.Get(dbUserAvatar);
+
+        }
+
         public async Task<sr<UserAvatar>> SetActiveInContext(int id) {
             var userId = _userService.GetUserId();
             var data = await _dbContext.UserAvatars.Where(x => x.UserId == userId).ToListAsync();
