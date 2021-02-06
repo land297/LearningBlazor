@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace Learning.Server {
     public class Program {
         public static void Main(string[] args) {
@@ -16,7 +17,12 @@ namespace Learning.Server {
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    .ConfigureLogging((ctx, builder) => {
+                        builder.AddConfiguration(ctx.Configuration.GetSection("Logging"));
+                        builder.AddFile(o => o.RootPath = ctx.HostingEnvironment.ContentRootPath);
+                    })
+                    .UseStartup<Startup>();
                 });
     }
 }

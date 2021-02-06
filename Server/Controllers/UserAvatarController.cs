@@ -2,6 +2,7 @@
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,10 @@ namespace Learning.Server.Controllers {
     [ApiController]
     public class UserAvatarController : ControllerBase {
         readonly IUserAvatarRepo _userAvatarRepo;
-        public UserAvatarController(IUserAvatarRepo userAvatarRepo) {
-            _userAvatarRepo = userAvatarRepo; ;
+        readonly ILogger _logger;
+        public UserAvatarController(IUserAvatarRepo userAvatarRepo,ILogger<UserAvatarController> logger) {
+            _userAvatarRepo = userAvatarRepo;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -28,10 +31,12 @@ namespace Learning.Server.Controllers {
         }
         [HttpPut("setactive/{id}")]
         public async Task<IActionResult> SetActive(int id) {
+            _logger.LogInformation("setting active", id);
             var result = await _userAvatarRepo.SetActiveInContext(id);
             if (!result.Success) {
                 return BadRequest(result.Message);
             } else {
+                _logger.LogInformation("ok");
                 return Ok(result.Data);
             }
         }
