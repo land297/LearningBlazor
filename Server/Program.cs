@@ -17,12 +17,7 @@ namespace Learning.Server {
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
-                    webBuilder
-                    .ConfigureLogging((ctx, builder) => {
-                        builder.AddConfiguration(ctx.Configuration.GetSection("Logging"));
-                        builder.AddFile(o => o.RootPath = ctx.HostingEnvironment.ContentRootPath);
-                    })
-                    .UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>();
                 });
     }
 }
