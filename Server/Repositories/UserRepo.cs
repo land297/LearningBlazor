@@ -24,8 +24,8 @@ namespace Learning.Server.Repositories {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
      
         }
-        public async Task<sr<int>> Save(UserRegistration dto) {
-            return await AddUser(dto);
+        public Task<sr<int>> Save(UserRegistration dto) {
+            return AddUser(dto);
         }
         public async Task<sr<int>> AddUser(UserRegistration userRegistration) {
             if (await UsersExits(userRegistration.Email)) {
@@ -40,27 +40,20 @@ namespace Learning.Server.Repositories {
             dbUser.Username = userRegistration.FirstName;
 
             return  await base.Save(dbUser);
-            //await _dbContext.Users.AddAsync(dbUser);
-            //await _dbContext.SaveChangesAsync();
-
-            //return sr<int>.GetSuccess(dbUser.Id);
         }
         public async Task<sr<bool>> UsersExists(User user) {
             return sr<bool>.Get(await UsersExits(user.Email));
         }
 
-        public async Task<bool> UsersExits(string email) {
-            return await DbSet.AnyAsync(x => x.Email.ToLower() == email.ToLower());
+        public Task<bool> UsersExits(string email) {
+            return DbSet.AnyAsync(x => x.Email.ToLower() == email.ToLower());
         }
-        public async Task<bool> UsersExits(int id) {
-            return await DbSet.AnyAsync(x => x.Id == id);
+        public Task<bool> UsersExits(int id) {
+            return DbSet.AnyAsync(x => x.Id == id);
         }
         public async Task<User> GetUser(string email) {
             var response = await GetFirst(x => x.Email.ToLower() == email.ToLower());
             return response.Data;
         }
-        //public async Task<User> GetUser(int id) {
-        //    return await _dbContext.Users.FirstOrDefaultAsync<User>(x => x.Id == id);
-        //}
     }
 }
