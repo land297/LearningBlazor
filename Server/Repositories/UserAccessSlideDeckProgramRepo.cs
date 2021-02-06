@@ -29,22 +29,7 @@ namespace Learning.Server.Repositories {
         public async Task<sr<IList<UserAccessSlideDeckProgram>>> Get(UserAvatar userAvatar) {
             //TODO: not include the image-attribute
             var programs = await Get(DbSet.Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).Where(x => x.UserAvatarId == userAvatar.Id).ToListAsync());
-            //if (programs.Success) {
-            //    foreach (var program in programs.Data) {
-            //        if (program.UserAvatarId != null && program.UserAvatarId != default(int)) {
-            //            int id = program.UserAvatarId ?? default(int);
-            //            program.UserAvatar = await _userAvatarRepo.Get(id);
-            //        }
-            //    }
-            //}
-            //var p = await DbSet.Select(x => new UserAccessSlideDeckProgram { Id = x.Id, UserAvatar = x.UserAvatar }).ToListAsync();
 
-            //    return _context.Tenders.Select(t => new TenderViewModel
-            //    {
-            //        Id = t.Id,
-            //        Creator = t.Creator,
-            //        TenderCircles = t.TenderCircles.Select(tc => new TenderCircle { CirlceId = tc.CircleId, TenderId = tc.TenderId }).ToList();
-            //}).ToList();
 
             return programs;
         }
@@ -56,6 +41,10 @@ namespace Learning.Server.Repositories {
         }
         public async Task<sr<UserAccessSlideDeckProgram>> RemoveWithId(int id) {
             return await Remove(DbSet.FirstOrDefaultAsync(x => x.Id == id));
+        }
+
+        public override Task<sr<int>> Save(object obj) {
+            throw new NotImplementedException();
         }
 
         public override async Task<sr<UserAccessSlideDeckProgram>> SaveReturnEntity(UserAccessSlideDeckProgram ua) {
@@ -84,6 +73,10 @@ namespace Learning.Server.Repositories {
                 }
             }
             return sr;
+        }
+
+        public override Task<sr<UserAccessSlideDeckProgram>> SaveReturnEntity(object obj) {
+            throw new NotImplementedException();
         }
     }
 }

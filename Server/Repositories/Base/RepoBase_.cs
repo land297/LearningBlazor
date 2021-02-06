@@ -21,6 +21,8 @@ namespace Learning.Server.Repositories.Base {
         Task<sr<Tentiy>> SaveReturnEntity(Tentiy entity);
         Task<sr<Tentiy>> SaveReturnEntity(object dto);
         Task<sr<Tentiy>> Remove(Task<Tentiy> task);
+        Task<sr<Tentiy>> Remove(Tentiy entity);
+        Task<sr<Tentiy>> Remove(int id);
     }
 
     public abstract class RepoBase2<T> where T : IdEntity<T> {
@@ -42,6 +44,16 @@ namespace Learning.Server.Repositories.Base {
         }
         public async Task<sr<T>> Remove(T entity) {
             try {
+                DbSet.Remove(entity);
+                await _dbContext.SaveChangesAsync();
+                return sr<T>.GetSuccess(entity);
+            } catch (Exception e) {
+                return sr<T>.Get(e);
+            }
+        }
+        public async Task<sr<T>> Remove(int id) {
+            try {
+                var entity = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
                 DbSet.Remove(entity);
                 await _dbContext.SaveChangesAsync();
                 return sr<T>.GetSuccess(entity);

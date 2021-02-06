@@ -20,28 +20,30 @@ namespace Learning.Server.Controllers {
     [ApiController]
     public class UserController : ControllerBase2<User> {
         IUserService _userService;
-        public UserController(IUserService userService, IRepoBase3<User> repo3) : base(repo3) {
+        //IRepoBase3<User> _repo;
+        public UserController(IUserService userService, IUserRepo repo3) : base (repo3) {
             _userService = userService;
+            //_repo = repo3;
         }
         [HttpPost("add")]
         public async Task<IActionResult> UserRegistration(UserRegistration userRegistration) {
-            return await Created(Repo.Save(userRegistration), "api/user/");
+            return await Created(RepoBase.Save(userRegistration), "api/user/");
   
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            return await Ok<IList<User>>(Repo.GetAll());
+            return await Ok<IList<User>>(RepoBase.GetAll());
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
-            return await Ok<User>(Repo.Get(id));
+            return await Ok<User>(RepoBase.Get(id));
         }
         [Authorize]
         [HttpGet("self")]
         public async Task<IActionResult> GetSelf() {
-            return await Ok<User>(Repo.Get(_userService.GetUserId()));
+            return await Ok<User>(RepoBase.Get(_userService.GetUserId()));
         }
     }
 }

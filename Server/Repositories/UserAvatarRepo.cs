@@ -20,12 +20,24 @@ namespace Learning.Server.Repositories {
         Task<sr<UserAvatar>> GetActiveInContext();
     }
 
-    public class UserAvatarRepo : RepoBase2<UserAvatar>, IUserAvatarRepo {
+    public class UserAvatarRepo : RepoBase2<UserAvatar>, IUserAvatarRepo, IRepoBase3<UserAvatar> {
         private readonly IUserService _userService;
 
         public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {
             _userService = userService;
         }
+        public override Task<sr<int>> Save(object obj) {
+            throw new NotImplementedException();
+        }
+
+        public override Task<sr<UserAvatar>> SaveReturnEntity(object obj) {
+            throw new NotImplementedException();
+        }
+
+        public override Task<sr<int>> Save(UserAvatar userAvatar) {
+            return SaveInContext(userAvatar);
+        }
+
         public async Task<sr<int>> SaveInContext(UserAvatar userAvatar) {
             //TODO: how could an "admin" user add userAvatars for another user...
             //      this just assigned current logged in user to the userAvatar

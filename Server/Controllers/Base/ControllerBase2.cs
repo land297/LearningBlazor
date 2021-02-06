@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Controllers.Base {
     public abstract class ControllerBase2<TEntity> : ControllerBase where TEntity : IdEntity<TEntity> {
-        protected IRepoBase3<TEntity> Repo;
-        public ControllerBase2(IRepoBase3<TEntity> repo) {
-            Repo = repo;
+        protected IRepoBase3<TEntity> RepoBase;
+        public ControllerBase2(object obj) {
+            RepoBase = obj as IRepoBase3<TEntity>;
         }
+
         public async Task<IActionResult> Ok<T>(Task<sr<T>> task) {
             var result = await task;
             if (!result.Success) {
