@@ -20,28 +20,7 @@ namespace Learning.Client.Services {
         string GetUserId();
     }
 
-    public abstract class ServiceBase {
-        protected HttpClient _http;
-        public ServiceBase(HttpClient http) {
-            _http = http;
-        }
 
-        protected async Task<sr<T>> Get<T>(string uri) {
-            try {
-                var response = await _http.GetAsync(uri);
-                if (response.IsSuccessStatusCode) {
-                    var stream = await response.Content.ReadAsStreamAsync();
-                    var obj = await stream.DeserializeJsonCamelCaseAsync<T>();
-                    return sr<T>.GetSuccess(obj);
-                } else {
-                    var message = await response.Content.ReadAsStringAsync();
-                    return sr<T>.Get(message);
-                }
-            } catch (Exception e) {
-                return sr<T>.Get(e);
-            }
-        }
-    }
 
     public class UserService : ServiceBase, IUserService {
         public event Action AuthenticatedUserChanged;

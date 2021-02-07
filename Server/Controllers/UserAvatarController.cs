@@ -53,7 +53,7 @@ namespace Learning.Server.Controllers {
         }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            return await Ok(_userAvatarRepo.GetAllInContext());
+            return await base.Ok(_userAvatarRepo.GetAllInContext());
         }
     }
 }

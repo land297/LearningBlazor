@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IUserAccessSlideDeckProgramRepo {
-        Task<IList<UserAccessSlideDeckProgram>> Get(UserAvatar userAvatar);
-        Task<IList<UserAccessSlideDeckProgram>> Get(User user);
+        Task<List<UserAccessSlideDeckProgram>> Get(UserAvatar userAvatar);
+        Task<List<UserAccessSlideDeckProgram>> Get(User user);
         Task<UserAccessSlideDeckProgram> SaveAndGetEntity(UserAccessSlideDeckProgram entity);
         Task<UserAccessSlideDeckProgram> RemoveWithId(int id);
         Task<UserAccessSlideDeckProgram> GetIncluded(int id);
@@ -26,21 +26,18 @@ namespace Learning.Server.Repositories {
             _slideDeckProgramRepo = slideDeckRepo;
         }
 
-        public async Task<IList<UserAccessSlideDeckProgram>> Get(UserAvatar userAvatar) {
+        public Task<List<UserAccessSlideDeckProgram>> Get(UserAvatar userAvatar) {
             //TODO: not include the image-attribute
-            var programs = await DbSet.Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).Where(x => x.UserAvatarId == userAvatar.Id).ToListAsync();
-
-
-            return programs;
+           return DbSet.Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).Where(x => x.UserAvatarId == userAvatar.Id).ToListAsync();
         }
-        public async Task<IList<UserAccessSlideDeckProgram>> Get(User user) {
-            return await DbSet.Include(x => x.SlideDeckProgram).Where(x => x.UserId == user.Id).ToListAsync();
+        public Task<List<UserAccessSlideDeckProgram>> Get(User user) {
+            return DbSet.Include(x => x.SlideDeckProgram).Where(x => x.UserId == user.Id).ToListAsync();
         }
-        public async Task<UserAccessSlideDeckProgram> GetIncluded(int id) {
-            return await DbSet.Include(x => x.SlideDeckProgram).FirstOrDefaultAsync(x => x.Id == id);
+        public Task<UserAccessSlideDeckProgram> GetIncluded(int id) {
+            return DbSet.Include(x => x.SlideDeckProgram).FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<UserAccessSlideDeckProgram> RemoveWithId(int id) {
-            return await Remove(DbSet.FirstOrDefaultAsync(x => x.Id == id));
+        public Task<UserAccessSlideDeckProgram> RemoveWithId(int id) {
+            return Remove(DbSet.FirstOrDefaultAsync(x => x.Id == id));
         }
 
         public override Task<int> Save(object obj) {

@@ -49,10 +49,10 @@ namespace Learning.Server.Repositories.Base {
             await _dbContext.SaveChangesAsync();
             return entity;
         }
-        public async Task<T> Get(Task<T> task) {
-            var result = await task;
-            return result;
-        }
+        //public async Task<T> Get(Task<T> task) {
+        //    var result = await task;
+        //    return result;
+        //}
         public async Task<T> Get(int id) {
             var result = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
             return result;

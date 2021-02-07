@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Shared.DbModels {
-
     public class UserAccessSlideDeckProgram : IdEntity<UserAccessSlideDeckProgram> {
         //public int Id { get; set; }
         public int SlideDeckProgramId { get; set; }

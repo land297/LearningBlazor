@@ -14,8 +14,8 @@ namespace Learning.Server.Repositories {
         Task<int> SaveInContext(UserAvatar userAvatar);
         Task<UserAvatar> GetInContext(int id);
         Task<UserAvatar> Get(int id);
-        Task<IList<UserAvatar>> GetAllInContext();
-        Task<IList<UserAvatar>> GetAllForUser_NoBlob(User user);
+        Task<List<UserAvatar>> GetAllInContext();
+        Task<List<UserAvatar>> GetAllForUser_NoBlob(User user);
         Task<UserAvatar> SetActiveInContext(int id);
         Task<UserAvatar> Delete(int id);
         Task<UserAvatar> GetActiveInContext();
@@ -108,29 +108,23 @@ namespace Learning.Server.Repositories {
             await _dbContext.SaveChangesAsync();
             return active;
         }
-        public async Task<UserAvatar> GetActiveInContext() {
+        public Task<UserAvatar> GetActiveInContext() {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.IsActive);
-            return data;
+            return _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.IsActive);
         }
-        public async Task<UserAvatar> GetInContext(int id) {
+        public Task<UserAvatar> GetInContext(int id) {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
-
-            return data;
+            return _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
         }
-        public async Task<IList<UserAvatar>> GetAllInContext() {
+        public Task<List<UserAvatar>> GetAllInContext() {
             var userId = _userService.GetUserId();
-            var data = await _dbContext.UserAvatars.Include(x => x.Blob).Where(x => x.UserId == userId).ToListAsync();
-            return data;
+           return _dbContext.UserAvatars.Include(x => x.Blob).Where(x => x.UserId == userId).ToListAsync();
         }
-        public async Task<IList<UserAvatar>> GetAllForUser_NoBlob(User user) {
-            var data = await _dbContext.UserAvatars.Where(x => x.UserId == user.Id).ToListAsync();
-            return data;
+        public Task<List<UserAvatar>> GetAllForUser_NoBlob(User user) {
+            return _dbContext.UserAvatars.Where(x => x.UserId == user.Id).ToListAsync();
         }
-        new public async Task<UserAvatar> Get(int id) {
-            var data = await  Get(DbSet.Include(x => x.Blob).SingleOrDefaultAsync(x => x.Id == id));
-            return data;
+        new public Task<UserAvatar> Get(int id) {
+            return DbSet.Include(x => x.Blob).SingleOrDefaultAsync(x => x.Id == id);
         }
 
 
