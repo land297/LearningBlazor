@@ -25,20 +25,10 @@ namespace Learning.Server.Service {
             _userRepo = userRepo;
         }
         public async Task<User> GetUser(ClaimsPrincipal user) {
-            var sr = await _userRepo.Get(GetUserId(user));
-            if (sr.Success) {
-                return sr.Data;
-            } else {
-                return null;
-            }
+              return await _userRepo.Get(GetUserId(user));
         }
         public async Task<User> GetUser() {
-            var sr = await _userRepo.Get(GetUserId());
-            if (sr.Success) {
-                return sr.Data;
-            } else {
-                return null;
-            }
+            return await _userRepo.Get(GetUserId());
         }
         public int GetUserId(ClaimsPrincipal user) => int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
         public int GetUserId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));

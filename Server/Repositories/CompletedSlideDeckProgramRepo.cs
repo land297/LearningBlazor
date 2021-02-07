@@ -18,15 +18,15 @@ namespace Learning.Server.Repositories {
     }
 
     public class CompletedSlideDeckProgramRepo : RepoBase2<CompletedSlideDeckProgram>, 
-        ICompletedSlideDeckProgramRepo,
-        IRepoBase3<CompletedSlideDeckProgram>{
+        ICompletedSlideDeckProgramRepo
+        {
         //private readonly AppDbContext _dbContext;
         readonly IUserService _userService;
         public CompletedSlideDeckProgramRepo(AppDbContext dbContext, IUserService userService) : base(dbContext){
             //_dbContext = dbContext;
             _userService = userService;
         }
-        public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
+        new public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
             var response = sr<CompletedSlideDeckProgram>.Get();
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
             completedProgram.SlideDeckProgram = null;
@@ -62,11 +62,15 @@ namespace Learning.Server.Repositories {
             }
         }
 
-        public override Task<sr<int>> Save(object obj) {
+        public override Task<int> Save(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<sr<CompletedSlideDeckProgram>> SaveReturnEntity(object obj) {
+        public override Task<CompletedSlideDeckProgram> SaveAndGetEntity(object obj) {
+            throw new NotImplementedException();
+        }
+
+        Task<sr<IList<CompletedSlideDeckProgram>>> ICompletedSlideDeckProgramRepo.GetAll() {
             throw new NotImplementedException();
         }
     }

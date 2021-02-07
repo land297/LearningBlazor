@@ -114,8 +114,15 @@ namespace Learning.Client.Services {
 
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
-                var userAvatar = await stream.DeserializeJsonCamelCaseAsync<List<UserAvatar>>();
-                return sr<List<UserAvatar>>.GetSuccess(userAvatar);
+                //var userAvatar = await stream.DeserializeJsonCamelCaseAsync<List<UserAvatar>>();
+                //return sr<List<UserAvatar>>.GetSuccess(userAvatar);
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<List<UserAvatar>>();
+                if (t.Success) {
+                    return sr<List<UserAvatar>>.GetSuccess(t.Data);
+                } else {
+                    var s = await response.Content.ReadAsStringAsync();
+                    return sr<List<UserAvatar>>.Get(s);
+                }
             } else {
                 var error = await response.Content.ReadAsStringAsync();
                 return sr<List<UserAvatar>>.Get(error);

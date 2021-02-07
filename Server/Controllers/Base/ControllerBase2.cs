@@ -14,37 +14,30 @@ namespace Learning.Server.Controllers.Base {
             RepoBase = obj as IRepoBase3<TEntity>;
         }
 
-        public async Task<IActionResult> Ok<T>(Task<sr<T>> task) {
-            var result = await task;
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
-        }
-        public async Task<IActionResult> Created<T>(Task<sr<T>> task, string uri) {
-            var result = await task;
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Created($"{uri}{result.Data}", result.Data);
-            }
-        }
-        public async Task<IActionResult> Ok2<T>(Task<sr<T>> task) {
+        public async Task<IActionResult> Ok<T>(Task<T> task) {
             try {
                 var result = await task;
-                return Ok(result);
-            } catch (Exception e){
-                return BadRequest(e.Message);
+                if (result == null) {
+                    return Ok(sr<T>.Get("Result was null"));
+                } else {
+                    return Ok(sr<T>.GetSuccess(result));
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
             }
         }
-        public async Task<IActionResult> Created2<T>(Task<sr<T>> task, string uri) {
+        public async Task<IActionResult> Created<T>(Task<T> task, string uri) {
             try {
                 var result = await task;
-                return Created($"{uri}{result}", result);
-            } catch (Exception e) {
-                return BadRequest(e.Message);
+                if (result == null) {
+                    return Ok(sr<T>.Get("Result was null"));
+                } else {
+                    return Created($"{uri}{result}", result);
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
             }
         }
+        
     }
 }

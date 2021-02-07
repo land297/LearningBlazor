@@ -11,35 +11,35 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IUserAvatarRepo {
-        Task<sr<int>> SaveInContext(UserAvatar userAvatar);
-        Task<sr<UserAvatar>> GetInContext(int id);
-        Task<sr<UserAvatar>> Get(int id);
-        Task<sr<IList<UserAvatar>>> GetAllInContext();
-        Task<sr<IList<UserAvatar>>> GetAllForUser_NoBlob(User user);
-        Task<sr<UserAvatar>> SetActiveInContext(int id);
-        Task<sr<UserAvatar>> Delete(int id);
-        Task<sr<UserAvatar>> GetActiveInContext();
+        Task<int> SaveInContext(UserAvatar userAvatar);
+        Task<UserAvatar> GetInContext(int id);
+        Task<UserAvatar> Get(int id);
+        Task<IList<UserAvatar>> GetAllInContext();
+        Task<IList<UserAvatar>> GetAllForUser_NoBlob(User user);
+        Task<UserAvatar> SetActiveInContext(int id);
+        Task<UserAvatar> Delete(int id);
+        Task<UserAvatar> GetActiveInContext();
     }
 
-    public class UserAvatarRepo : RepoBase2<UserAvatar>, IUserAvatarRepo, IRepoBase3<UserAvatar> {
+    public class UserAvatarRepo : RepoBase2<UserAvatar>, IUserAvatarRepo {
         private readonly IUserService _userService;
 
         public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {
             _userService = userService;
         }
-        public override Task<sr<int>> Save(object obj) {
+        public override Task<int> Save(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<sr<UserAvatar>> SaveReturnEntity(object obj) {
+        public override Task<UserAvatar> SaveAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<sr<int>> Save(UserAvatar userAvatar) {
+        public override Task<int> Save(UserAvatar userAvatar) {
             return SaveInContext(userAvatar);
         }
 
-        public async Task<sr<int>> SaveInContext(UserAvatar userAvatar) {
+        public async Task<int> SaveInContext(UserAvatar userAvatar) {
             //TODO: how could an "admin" user add userAvatars for another user...
             //      this just assigned current logged in user to the userAvatar
             userAvatar.UserId = _userService.GetUserId();
@@ -64,9 +64,9 @@ namespace Learning.Server.Repositories {
            
             await _dbContext.SaveChangesAsync();
 
-            return sr<int>.GetSuccess(userAvatar.Id);
+            return userAvatar.Id;
         }
-        public async Task<sr<UserAvatar>> Delete(int id) {
+        public async Task<UserAvatar> Delete(int id) {
             //TODO: how could an "admin" user add userAvatars for another user...
             //      this just assigned current logged in user to the userAvatar
                    //update
@@ -87,13 +87,13 @@ namespace Learning.Server.Repositories {
                 _dbContext.UserAvatars.Remove(dbUserAvatar);
                 await _dbContext.SaveChangesAsync();
 
-                return sr<UserAvatar>.GetSuccess(dbUserAvatar);
+               
             }
-            return sr<UserAvatar>.Get(dbUserAvatar);
+            return dbUserAvatar;
 
         }
 
-        public async Task<sr<UserAvatar>> SetActiveInContext(int id) {
+        public async Task<UserAvatar> SetActiveInContext(int id) {
             var userId = _userService.GetUserId();
             var data = await _dbContext.UserAvatars.Where(x => x.UserId == userId).ToListAsync();
             UserAvatar active = null;
@@ -106,32 +106,31 @@ namespace Learning.Server.Repositories {
                 }
             }
             await _dbContext.SaveChangesAsync();
-            return sr<UserAvatar>.GetSuccess(active);
+            return active;
         }
-        public async Task<sr<UserAvatar>> GetActiveInContext() {
+        public async Task<UserAvatar> GetActiveInContext() {
             var userId = _userService.GetUserId();
             var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.IsActive);
-            return sr<UserAvatar>.GetSuccess(data);
+            return data;
         }
-        public async Task<sr<UserAvatar>> GetInContext(int id) {
+        public async Task<UserAvatar> GetInContext(int id) {
             var userId = _userService.GetUserId();
             var data = await _dbContext.UserAvatars.Include(x => x.Blob).SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
 
-            return sr<UserAvatar>.GetSuccess(data);
+            return data;
         }
-        public async Task<sr<IList<UserAvatar>>> GetAllInContext() {
+        public async Task<IList<UserAvatar>> GetAllInContext() {
             var userId = _userService.GetUserId();
             var data = await _dbContext.UserAvatars.Include(x => x.Blob).Where(x => x.UserId == userId).ToListAsync();
-            return sr<IList<UserAvatar>>.GetSuccess(data);
+            return data;
         }
-        public async Task<sr<IList<UserAvatar>>> GetAllForUser_NoBlob(User user) {
+        public async Task<IList<UserAvatar>> GetAllForUser_NoBlob(User user) {
             var data = await _dbContext.UserAvatars.Where(x => x.UserId == user.Id).ToListAsync();
-            return sr<IList<UserAvatar>>.GetSuccess(data);
+            return data;
         }
-        new public async Task<sr<UserAvatar>> Get(int id) {
+        new public async Task<UserAvatar> Get(int id) {
             var data = await  Get(DbSet.Include(x => x.Blob).SingleOrDefaultAsync(x => x.Id == id));
-
-            return sr<UserAvatar>.GetSuccess(data.Data);
+            return data;
         }
 
 

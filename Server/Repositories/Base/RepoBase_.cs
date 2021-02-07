@@ -11,135 +11,87 @@ using System.Threading.Tasks;
 namespace Learning.Server.Repositories.Base {
     public interface IRepoBase3<Tentiy> where Tentiy : IdEntity<Tentiy> {
         DbSet<Tentiy> DbSet { get; }
-        Task<sr<Tentiy>> GetFirst(Expression<Func<Tentiy, bool>> predicate);
-        Task<sr<IList<Tentiy>>> Get(Task<List<Tentiy>> task);
-        Task<sr<Tentiy>> Get(Task<Tentiy> task);
-        Task<sr<Tentiy>> Get(int id);
-        Task<sr<IList<Tentiy>>> GetAll();
-        Task<sr<int>> Save(Tentiy entity);
-        Task<sr<int>> Save(object dto);
-        Task<sr<Tentiy>> SaveReturnEntity(Tentiy entity);
-        Task<sr<Tentiy>> SaveReturnEntity(object dto);
-        Task<sr<Tentiy>> Remove(Task<Tentiy> task);
-        Task<sr<Tentiy>> Remove(Tentiy entity);
-        Task<sr<Tentiy>> Remove(int id);
+        Task<Tentiy> GetFirst(Expression<Func<Tentiy, bool>> predicate);
+        //Task<IList<Tentiy>> Get(Task<List<Tentiy>> task);
+        //Task<Tentiy> Get(Task<Tentiy> task);
+        Task<Tentiy> Get(int id);
+        Task<IList<Tentiy>> GetAll();
+        Task<int> Save(Tentiy entity);
+        Task<int> Save(object dto);
+        Task<Tentiy> SaveAndGetEntity(Tentiy entity);
+        Task<Tentiy> SaveAndGetEntity(object dto);
+        //Task<Tentiy> Remove(Task<Tentiy> task);
+        Task<Tentiy> Remove(Tentiy entity);
+        Task<Tentiy> Remove(int id);
     }
 
-    public abstract class RepoBase2<T> where T : IdEntity<T> {
+    public abstract class RepoBase2<T> : IRepoBase3<T> where T : IdEntity<T> {
         protected readonly AppDbContext _dbContext;
         public DbSet<T> DbSet { get; private set; }
         public RepoBase2(AppDbContext dbContext) {
             _dbContext = dbContext;
             DbSet = _dbContext.Set<T>();
         }
-        public async Task<sr<T>> Remove(Task<T> task) {
-            try {
-                var result = await task;
-                DbSet.Remove(result);
-                await _dbContext.SaveChangesAsync();
-                return sr<T>.GetSuccess(result);
-            } catch (Exception e) {
-                return sr<T>.Get(e);
-            }
+        public async Task<T> Remove(Task<T> task) {
+            var result = await task;
+            DbSet.Remove(result);
+            await _dbContext.SaveChangesAsync();
+            return result;
         }
-        public async Task<sr<T>> Remove(T entity) {
-            try {
-                DbSet.Remove(entity);
-                await _dbContext.SaveChangesAsync();
-                return sr<T>.GetSuccess(entity);
-            } catch (Exception e) {
-                return sr<T>.Get(e);
-            }
+        public async Task<T> Remove(T entity) {
+            DbSet.Remove(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity;
         }
-        public async Task<sr<T>> Remove(int id) {
-            try {
-                var entity = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-                DbSet.Remove(entity);
-                await _dbContext.SaveChangesAsync();
-                return sr<T>.GetSuccess(entity);
-            } catch (Exception e) {
-                return sr<T>.Get(e);
-            }
+        public async Task<T> Remove(int id) {
+            var entity = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            DbSet.Remove(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity;
         }
-        public async Task<sr<T>> Get(Task<T> task) {
-            try {
-                var result = await task;
-                if (result == null) {
-                    return sr<T>.Get("Null");
-                }
-                return sr<T>.GetSuccess(result);
-            } catch (Exception e) {
-                return sr<T>.Get(e);
-            }
+        public async Task<T> Get(Task<T> task) {
+            var result = await task;
+            return result;
         }
-        public async Task<sr<T>> Get(int id) {
-            try {
-                var result = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-                if (result == null) {
-                    return sr<T>.Get("Null");
-                }
-                return sr<T>.GetSuccess(result);
-            } catch (Exception e) {
-                return sr<T>.Get(e);
-            }
+        public async Task<T> Get(int id) {
+            var result = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            return result;
         }
-        public async Task<sr<IList<T>>> Get(Task<List<T>> task) {
-            try {
-                var result = await task;
-                return sr<IList<T>>.GetSuccess(result);
-            } catch (Exception e) {
-                return sr<IList<T>>.Get(e);
-            }
-        }
+        //public async Task<IList<T>> Get(Task<List<T>> task) {
+        //    return await task;
+        //}
 
-        public async Task<sr<T>> GetFirst(Expression<Func<T, bool>> predicate) {
-            try {
-                var result = await DbSet.FirstOrDefaultAsync(predicate);
-                return sr<T>.GetSuccess(result);
-            } catch (Exception e) {
-                return sr<T>.Get(e);
-            }
+        public async Task<T> GetFirst(Expression<Func<T, bool>> predicate) {
+            return await DbSet.FirstOrDefaultAsync(predicate);
         }
-        public async Task<sr<IList<T>>> GetAll() {
-            try {
-                var result = await DbSet.ToListAsync();
-                return sr<IList<T>>.GetSuccess(result);
-            } catch (Exception e) {
-                return sr<IList<T>>.Get(e);
-            }
+        public async Task<IList<T>> GetAll() {
+            return await DbSet.ToListAsync();
         }
-        public abstract Task<sr<int>> Save(object obj);
-        public virtual async Task<sr<int>> Save(T entity) {
-            try {
+        public abstract Task<int> Save(object obj);
+        public virtual async Task<int> Save(T entity) {
+            if (entity.Id != default(int)) {
+                var result = await GetFirst(x => x.Id == entity.Id);
+                result.CopyValues(result, ref entity);
+            } else {
+                await DbSet.AddAsync(entity);
+            }
+            await _dbContext.SaveChangesAsync();
+            return entity.Id;
+        }
+        public abstract Task<T> SaveAndGetEntity(object obj);
+        public virtual async Task<T> SaveAndGetEntity(T entity) {
+            try {   
                 if (entity.Id != default(int)) {
                     var result = await GetFirst(x => x.Id == entity.Id);
-                    if (result.Success) {
-                        result.Data.CopyValues(result.Data, ref entity);
-                    }
+                    result.CopyValues(result, ref entity);
                 } else {
                     await DbSet.AddAsync(entity);
                 }
                 await _dbContext.SaveChangesAsync();
-                return sr<int>.GetSuccess(entity.Id);
-            } catch (Exception e) {
-                return sr<int>.Get(e);
-            }
-        }
-        public abstract Task<sr<T>> SaveReturnEntity(object obj);
-        public virtual async Task<sr<T>> SaveReturnEntity(T entity) {
-            try {
-                if (entity.Id != default(int)) {
-                    var result = await GetFirst(x => x.Id == entity.Id);
-                    if (result.Success) {
-                        result.Data.CopyValues(result.Data, ref entity);
-                    }
-                } else {
-                    await DbSet.AddAsync(entity);
-                }
-                await _dbContext.SaveChangesAsync();
-                return sr<T>.GetSuccess(entity);
-            } catch (Exception e) {
-                return sr<T>.Get(e);
+                return entity;
+            } catch (Exception ex) {
+                // TODO: logger logg ex
+                throw;
             }
         }
         

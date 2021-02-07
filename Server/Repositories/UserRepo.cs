@@ -13,18 +13,18 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IUserRepo {
-        Task<sr<int>> AddUser(UserRegistration user);
-        Task<sr<bool>> UsersExists(User user);
-        Task<sr<User>> Get(int id);
+        Task<int> AddUser(UserRegistration user);
+        Task<bool> UsersExists(User user);
+        Task<User> Get(int id);
         Task<User> GetUser(string email);
-        Task<sr<IList<User>>> GetAll();
+        Task<IList<User>> GetAll();
     }
 
-    public class UserRepo : RepoBase2<User>, IUserRepo,IRepoBase3<User> {
+    public class UserRepo : RepoBase2<User>, IUserRepo {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
      
         }
-        public override Task<sr<int>> Save(object obj) {
+        public override Task<int> Save(object obj) {
             var dto = obj as UserRegistration;
             if (dto != null) {
                 return AddUser(dto);
@@ -32,12 +32,12 @@ namespace Learning.Server.Repositories {
                 return null;
             }
         }
-        public override Task<sr<User>> SaveReturnEntity(object obj) {
+        public override Task<User> SaveAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
-        public async Task<sr<int>> AddUser(UserRegistration userRegistration) {
+        public async Task<int> AddUser(UserRegistration userRegistration) {
             if (await UsersExits(userRegistration.Email)) {
-                return sr<int>.Get("User already exists");
+                throw new Exception("Email already in use");
             }
             CreatePassword.CreatePasswordHash(userRegistration.Password, out byte[] hash, out byte[] salt);
             var dbUser = new User();
@@ -49,8 +49,8 @@ namespace Learning.Server.Repositories {
 
             return  await base.Save(dbUser);
         }
-        public async Task<sr<bool>> UsersExists(User user) {
-            return sr<bool>.Get(await UsersExits(user.Email));
+        public async Task<bool> UsersExists(User user) {
+            return await UsersExits(user.Email);
         }
 
         public Task<bool> UsersExits(string email) {
@@ -61,7 +61,7 @@ namespace Learning.Server.Repositories {
         }
         public async Task<User> GetUser(string email) {
             var response = await GetFirst(x => x.Email.ToLower() == email.ToLower());
-            return response.Data;
+            return response;
         }
     }
 }

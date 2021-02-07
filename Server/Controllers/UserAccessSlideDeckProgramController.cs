@@ -1,4 +1,5 @@
-﻿using Learning.Server.Repositories;
+﻿using Learning.Server.Controllers.Base;
+using Learning.Server.Repositories;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,10 @@ using System.Threading.Tasks;
 namespace Learning.Server.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserAccessSlideDeckProgramController : ControllerBase {
+    public class UserAccessSlideDeckProgramController : ControllerBase2<UserAccessSlideDeckProgram> {
         private readonly IUserAccessSlideDeckProgramRepo _userAccessSlideDeckProgramRepo;
         readonly IUserRepo _userRepo;
-        public UserAccessSlideDeckProgramController(IUserAccessSlideDeckProgramRepo userAccessSlideDeckProgramRepo, IUserRepo userRepo) {
+        public UserAccessSlideDeckProgramController(IUserAccessSlideDeckProgramRepo userAccessSlideDeckProgramRepo, IUserRepo userRepo) : base (userAccessSlideDeckProgramRepo){
             _userAccessSlideDeckProgramRepo = userAccessSlideDeckProgramRepo;
             _userRepo = userRepo;
         }
@@ -23,31 +24,17 @@ namespace Learning.Server.Controllers {
         //public async Task<IActionResult> GetViaUserAvatar([FromBody] UserAvatar ua) {
         public async Task<IActionResult> GetViaUserAvatar(int id) {
             // TODO: need to check if user can get unpublished or not
-            var result = await _userAccessSlideDeckProgramRepo.Get(new UserAvatar() { Id = id });
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            
+            return await Ok(_userAccessSlideDeckProgramRepo.Get(new UserAvatar { Id = id }));
         
         }
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> RemoveAccessWithId(int id) {
-            var result = await _userAccessSlideDeckProgramRepo.RemoveWithId(id);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return NoContent();
-            }
+            return await Ok(RepoBase.Remove(id));
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAccessWithId(int id) {
-            var result = await _userAccessSlideDeckProgramRepo.Get(id);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_userAccessSlideDeckProgramRepo.GetIncluded(id));
         }
         [HttpGet("user")]
         public async Task<IActionResult> GetViaUser(User u) {
@@ -56,23 +43,13 @@ namespace Learning.Server.Controllers {
             if (user == null) {
                 return BadRequest("No user");
             }
-            var result = await _userAccessSlideDeckProgramRepo.Get(user);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_userAccessSlideDeckProgramRepo.Get(user));
         }
         [HttpPost]
         public async Task<IActionResult> Post(UserAccessSlideDeckProgram userAccess) {
             // TODO: need to check if user can get unpublished or not
-            
-            var result = await _userAccessSlideDeckProgramRepo.SaveReturnEntity(userAccess);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+
+            return await Created(_userAccessSlideDeckProgramRepo.SaveAndGetEntity(userAccess),"unkown uri return");
         }
     }
 }

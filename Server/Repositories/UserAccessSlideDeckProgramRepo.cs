@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IUserAccessSlideDeckProgramRepo {
-        Task<sr<IList<UserAccessSlideDeckProgram>>> Get(UserAvatar userAvatar);
-        Task<sr<IList<UserAccessSlideDeckProgram>>> Get(User user);
-        Task<sr<UserAccessSlideDeckProgram>> SaveReturnEntity(UserAccessSlideDeckProgram entity);
-        Task<sr<UserAccessSlideDeckProgram>> RemoveWithId(int id);
-        Task<sr<UserAccessSlideDeckProgram>> Get(int id);
+        Task<IList<UserAccessSlideDeckProgram>> Get(UserAvatar userAvatar);
+        Task<IList<UserAccessSlideDeckProgram>> Get(User user);
+        Task<UserAccessSlideDeckProgram> SaveAndGetEntity(UserAccessSlideDeckProgram entity);
+        Task<UserAccessSlideDeckProgram> RemoveWithId(int id);
+        Task<UserAccessSlideDeckProgram> GetIncluded(int id);
     }
 
     public class UserAccessSlideDeckProgramRepo : RepoBase2<UserAccessSlideDeckProgram>, IUserAccessSlideDeckProgramRepo {
@@ -26,28 +26,28 @@ namespace Learning.Server.Repositories {
             _slideDeckProgramRepo = slideDeckRepo;
         }
 
-        public async Task<sr<IList<UserAccessSlideDeckProgram>>> Get(UserAvatar userAvatar) {
+        public async Task<IList<UserAccessSlideDeckProgram>> Get(UserAvatar userAvatar) {
             //TODO: not include the image-attribute
-            var programs = await Get(DbSet.Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).Where(x => x.UserAvatarId == userAvatar.Id).ToListAsync());
+            var programs = await DbSet.Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).Where(x => x.UserAvatarId == userAvatar.Id).ToListAsync();
 
 
             return programs;
         }
-        public async Task<sr<IList<UserAccessSlideDeckProgram>>> Get(User user) {
-            return await Get(DbSet.Include(x => x.SlideDeckProgram).Where(x => x.UserId == user.Id).ToListAsync());
+        public async Task<IList<UserAccessSlideDeckProgram>> Get(User user) {
+            return await DbSet.Include(x => x.SlideDeckProgram).Where(x => x.UserId == user.Id).ToListAsync();
         }
-        new public async Task<sr<UserAccessSlideDeckProgram>> Get(int id) {
-            return await Get(DbSet.Include(x => x.SlideDeckProgram).FirstOrDefaultAsync(x => x.Id == id));
+        public async Task<UserAccessSlideDeckProgram> GetIncluded(int id) {
+            return await DbSet.Include(x => x.SlideDeckProgram).FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<sr<UserAccessSlideDeckProgram>> RemoveWithId(int id) {
+        public async Task<UserAccessSlideDeckProgram> RemoveWithId(int id) {
             return await Remove(DbSet.FirstOrDefaultAsync(x => x.Id == id));
         }
 
-        public override Task<sr<int>> Save(object obj) {
+        public override Task<int> Save(object obj) {
             throw new NotImplementedException();
         }
 
-        public override async Task<sr<UserAccessSlideDeckProgram>> SaveReturnEntity(UserAccessSlideDeckProgram ua) {
+        public override async Task<UserAccessSlideDeckProgram> SaveAndGetEntity(UserAccessSlideDeckProgram ua) {
             if (ua.UserAvatar != null) {
                 ua.UserAvatarId = ua.UserAvatar.Id;
                 ua.UserAvatar = null;
@@ -60,22 +60,21 @@ namespace Learning.Server.Repositories {
                 ua.UserId = ua.User.Id;
                 ua.User = null;
             }
-            var sr = await base.SaveReturnEntity(ua);
-            if (sr.Success) {
+            var sr = await base.SaveAndGetEntity(ua);
+            if (sr != null) {
                 var sr2 = await _slideDeckProgramRepo.GetFirst(ua.SlideDeckProgramId);
                 if (sr2.Success) {
-                    sr.Data.SlideDeckProgram = sr2.Data;
+                    sr.SlideDeckProgram = sr2.Data;
                     
                 } else {
-                    await base.Remove(sr.Data);
-                    sr.Success = false;
-                    sr.Message = $"SlideDeckProgram with Id {ua.SlideDeckProgramId} doesn't exist";
+                    await base.Remove(sr);
+                    throw new Exception($"SlideDeckProgram with Id {ua.SlideDeckProgramId} doesn't exist");
                 }
             }
             return sr;
         }
 
-        public override Task<sr<UserAccessSlideDeckProgram>> SaveReturnEntity(object obj) {
+        public override Task<UserAccessSlideDeckProgram> SaveAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
     }
