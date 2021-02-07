@@ -15,7 +15,7 @@ namespace Learning.Server.Repositories.Base {
         //Task<IList<Tentiy>> Get(Task<List<Tentiy>> task);
         //Task<Tentiy> Get(Task<Tentiy> task);
         Task<Tentiy> Get(int id);
-        Task<IList<Tentiy>> GetAll();
+        Task<List<Tentiy>> GetAll();
         Task<int> Save(Tentiy entity);
         Task<int> Save(object dto);
         Task<Tentiy> SaveAndGetEntity(Tentiy entity);
@@ -53,19 +53,18 @@ namespace Learning.Server.Repositories.Base {
         //    var result = await task;
         //    return result;
         //}
-        public async Task<T> Get(int id) {
-            var result = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return result;
+        public Task<T> Get(int id) {
+            return DbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
         //public async Task<IList<T>> Get(Task<List<T>> task) {
         //    return await task;
         //}
 
-        public async Task<T> GetFirst(Expression<Func<T, bool>> predicate) {
-            return await DbSet.FirstOrDefaultAsync(predicate);
+        public Task<T> GetFirst(Expression<Func<T, bool>> predicate) {
+            return DbSet.FirstOrDefaultAsync(predicate);
         }
-        public async Task<IList<T>> GetAll() {
-            return await DbSet.ToListAsync();
+        public Task<List<T>> GetAll() {
+            return DbSet.ToListAsync();
         }
         public abstract Task<int> Save(object obj);
         public virtual async Task<int> Save(T entity) {

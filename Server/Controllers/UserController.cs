@@ -33,7 +33,7 @@ namespace Learning.Server.Controllers {
         [Authorize(Roles = "Admin")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            return await Ok<IList<User>>(RepoBase.GetAll());
+            return await Ok<List<User>>(RepoBase.GetAll());
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{id:int}")]

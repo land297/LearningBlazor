@@ -17,7 +17,7 @@ namespace Learning.Server.Repositories {
         Task<bool> UsersExists(User user);
         Task<User> Get(int id);
         Task<User> GetUser(string email);
-        Task<IList<User>> GetAll();
+        Task<List<User>> GetAll();
     }
 
     public class UserRepo : RepoBase2<User>, IUserRepo {
