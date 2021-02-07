@@ -7,8 +7,8 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Learning.Shared.DbModels {
-    public class CompletedSlideDeckProgram {
-        public int Id { get; set; }
+    public class CompletedSlideDeckProgram : IdEntity<CompletedSlideDeckProgram> {
+        //public int Id { get; set; }
         [Required]
         public int UserAvatarId { get; set; }
   
@@ -21,5 +21,9 @@ namespace Learning.Shared.DbModels {
         public int UserAvatarFeedback { get; set; }
         public bool IsPublic { get; set; }
         public DateTime CompletedOn { get; set; }
+
+        public override void CopyValues(CompletedSlideDeckProgram source, ref CompletedSlideDeckProgram copy) {
+            throw new NotImplementedException();
+        }
     }
 }

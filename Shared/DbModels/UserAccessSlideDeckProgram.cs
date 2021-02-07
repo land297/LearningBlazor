@@ -5,10 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Shared.DbModels {
-    public abstract class IdEntity<T> {
-        public int Id { get; set; }
-        public abstract void CopyValues(T source, ref T copy);
-    }
+
     public class UserAccessSlideDeckProgram : IdEntity<UserAccessSlideDeckProgram> {
         //public int Id { get; set; }
         public int SlideDeckProgramId { get; set; }

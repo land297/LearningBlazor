@@ -30,5 +30,21 @@ namespace Learning.Server.Controllers.Base {
                 return Created($"{uri}{result.Data}", result.Data);
             }
         }
+        public async Task<IActionResult> Ok2<T>(Task<sr<T>> task) {
+            try {
+                var result = await task;
+                return Ok(result);
+            } catch (Exception e){
+                return BadRequest(e.Message);
+            }
+        }
+        public async Task<IActionResult> Created2<T>(Task<sr<T>> task, string uri) {
+            try {
+                var result = await task;
+                return Created($"{uri}{result}", result);
+            } catch (Exception e) {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

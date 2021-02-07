@@ -1,4 +1,5 @@
 ﻿using Learning.Server.DbContext;
+using Learning.Server.Repositories.Base;
 using Learning.Server.Service;
 using Learning.Shared;
 using Learning.Shared.DbModels;
@@ -16,11 +17,13 @@ namespace Learning.Server.Repositories {
         Task<sr<CompletedSlideDeckProgram>> GetShared(int id);
     }
 
-    public class CompletedSlideDeckProgramRepo : ICompletedSlideDeckProgramRepo {
-        private readonly AppDbContext _dbContext;
+    public class CompletedSlideDeckProgramRepo : RepoBase2<CompletedSlideDeckProgram>, 
+        ICompletedSlideDeckProgramRepo,
+        IRepoBase3<CompletedSlideDeckProgram>{
+        //private readonly AppDbContext _dbContext;
         readonly IUserService _userService;
-        public CompletedSlideDeckProgramRepo(AppDbContext dbContext, IUserService userService) {
-            _dbContext = dbContext;
+        public CompletedSlideDeckProgramRepo(AppDbContext dbContext, IUserService userService) : base(dbContext){
+            //_dbContext = dbContext;
             _userService = userService;
         }
         public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
@@ -44,11 +47,6 @@ namespace Learning.Server.Repositories {
             }
             return response;
         }
-        public async Task<sr<IList<CompletedSlideDeckProgram>>> GetAll() {
-            var userId = _userService.GetUserId();
-            var data = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.UserAvatar.UserId == userId).ToListAsync();
-            return sr<IList<CompletedSlideDeckProgram>>.GetSuccess(data);
-        }
         public async Task<sr<IList<CompletedSlideDeckProgram>>> GetAllForUserAvatar(int id) {
             var userId = _userService.GetUserId();
             var data = await _dbContext.CompletedSlideDeckPrograms.Include(x => x.SlideDeckProgram).Where(x => x.UserAvatar.UserId == userId && x.UserAvatar.Id == id).ToListAsync();
@@ -62,6 +60,14 @@ namespace Learning.Server.Repositories {
             } else {
                 return sr<CompletedSlideDeckProgram>.Get("Not found");
             }
+        }
+
+        public override Task<sr<int>> Save(object obj) {
+            throw new NotImplementedException();
+        }
+
+        public override Task<sr<CompletedSlideDeckProgram>> SaveReturnEntity(object obj) {
+            throw new NotImplementedException();
         }
     }
 }
