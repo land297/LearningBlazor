@@ -1,4 +1,5 @@
-﻿using Learning.Server.Repositories;
+﻿using Learning.Server.Controllers.Base;
+using Learning.Server.Repositories;
 using Learning.Shared;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
@@ -11,10 +12,10 @@ using System.Threading.Tasks;
 namespace Learning.Server.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class SlideDeckProgramController : ControllerBase {
+    public class SlideDeckProgramController : ControllerBase2<SlideDeckProgram> {
         private readonly ISlideDeckProgramRepo _slideDeckProgramRepo;
         //private readonly IGetter<SlideDeckProgram> _getter;
-        public SlideDeckProgramController(ISlideDeckProgramRepo slideDeckProgramRepo) {
+        public SlideDeckProgramController(ISlideDeckProgramRepo slideDeckProgramRepo) :base (slideDeckProgramRepo){
             _slideDeckProgramRepo = slideDeckProgramRepo;
             //_getter = _slideDeckProgramRepo as IGetter<SlideDeckProgram>;
         }

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using static Learning.Shared.Models.Enums;
 
 namespace Learning.Shared.DbModels {
-    public class SlideDeckProgram {
-        public int Id { get; set; }
+    public class SlideDeckProgram : IdEntity<SlideDeckProgram>{
+        //public int Id { get; set; }
         [Required]
         public int AuthorId { get; set; }
         public User Author { get; set; }
@@ -30,5 +30,8 @@ namespace Learning.Shared.DbModels {
         public AccessLevel AccessLevel { get; set; }
         public IList<SlideDeckProgramEntry> Entries { get; set; } = new List<SlideDeckProgramEntry>();
 
+        public override void CopyValues(SlideDeckProgram source, ref SlideDeckProgram copy) {
+            throw new NotImplementedException();
+        }
     }
 }
