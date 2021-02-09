@@ -59,9 +59,9 @@ namespace Learning.Server.Repositories {
             }
             var sr = await base.SaveAndGetEntity(ua);
             if (sr != null) {
-                var sr2 = await _slideDeckProgramRepo.GetFirst(ua.SlideDeckProgramId);
-                if (sr2.Success) {
-                    sr.SlideDeckProgram = sr2.Data;
+                var slideDeckProgram = await _slideDeckProgramRepo.GetFirst(ua.SlideDeckProgramId);
+                if (slideDeckProgram != null) {
+                    sr.SlideDeckProgram = slideDeckProgram;
                     
                 } else {
                     await base.Remove(sr);

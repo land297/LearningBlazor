@@ -18,10 +18,7 @@ namespace Learning.Server.Repositories {
         Task<SlideDeckProgram> GetFirst(string slug);
     }
     public class SlideDeckProgramRepo : RepoBase2<SlideDeckProgram>, ISlideDeckProgramRepo/*, IGetter<SlideDeckProgram>*/ {
-        //private readonly AppDbContext _dbContext;
-
         public SlideDeckProgramRepo(AppDbContext dbContext) : base(dbContext){
-            //_dbContext = dbContext;
         }
         public override async Task<int> Save(SlideDeckProgram slideDeckProgram) {
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
@@ -45,7 +42,6 @@ namespace Learning.Server.Repositories {
                return Save(program);
             }
             return null;
-
         }
 
         public override Task<SlideDeckProgram> SaveAndGetEntity(object obj) {
@@ -59,11 +55,9 @@ namespace Learning.Server.Repositories {
         }
         private async Task<List<SlideDeckProgram>> Get(bool getUnpublished, System.Linq.Expressions.Expression<Func<SlideDeckProgram, bool>> where) {
                 if (getUnpublished) {
-                    // TODO: same as below, returns wrong type..
-                    //var list = await _dbContext.SlideDeckPrograms.Where(where).Include(x => x.Entries).ToListAsync();
                     return await _dbContext.SlideDeckPrograms.Where(where).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
                 } else {
-                   return await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
+                    return await _dbContext.SlideDeckPrograms.Where(x => x.Published != DateTime.MinValue && !x.IsDeleted).Include(x => x.Entries).ThenInclude(x => x.SlideDeck).ThenInclude(x => x.Slides).ToListAsync();
                 }
         }
         public async Task<SlideDeckProgram> GetFirst(int id) {

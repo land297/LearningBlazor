@@ -26,7 +26,7 @@ namespace Learning.Server.Controllers {
         
         [HttpPost]
         public async Task<IActionResult> Post(UserAvatar userAvatar) {
-            return await Created(_userAvatarRepo.SaveInContext(userAvatar),"TODO: some uri that I will return");
+            return await CreatedObject(_userAvatarRepo.SaveInContext(userAvatar),"TODO: some uri that I will return");
         }
 
         [HttpPut("setactive/{id}")]

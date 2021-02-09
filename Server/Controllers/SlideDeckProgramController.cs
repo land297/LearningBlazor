@@ -2,6 +2,7 @@
 using Learning.Server.Repositories;
 using Learning.Shared;
 using Learning.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Controllers {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SlideDeckProgramController : ControllerBase2<SlideDeckProgram> {
@@ -19,33 +21,19 @@ namespace Learning.Server.Controllers {
             _slideDeckProgramRepo = slideDeckProgramRepo;
             //_getter = _slideDeckProgramRepo as IGetter<SlideDeckProgram>;
         }
+        [Authorize(Roles = "Admin,ContentCreator")]
         [HttpPost]
         public async Task<IActionResult> Save(SlideDeckProgram slideDeckProgram) {
             //TODO: check if user is authorized
-            var result = await _slideDeckProgramRepo.Save(slideDeckProgram);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Created($"api/SlideDeckProgram/{slideDeckProgram.Id}", slideDeckProgram);
-            }
+            return await CreatedIntUri(_slideDeckProgramRepo.Save(slideDeckProgram),$"api/SlideDeckProgram/",slideDeckProgram);
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsUser() {
-            var result = await _slideDeckProgramRepo.GetAllAsUser();
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_slideDeckProgramRepo.GetAllAsUser());
         }
         [HttpGet("contentcreator")]
         public async Task<IActionResult> GetAllAsContentCreator() {
-            var result = await _slideDeckProgramRepo.GetAllAsContentCreator();
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_slideDeckProgramRepo.GetAllAsContentCreator());
         }
         //TODO: refactor get methods
         [HttpGet("{id:int}")]
@@ -58,14 +46,8 @@ namespace Learning.Server.Controllers {
             // TODO: need to check if user can get unpublished or not
             return await Get<SlideDeckProgram>(_slideDeckProgramRepo.GetFirst(slug));
         }
-        public async Task<IActionResult> Get<T>(Task<sr<T>> taskToGetFirst) {
-            // TODO: need to check if user can get unpublished or not
-            var result = await taskToGetFirst;
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+        public async Task<IActionResult> Get<T>(Task<T> taskToGetFirst) {
+            return await Ok<T>(taskToGetFirst);
         }
     }
 }

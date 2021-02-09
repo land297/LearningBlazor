@@ -49,7 +49,7 @@ namespace Learning.Server.Controllers {
         public async Task<IActionResult> Post(UserAccessSlideDeckProgram userAccess) {
             // TODO: need to check if user can get unpublished or not
 
-            return await Created(_userAccessSlideDeckProgramRepo.SaveAndGetEntity(userAccess),"unkown uri return");
+            return await CreatedObject(_userAccessSlideDeckProgramRepo.SaveAndGetEntity(userAccess),"unkown uri return");
         }
     }
 }

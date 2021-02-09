@@ -27,7 +27,7 @@ namespace Learning.Server.Controllers {
         }
         [HttpPost("add")]
         public async Task<IActionResult> UserRegistration(UserRegistration userRegistration) {
-            return await Created(RepoBase.Save(userRegistration), "api/user/");
+            return await CreatedObject(RepoBase.Save(userRegistration), "api/user/");
   
         }
         [Authorize(Roles = "Admin")]

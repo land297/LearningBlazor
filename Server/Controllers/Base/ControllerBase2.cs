@@ -37,7 +37,8 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
-        public async Task<IActionResult> Created<T>(Task<T> task, string uri) {
+        public async Task<IActionResult> CreatedObject<T>(Task<T> task, string uri) {
+            //TODO: this method return shit..
             try {
                 var result = await task;
                 if (result == null) {
@@ -49,6 +50,18 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
-        
+        public async Task<IActionResult> CreatedIntUri<T>(Task<T> task, string uri, object obj) {
+            try {
+                var id = await task;
+                if (id == null) {
+                    return NotFound();
+                } else {
+                    return Created($"{uri}/{id}",obj);
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }
