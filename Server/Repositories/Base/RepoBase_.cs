@@ -16,10 +16,10 @@ namespace Learning.Server.Repositories.Base {
         //Task<Tentiy> Get(Task<Tentiy> task);
         Task<Tentiy> Get(int id);
         Task<List<Tentiy>> GetAll();
-        Task<int> Save(Tentiy entity);
-        Task<int> Save(object dto);
+        Task<int> SaveAndGetId(Tentiy entity);
+        Task<int> SaveAndDtoGetId(object dto);
         Task<Tentiy> SaveAndGetEntity(Tentiy entity);
-        Task<Tentiy> SaveAndGetEntity(object dto);
+        Task<Tentiy> SaveDtoAndGetEntity(object dto);
         //Task<Tentiy> Remove(Task<Tentiy> task);
         Task<Tentiy> Remove(Tentiy entity);
         Task<Tentiy> Remove(int id);
@@ -53,7 +53,7 @@ namespace Learning.Server.Repositories.Base {
         //    var result = await task;
         //    return result;
         //}
-        public Task<T> Get(int id) {
+        public virtual Task<T> Get(int id) {
             return DbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
         //public async Task<IList<T>> Get(Task<List<T>> task) {
@@ -66,8 +66,11 @@ namespace Learning.Server.Repositories.Base {
         public Task<List<T>> GetAll() {
             return DbSet.ToListAsync();
         }
-        public abstract Task<int> Save(object obj);
-        public virtual async Task<int> Save(T entity) {
+        public virtual Task<int> SaveDtoAndGetId(object obj, Func<object,T> transformDtoToEntity) {
+            var entity = transformDtoToEntity(obj);
+            return SaveAndGetId(entity);
+        }
+        public virtual async Task<int> SaveAndGetId(T entity) {
             if (entity.Id != default(int)) {
                 var result = await GetFirst(x => x.Id == entity.Id);
                 result.CopyValues(result, ref entity);
@@ -77,7 +80,7 @@ namespace Learning.Server.Repositories.Base {
             await _dbContext.SaveChangesAsync();
             return entity.Id;
         }
-        public abstract Task<T> SaveAndGetEntity(object obj);
+        public abstract Task<T> SaveDtoAndGetEntity(object obj);
         public virtual async Task<T> SaveAndGetEntity(T entity) {
             try {   
                 if (entity.Id != default(int)) {
@@ -89,7 +92,7 @@ namespace Learning.Server.Repositories.Base {
                 await _dbContext.SaveChangesAsync();
                 return entity;
             } catch (Exception ex) {
-                // TODO: logger logg ex
+                // TODO: logger logg ex ?
                 throw;
             }
         }

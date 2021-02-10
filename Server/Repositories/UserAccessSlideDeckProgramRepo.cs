@@ -40,7 +40,7 @@ namespace Learning.Server.Repositories {
             return Remove(DbSet.FirstOrDefaultAsync(x => x.Id == id));
         }
 
-        public override Task<int> Save(object obj) {
+        public override Task<int> SaveAndDtoGetId(object obj) {
             throw new NotImplementedException();
         }
 
@@ -71,7 +71,7 @@ namespace Learning.Server.Repositories {
             return sr;
         }
 
-        public override Task<UserAccessSlideDeckProgram> SaveAndGetEntity(object obj) {
+        public override Task<UserAccessSlideDeckProgram> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
     }

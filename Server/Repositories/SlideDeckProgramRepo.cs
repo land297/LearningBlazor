@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface ISlideDeckProgramRepo {
-        Task<int> Save(SlideDeckProgram slideDeckProgram);
+        Task<int> SaveAndGetId(SlideDeckProgram slideDeckProgram);
         Task<List<SlideDeckProgram>> GetAllAsContentCreator();
         Task<List<SlideDeckProgram>> GetAllAsUser();
         Task<SlideDeckProgram> GetFirst(int id);
@@ -20,7 +20,7 @@ namespace Learning.Server.Repositories {
     public class SlideDeckProgramRepo : RepoBase2<SlideDeckProgram>, ISlideDeckProgramRepo/*, IGetter<SlideDeckProgram>*/ {
         public SlideDeckProgramRepo(AppDbContext dbContext) : base(dbContext){
         }
-        public override async Task<int> Save(SlideDeckProgram slideDeckProgram) {
+        public override async Task<int> SaveAndGetId(SlideDeckProgram slideDeckProgram) {
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
             foreach (var entry in slideDeckProgram.Entries) {
                 entry.SlideDeck = null;
@@ -36,15 +36,15 @@ namespace Learning.Server.Repositories {
        
             return slideDeckProgram.Id;
         }
-        public override Task<int> Save(object obj) { 
+        public override Task<int> SaveAndDtoGetId(object obj) { 
             var program = obj as SlideDeckProgram;
             if (program != null) {
-               return Save(program);
+               return SaveAndGetId(program);
             }
             return null;
         }
 
-        public override Task<SlideDeckProgram> SaveAndGetEntity(object obj) {
+        public override Task<SlideDeckProgram> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
         public async Task<List<SlideDeckProgram>> GetAllAsUser() {

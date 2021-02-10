@@ -25,7 +25,7 @@ namespace Learning.Server.Controllers {
         [HttpPost]
         public async Task<IActionResult> Save(SlideDeckProgram slideDeckProgram) {
             //TODO: check if user is authorized
-            return await CreatedIntUri(_slideDeckProgramRepo.Save(slideDeckProgram),$"api/SlideDeckProgram/",slideDeckProgram);
+            return await CreatedIntUri(_slideDeckProgramRepo.SaveAndGetId(slideDeckProgram),$"api/SlideDeckProgram/",slideDeckProgram);
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsUser() {

@@ -27,15 +27,15 @@ namespace Learning.Server.Repositories {
         public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {
             _userService = userService;
         }
-        public override Task<int> Save(object obj) {
+        public override Task<int> SaveAndDtoGetId(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<UserAvatar> SaveAndGetEntity(object obj) {
+        public override Task<UserAvatar> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<int> Save(UserAvatar userAvatar) {
+        public override Task<int> SaveAndGetId(UserAvatar userAvatar) {
             return SaveInContext(userAvatar);
         }
 

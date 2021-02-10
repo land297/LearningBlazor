@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using static Learning.Shared.Models.Enums;
 
 namespace Learning.Shared.DbModels {
-    public class SlideDeck {
-        public int Id { get; set; }
+    public class SlideDeck : IdEntity<SlideDeck>{
+        
         public int AuthorId { get; set; }
         public User Author { get; set; }
         [RegularExpression("^[a-z0-9-]+$", ErrorMessage = "Slug format not valid.")]
@@ -28,6 +28,10 @@ namespace Learning.Shared.DbModels {
         public bool Featured { get; set; }
         public AccessLevel AccessLevel { get; set; }
         public IList<Slide> Slides { get; set; } = new List<Slide>();
+
+        public override void CopyValues(SlideDeck source, ref SlideDeck copy) {
+            throw new NotImplementedException();
+        }
     }
     public class SlideDeckDTO {
         public int AuthorId { get; set; }

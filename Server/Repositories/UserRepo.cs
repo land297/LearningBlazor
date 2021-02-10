@@ -24,7 +24,7 @@ namespace Learning.Server.Repositories {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
      
         }
-        public override Task<int> Save(object obj) {
+        public override Task<int> SaveAndDtoGetId(object obj) {
             var dto = obj as UserRegistration;
             if (dto != null) {
                 return AddUser(dto);
@@ -32,7 +32,7 @@ namespace Learning.Server.Repositories {
                 return null;
             }
         }
-        public override Task<User> SaveAndGetEntity(object obj) {
+        public override Task<User> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
         public async Task<int> AddUser(UserRegistration userRegistration) {
@@ -47,7 +47,7 @@ namespace Learning.Server.Repositories {
             dbUser.Bio = userRegistration.Bio;
             dbUser.Username = userRegistration.FirstName;
 
-            return  await base.Save(dbUser);
+            return  await base.SaveAndGetId(dbUser);
         }
         public async Task<bool> UsersExists(User user) {
             return await UsersExits(user.Email);

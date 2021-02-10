@@ -1,5 +1,7 @@
-﻿using Learning.Server.Repositories;
+﻿using Learning.Server.Controllers.Base;
+using Learning.Server.Repositories;
 using Learning.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,77 +10,43 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Controllers {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class SlideDeckController : ControllerBase {
+    public class SlideDeckController : ControllerBase2<SlideDeck> {
         private readonly ISlideDeckRepo _slideDeckRepo;
 
-        public SlideDeckController(ISlideDeckRepo slideDeckRepo) {
+        public SlideDeckController(ISlideDeckRepo slideDeckRepo) : base (slideDeckRepo){
             _slideDeckRepo = slideDeckRepo;
         }
+        [Authorize(Roles = "Admin,ContentCreator")]
         [HttpPost]
         public async Task<IActionResult> Post(SlideDeck slideDeck) {
             //TODO: check if user is authorized
-            var result = await _slideDeckRepo.Save(slideDeck);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Created("uri purri prutt",slideDeck);
-            }
+            return await CreatedIntUri(_slideDeckRepo.SaveAndGetId(slideDeck),"api/SlideDeck/",slideDeck);
+            
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsUser() {
-            var result = await _slideDeckRepo.GetAllAsUser();
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_slideDeckRepo.GetAllAsUser());
         }
         [HttpGet("contentcreator")]
         public async Task<IActionResult> GetAllAsContentCreator() {
-            var result = await _slideDeckRepo.GetAllAsContentCreator();
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_slideDeckRepo.GetAllAsContentCreator());
         }
 
-        //TODO: refactor get methods
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
             // TODO: need to check if user can get unpublished or not
-            var result = await _slideDeckRepo.Get(id);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            
+            return await Ok(_slideDeckRepo.Get(id));
         }
         [HttpGet("{slug}")]
         public async Task<IActionResult> Get(string slug) {
             // TODO: need to check if user can get unpublished or not
-            var result = await _slideDeckRepo.Get(slug);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+
+            return await Ok(_slideDeckRepo.Get(slug));
         }
-        //private async Task<IActionResult> Get(int id, string slug) {
-        //    // TODO: need to check if user can get unpublished or not
-            
-        //    //if (id != default(int)) {
-        //    //    var result = await _slideDeckRepo.Get(id);
-        //    //} else {
-        //    //    var result = await _slideDeckRepo.Get(slug);
-        //    //}
-        //    //if (!result.Success) {
-        //    //    return BadRequest(result.Message);
-        //    //} else {
-        //    //    return Ok(result.Data);
-        //    //}
-        //}
+
     }
 }
