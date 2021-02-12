@@ -78,6 +78,19 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
+        [NonAction]
+        public async Task<IActionResult> CreatedIntUri3<T>(Task<T> task, Func<T, string> uri) {
+            try {
+                var entity = await task;
+                if (entity.Equals(default(T))) {
+                    return NotFound();
+                } else {
+                    return Created($"{uri(entity)}", entity);
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 }

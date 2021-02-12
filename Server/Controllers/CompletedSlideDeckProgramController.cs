@@ -1,4 +1,5 @@
-﻿using Learning.Server.Repositories;
+﻿using Learning.Server.Controllers.Base;
+using Learning.Server.Repositories;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,47 +11,29 @@ using System.Threading.Tasks;
 namespace Learning.Server.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class CompletedSlideDeckProgramController : ControllerBase {
+    public class CompletedSlideDeckProgramController : ControllerBase2<CompletedSlideDeckProgram> {
         private readonly ICompletedSlideDeckProgramRepo _completedProgramRepo;
 
-        public CompletedSlideDeckProgramController(ICompletedSlideDeckProgramRepo completedProgramRepo) {
+        public CompletedSlideDeckProgramController(ICompletedSlideDeckProgramRepo completedProgramRepo) : base (completedProgramRepo) {
             _completedProgramRepo = completedProgramRepo;
         }
         [HttpPost]
         public async Task<IActionResult> Post(CompletedSlideDeckProgram completedProgram) {
-            var result = await _completedProgramRepo.Save(completedProgram);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Created($"api/user/{result.Data}", result.Data);
-            }
+            return await CreatedIntUri3(_completedProgramRepo.Save(completedProgram),
+                (entity) => { return $"api/user/{entity.Id}"; });
         }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            var result = await _completedProgramRepo.GetAll();
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_completedProgramRepo.GetAll());
+            
         }
         [HttpGet("all/{id}")]
         public async Task<IActionResult> GetAll(int id) {
-            var result = await _completedProgramRepo.GetAllForUserAvatar(id);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_completedProgramRepo.GetAllForUserAvatar(id));
         }
         [HttpGet("shared/{id}")]
         public async Task<IActionResult> GetShared(int id) {
-            var result = await _completedProgramRepo.GetShared(id);
-            if (!result.Success) {
-                return BadRequest(result.Message);
-            } else {
-                return Ok(result.Data);
-            }
+            return await Ok(_completedProgramRepo.GetShared(id));
         }
     }
 }

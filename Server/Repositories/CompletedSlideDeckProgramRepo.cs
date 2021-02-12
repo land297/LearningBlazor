@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface ICompletedSlideDeckProgramRepo {
-        Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram);
-        Task<sr<IList<CompletedSlideDeckProgram>>> GetAll();
-        Task<sr<IList<CompletedSlideDeckProgram>>> GetAllForUserAvatar(int id);
-        Task<sr<CompletedSlideDeckProgram>> GetShared(int id);
+        Task<CompletedSlideDeckProgram> Save(CompletedSlideDeckProgram completedProgram);
+        Task<IList<CompletedSlideDeckProgram>> GetAll();
+        Task<IList<CompletedSlideDeckProgram>> GetAllForUserAvatar(int id);
+        Task<CompletedSlideDeckProgram> GetShared(int id);
     }
 
     public class CompletedSlideDeckProgramRepo : RepoBase2<CompletedSlideDeckProgram>, 
@@ -26,40 +26,29 @@ namespace Learning.Server.Repositories {
             //_dbContext = dbContext;
             _userService = userService;
         }
-        public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
-            var response = sr<CompletedSlideDeckProgram>.Get();
+        public async Task<CompletedSlideDeckProgram> Save(CompletedSlideDeckProgram completedProgram) {
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
             completedProgram.SlideDeckProgram = null;
             completedProgram.UserAvatar = null;
 
-            try {
-                if (completedProgram.Id != default(int)) {
-                    var slideDeckProgramInDb = await _dbContext.CompletedSlideDeckPrograms.FirstOrDefaultAsync(x => x.Id == completedProgram.Id);
-                    //TODO implement update
-                    //slideDeckProgramInDb.CopyValues(completedProgram);
-                } else {
-                    await _dbContext.CompletedSlideDeckPrograms.AddAsync(completedProgram);
-                }
-                await _dbContext.SaveChangesAsync();
-                response.SetSuccess(completedProgram);
-            } catch (Exception e) {
-                response.Message = e.Message;
-            }
-            return response;
-        }
-        public async Task<sr<IList<CompletedSlideDeckProgram>>> GetAllForUserAvatar(int id) {
-            var userId = _userService.GetUserId();
-            var data = await _dbContext.CompletedSlideDeckPrograms.Include(x => x.SlideDeckProgram).Where(x => x.UserAvatar.UserId == userId && x.UserAvatar.Id == id).ToListAsync();
-            return sr<IList<CompletedSlideDeckProgram>>.GetSuccess(data);
-        }
-        public async Task<sr<CompletedSlideDeckProgram>> GetShared(int id) {
-            var userId = _userService.GetUserId();
-            var data = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).SingleOrDefaultAsync();
-            if (data != null) {
-                return sr<CompletedSlideDeckProgram>.GetSuccess(data);
+            if (completedProgram.Id != default(int)) {
+                var slideDeckProgramInDb = await _dbContext.CompletedSlideDeckPrograms.FirstOrDefaultAsync(x => x.Id == completedProgram.Id);
+                //TODO implement update
+                //slideDeckProgramInDb.CopyValues(completedProgram);
             } else {
-                return sr<CompletedSlideDeckProgram>.Get("Not found");
+                await _dbContext.CompletedSlideDeckPrograms.AddAsync(completedProgram);
             }
+            await _dbContext.SaveChangesAsync();
+            return completedProgram;
+            
+        }
+        public async Task<IList<CompletedSlideDeckProgram>> GetAllForUserAvatar(int id) {
+            var userId = _userService.GetUserId();
+            return await _dbContext.CompletedSlideDeckPrograms.Include(x => x.SlideDeckProgram).Where(x => x.UserAvatar.UserId == userId && x.UserAvatar.Id == id).ToListAsync();
+        }
+        public async Task<CompletedSlideDeckProgram> GetShared(int id) {
+            var userId = _userService.GetUserId();
+            return await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).SingleOrDefaultAsync();
         }
 
         //public override Task<int> SaveDtoAndGetId(object obj) {
@@ -70,7 +59,7 @@ namespace Learning.Server.Repositories {
             throw new NotImplementedException();
         }
 
-        Task<sr<IList<CompletedSlideDeckProgram>>> ICompletedSlideDeckProgramRepo.GetAll() {
+        Task<IList<CompletedSlideDeckProgram>> ICompletedSlideDeckProgramRepo.GetAll() {
             throw new NotImplementedException();
         }
     }
