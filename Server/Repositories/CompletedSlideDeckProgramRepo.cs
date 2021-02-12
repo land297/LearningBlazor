@@ -26,7 +26,7 @@ namespace Learning.Server.Repositories {
             //_dbContext = dbContext;
             _userService = userService;
         }
-        new public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
+        public async Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram) {
             var response = sr<CompletedSlideDeckProgram>.Get();
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
             completedProgram.SlideDeckProgram = null;
