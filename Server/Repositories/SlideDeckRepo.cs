@@ -23,7 +23,7 @@ namespace Learning.Server.Repositories {
 
         public SlideDeckRepo(AppDbContext dbContext) : base (dbContext){
         }
-        public override Task<int> SaveAndDtoGetId(object obj) {
+        public override Task<int> SaveDtoAndGetId(object obj) {
             throw new NotImplementedException();
         }
 

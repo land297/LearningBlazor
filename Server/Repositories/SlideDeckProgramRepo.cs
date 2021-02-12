@@ -36,7 +36,7 @@ namespace Learning.Server.Repositories {
        
             return slideDeckProgram.Id;
         }
-        public override Task<int> SaveAndDtoGetId(object obj) { 
+        public override Task<int> SaveDtoAndGetId(object obj) { 
             var program = obj as SlideDeckProgram;
             if (program != null) {
                return SaveAndGetId(program);

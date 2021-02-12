@@ -25,6 +25,7 @@ namespace Learning.Server.Controllers.Base {
     503 Service Unavailable – This indicates that something unexpected happened on server side (It can be anything like server overload, some parts of the system failed, etc.).
          * 
          */
+        [NonAction]
         public async Task<IActionResult> Ok<T>(Task<T> task) {
             try {
                 var result = await task;
@@ -37,6 +38,7 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
+        [NonAction]
         public async Task<IActionResult> CreatedObject<T>(Task<T> task, string uri) {
             //TODO: this method return shit..
             try {
@@ -50,6 +52,7 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
+        [NonAction]
         public async Task<IActionResult> CreatedIntUri(Task<int> task, string uri, object obj) {
             try {
                 var id = await task;
@@ -62,6 +65,7 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
+        [NonAction]
         public async Task<IActionResult> CreatedIntUri2(Task<int> task, Func<int,string> uri, object obj) {
             try {
                 var id = await task;

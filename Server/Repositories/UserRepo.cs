@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IUserRepo {
-        Task<int> AddUser(UserRegistration user);
+        Task<int> SaveDtoAndGetId(object user);
         Task<bool> UsersExists(User user);
         Task<User> Get(int id);
         Task<User> GetUser(string email);
@@ -22,23 +22,13 @@ namespace Learning.Server.Repositories {
 
     public class UserRepo : RepoBase2<User>, IUserRepo {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
-     
+            DtoToEntityTransforms.Add(typeof(UserRegistration), TransformDto);
         }
-        public override Task<int> SaveAndDtoGetId(object obj) {
-            var dto = obj as UserRegistration;
-            if (dto != null) {
-                return AddUser(dto);
-            } else {
-                return null;
-            }
-        }
-        public override Task<User> SaveDtoAndGetEntity(object obj) {
-            throw new NotImplementedException();
-        }
-        public async Task<int> AddUser(UserRegistration userRegistration) {
-            if (await UsersExits(userRegistration.Email)) {
-                throw new Exception("Email already in use");
-            }
+        
+        public User TransformDto(object obj) {
+            var userRegistration = obj as UserRegistration;
+            if (userRegistration == null) { return null; }
+
             CreatePassword.CreatePasswordHash(userRegistration.Password, out byte[] hash, out byte[] salt);
             var dbUser = new User();
             dbUser.PasswordHash = hash;
@@ -47,8 +37,23 @@ namespace Learning.Server.Repositories {
             dbUser.Bio = userRegistration.Bio;
             dbUser.Username = userRegistration.FirstName;
 
-            return  await base.SaveAndGetId(dbUser);
+            return dbUser;
         }
+        
+        //public async Task<int> AddUser(UserRegistration userRegistration) {
+        //    if (await UsersExits(userRegistration.Email)) {
+        //        throw new Exception("Email already in use");
+        //    }
+        //    CreatePassword.CreatePasswordHash(userRegistration.Password, out byte[] hash, out byte[] salt);
+        //    var dbUser = new User();
+        //    dbUser.PasswordHash = hash;
+        //    dbUser.PasswordSalt = salt;
+        //    dbUser.Email = userRegistration.Email;
+        //    dbUser.Bio = userRegistration.Bio;
+        //    dbUser.Username = userRegistration.FirstName;
+
+        //    return  await base.SaveAndGetId(dbUser);
+        //}
         public async Task<bool> UsersExists(User user) {
             return await UsersExits(user.Email);
         }

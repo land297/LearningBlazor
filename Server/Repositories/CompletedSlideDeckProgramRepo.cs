@@ -62,9 +62,9 @@ namespace Learning.Server.Repositories {
             }
         }
 
-        public override Task<int> SaveAndDtoGetId(object obj) {
-            throw new NotImplementedException();
-        }
+        //public override Task<int> SaveDtoAndGetId(object obj) {
+        //    throw new NotImplementedException();
+        //}
 
         public override Task<CompletedSlideDeckProgram> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();

@@ -27,7 +27,7 @@ namespace Learning.Server.Repositories {
         public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {
             _userService = userService;
         }
-        public override Task<int> SaveAndDtoGetId(object obj) {
+        public override Task<int> SaveDtoAndGetId(object obj) {
             throw new NotImplementedException();
         }
 

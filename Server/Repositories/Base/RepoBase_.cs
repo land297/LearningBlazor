@@ -17,7 +17,7 @@ namespace Learning.Server.Repositories.Base {
         Task<Tentiy> Get(int id);
         Task<List<Tentiy>> GetAll();
         Task<int> SaveAndGetId(Tentiy entity);
-        Task<int> SaveAndDtoGetId(object dto);
+        Task<int> SaveDtoAndGetId(object dto);
         Task<Tentiy> SaveAndGetEntity(Tentiy entity);
         Task<Tentiy> SaveDtoAndGetEntity(object dto);
         //Task<Tentiy> Remove(Task<Tentiy> task);
@@ -32,6 +32,7 @@ namespace Learning.Server.Repositories.Base {
             _dbContext = dbContext;
             DbSet = _dbContext.Set<T>();
         }
+        public Dictionary<Type, Func<object, T>> DtoToEntityTransforms = new Dictionary<Type, Func<object, T>>();
         public async Task<T> Remove(Task<T> task) {
             var result = await task;
             DbSet.Remove(result);
@@ -56,9 +57,6 @@ namespace Learning.Server.Repositories.Base {
         public virtual Task<T> Get(int id) {
             return DbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
-        //public async Task<IList<T>> Get(Task<List<T>> task) {
-        //    return await task;
-        //}
 
         public Task<T> GetFirst(Expression<Func<T, bool>> predicate) {
             return DbSet.FirstOrDefaultAsync(predicate);
@@ -66,9 +64,14 @@ namespace Learning.Server.Repositories.Base {
         public Task<List<T>> GetAll() {
             return DbSet.ToListAsync();
         }
-        public virtual Task<int> SaveDtoAndGetId(object obj, Func<object,T> transformDtoToEntity) {
-            var entity = transformDtoToEntity(obj);
-            return SaveAndGetId(entity);
+        public virtual async Task<int> SaveDtoAndGetId(object obj) {
+            if (DtoToEntityTransforms.ContainsKey(obj.GetType())) {
+                var entity = DtoToEntityTransforms[obj.GetType()](obj);
+                if (entity != null) {
+                    return await SaveAndGetId(entity);
+                }
+            }
+            return default;
         }
         public virtual async Task<int> SaveAndGetId(T entity) {
             if (entity.Id != default(int)) {
@@ -80,7 +83,15 @@ namespace Learning.Server.Repositories.Base {
             await _dbContext.SaveChangesAsync();
             return entity.Id;
         }
-        public abstract Task<T> SaveDtoAndGetEntity(object obj);
+        public virtual async Task<T> SaveDtoAndGetEntity(object obj) {
+            if (DtoToEntityTransforms.ContainsKey(obj.GetType())) {
+                var entity = DtoToEntityTransforms[obj.GetType()](obj);
+                if (entity != null) {
+                    return await SaveAndGetEntity(entity);
+                }
+            } 
+            return default;
+        }
         public virtual async Task<T> SaveAndGetEntity(T entity) {
             try {   
                 if (entity.Id != default(int)) {
