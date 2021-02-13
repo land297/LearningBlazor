@@ -33,6 +33,8 @@ namespace Learning.Server.Repositories.Base {
             DbSet = _dbContext.Set<T>();
         }
         public Dictionary<Type, Func<object, T>> DtoToEntityTransforms = new Dictionary<Type, Func<object, T>>();
+        public Func<T, Task<bool>> ValidateEntityStateBeforeSave;
+
         public async Task<T> Remove(Task<T> task) {
             var result = await task;
             DbSet.Remove(result);
@@ -74,6 +76,12 @@ namespace Learning.Server.Repositories.Base {
             return default;
         }
         public virtual async Task<int> SaveAndGetId(T entity) {
+            if (ValidateEntityStateBeforeSave != null) {
+                var isValid = await ValidateEntityStateBeforeSave.Invoke(entity);
+                if (!isValid) {
+                    return default;
+                }
+            }
             if (entity.Id != default(int)) {
                 var result = await GetFirst(x => x.Id == entity.Id);
                 result.CopyValues(result, ref entity);
@@ -93,6 +101,12 @@ namespace Learning.Server.Repositories.Base {
             return default;
         }
         public virtual async Task<T> SaveAndGetEntity(T entity) {
+            if (ValidateEntityStateBeforeSave != null) {
+                var isValid = await ValidateEntityStateBeforeSave.Invoke(entity);
+                if (!isValid) {
+                    return default;
+                }
+            }
             try {   
                 if (entity.Id != default(int)) {
                     var result = await GetFirst(x => x.Id == entity.Id);

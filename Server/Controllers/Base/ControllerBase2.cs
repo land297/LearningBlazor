@@ -38,20 +38,20 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
-        [NonAction]
-        public async Task<IActionResult> CreatedObject<T>(Task<T> task, string uri) {
-            //TODO: this method return shit..
-            try {
-                var result = await task;
-                if (result == null) {
-                    return NotFound();
-                } else {
-                    return Created($"{uri}{result}", result);
-                }
-            } catch (Exception ex) {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[NonAction]
+        //public async Task<IActionResult> CreatedObject<T>(Task<T> task, string uri) {
+        //    //TODO: this method return shit..
+        //    try {
+        //        var result = await task;
+        //        if (result == null) {
+        //            return NotFound();
+        //        } else {
+        //            return Created($"{uri}{result}", result);
+        //        }
+        //    } catch (Exception ex) {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
         [NonAction]
         public async Task<IActionResult> CreatedIntUri(Task<int> task, string uri, object obj) {
             try {

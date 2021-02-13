@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Client.Services {
     public interface IUserService {
-        Task<sr<string>> Register(UserRegistration userRegistration);
+        Task<sr<User>> Register(UserRegistration userRegistration);
         Task<sr<List<User>>> GetAll();
         Task<sr<User>> GetLogedInSelf();
         public event Action AuthenticatedUserChanged;
@@ -43,8 +43,8 @@ namespace Learning.Client.Services {
             AuthenticatedUserChanged?.Invoke();
         }
 
-        public async Task<sr<string>> Register(UserRegistration userRegistration) {
-            return await _base.Post<UserRegistration,string>("api/user/add", userRegistration);
+        public async Task<sr<User>> Register(UserRegistration userRegistration) {
+            return await _base.Post<UserRegistration,User>("api/user/add", userRegistration);
 
             
         }

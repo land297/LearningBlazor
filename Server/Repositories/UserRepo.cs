@@ -23,8 +23,11 @@ namespace Learning.Server.Repositories {
     public class UserRepo : RepoBase2<User>, IUserRepo {
         public UserRepo(AppDbContext dbContext) : base(dbContext) {
             DtoToEntityTransforms.Add(typeof(UserRegistration), TransformDto);
+            ValidateEntityStateBeforeSave = async (User user) => {
+                var exists = await UsersExits(user.Email);
+                return exists ? false : true; };
         }
-        
+
         public User TransformDto(object obj) {
             var userRegistration = obj as UserRegistration;
             if (userRegistration == null) { return null; }

@@ -19,11 +19,12 @@ namespace Learning.Client.Services.Base {
                 if (response.IsSuccessStatusCode) {
                     var stream = await response.Content.ReadAsStreamAsync();
                     var t = await stream.TryDeserializeJsonCamelCaseAsync<T>();
+                    Console.WriteLine("!!" + response.Content.Headers);
                     if (t.Success) {
                         return sr<T>.GetSuccess(t.Data);
                     } else {
                         var s = await response.Content.ReadAsStringAsync();
-
+                        Console.WriteLine("!!" + response.Content.Headers);
                         Console.WriteLine("!!" + s);
                         Console.WriteLine("!!" + response.RequestMessage.RequestUri);
                         Console.WriteLine("!!" + response.RequestMessage.Content);
