@@ -1,4 +1,5 @@
-﻿using Learning.Client.Shared;
+﻿using Learning.Client.Services.Base;
+using Learning.Client.Shared;
 using Learning.Shared;
 using Learning.Shared.DataTransferModel;
 using Learning.Shared.DbModels;
@@ -22,11 +23,14 @@ namespace Learning.Client.Services {
 
 
 
-    public class UserService : ServiceBase, IUserService {
+    public class UserService : IUserService {
         public event Action AuthenticatedUserChanged;
-        private readonly AuthenticationStateProvider _authStateProvider;
         public ClaimsPrincipal UserClaims;
-        public UserService(HttpClient http, AuthenticationStateProvider authStateProvider) : base(http) {
+
+        private readonly AuthenticationStateProvider _authStateProvider;
+        private readonly ServiceBase2 _base;
+        public UserService(HttpClient http, AuthenticationStateProvider authStateProvider)  {
+            _base = new ServiceBase2(http);
             _authStateProvider = authStateProvider;
             _authStateProvider.AuthenticationStateChanged += _authStateProvider_AuthenticationStateChanged;
         }
@@ -40,19 +44,15 @@ namespace Learning.Client.Services {
         }
 
         public async Task<sr<string>> Register(UserRegistration userRegistration) {
-            var response = await _http.PostAsJsonAsync<UserRegistration>("api/user/add", userRegistration);
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode) {
-                return sr<string>.GetSuccess(content);
-            } else {
-                return sr<string>.Get(content);
-            }
+            return await _base.Post<UserRegistration,string>("api/user/add", userRegistration);
+
+            
         }
         public async Task<sr<List<User>>> GetAll() {
-            return await Get<List<User>>("api/user/all");
+            return await _base.Get<List<User>>("api/user/all");
         }
         public async Task<sr<User>> GetLogedInSelf() {
-            return await Get<User>("api/user/self");
+            return await _base.Get<User>("api/user/self");
         }
         public string GetUserId() {
             if (UserClaims == null) {
