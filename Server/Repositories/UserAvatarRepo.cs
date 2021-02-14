@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IUserAvatarRepo {
-        Task<int> SaveInContext(UserAvatar userAvatar);
+        Task<Tuple<int, string>> SaveInContext(UserAvatar userAvatar);
         Task<UserAvatar> GetInContext(int id);
         Task<UserAvatar> Get(int id);
         Task<List<UserAvatar>> GetAllInContext();
@@ -27,19 +27,19 @@ namespace Learning.Server.Repositories {
         public UserAvatarRepo(AppDbContext dbContext, IUserService userService) : base(dbContext) {
             _userService = userService;
         }
-        public override Task<int> SaveDtoAndGetId(object obj) {
+        public override Task<Tuple<int, string>> SaveDtoAndGetId(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<UserAvatar> SaveDtoAndGetEntity(object obj) {
+        public override Task<Tuple<UserAvatar, string>> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<int> SaveAndGetId(UserAvatar userAvatar) {
+        public override Task<Tuple<int, string>> SaveAndGetId(UserAvatar userAvatar) {
             return SaveInContext(userAvatar);
         }
 
-        public async Task<int> SaveInContext(UserAvatar userAvatar) {
+        public async Task<Tuple<int, string>> SaveInContext(UserAvatar userAvatar) {
             //TODO: how could an "admin" user add userAvatars for another user...
             //      this just assigned current logged in user to the userAvatar
             userAvatar.UserId = _userService.GetUserId();
@@ -64,7 +64,7 @@ namespace Learning.Server.Repositories {
            
             await _dbContext.SaveChangesAsync();
 
-            return userAvatar.Id;
+            return Tuple.Create(userAvatar.Id,string.Empty);
         }
         public async Task<UserAvatar> Delete(int id) {
             //TODO: how could an "admin" user add userAvatars for another user...

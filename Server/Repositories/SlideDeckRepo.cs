@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface ISlideDeckRepo {
-        Task<SlideDeck> SaveAndGetEntity(SlideDeck slideDeck);
-        Task<int> SaveAndGetId(SlideDeck slideDeck);
+        Task<Tuple<SlideDeck, string>> SaveAndGetEntity(SlideDeck slideDeck);
+        Task<Tuple<int, string>> SaveAndGetId(SlideDeck slideDeck);
         Task<List<SlideDeck>> GetAllAsUser();
         Task<List<SlideDeck>> GetAllAsContentCreator();
         Task<SlideDeck> Get(int id);
@@ -23,11 +23,11 @@ namespace Learning.Server.Repositories {
 
         public SlideDeckRepo(AppDbContext dbContext) : base (dbContext){
         }
-        public override Task<int> SaveDtoAndGetId(object obj) {
+        public override Task<Tuple<int, string>> SaveDtoAndGetId(object obj) {
             throw new NotImplementedException();
         }
 
-        public override Task<SlideDeck> SaveDtoAndGetEntity(object obj) {
+        public override Task<Tuple<SlideDeck, string>> SaveDtoAndGetEntity(object obj) {
             var s = obj as SlideDeck;
             if (s != null) {
                 return SaveAndGetEntity(s);
@@ -35,7 +35,7 @@ namespace Learning.Server.Repositories {
                 return null;
             }
         }
-        public override async Task<int> SaveAndGetId(SlideDeck slideDeck) {
+        public override async Task<Tuple<int, string>> SaveAndGetId(SlideDeck slideDeck) {
             if (slideDeck.Id != default(int)) {
                 var slideDeckInDb = await _dbContext.SlideDecks.Include(sd => sd.Slides).FirstOrDefaultAsync(sd => sd.Id == slideDeck.Id);
                 slideDeckInDb.CopyValues(slideDeck);
@@ -45,9 +45,9 @@ namespace Learning.Server.Repositories {
             }
             await _dbContext.SaveChangesAsync();
 
-            return slideDeck.Id;
+            return Tuple.Create(slideDeck.Id, string.Empty);
         }
-        public override async Task<SlideDeck> SaveAndGetEntity(SlideDeck slideDeck) {
+        public override async Task<Tuple<SlideDeck, string>> SaveAndGetEntity(SlideDeck slideDeck) {
                 if (slideDeck.Id != default(int)) {
                     var slideDeckInDb = await _dbContext.SlideDecks.Include(sd => sd.Slides).FirstOrDefaultAsync(sd => sd.Id == slideDeck.Id);
                     slideDeckInDb.CopyValues(slideDeck);
@@ -56,8 +56,8 @@ namespace Learning.Server.Repositories {
                     await _dbContext.SlideDecks.AddAsync(slideDeck);
                 }
                 await _dbContext.SaveChangesAsync();
-   
-            return slideDeck;
+
+            return Tuple.Create(slideDeck, string.Empty);
         }
         public async Task<List<SlideDeck>> GetAllAsUser() {
             return await Get(false);

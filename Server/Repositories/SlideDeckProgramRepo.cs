@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface ISlideDeckProgramRepo {
-        Task<int> SaveAndGetId(SlideDeckProgram slideDeckProgram);
+        Task<Tuple<int, string>> SaveAndGetId(SlideDeckProgram slideDeckProgram);
         Task<List<SlideDeckProgram>> GetAllAsContentCreator();
         Task<List<SlideDeckProgram>> GetAllAsUser();
         Task<SlideDeckProgram> GetFirst(int id);
@@ -20,7 +20,7 @@ namespace Learning.Server.Repositories {
     public class SlideDeckProgramRepo : RepoBase2<SlideDeckProgram>, ISlideDeckProgramRepo/*, IGetter<SlideDeckProgram>*/ {
         public SlideDeckProgramRepo(AppDbContext dbContext) : base(dbContext){
         }
-        public override async Task<int> SaveAndGetId(SlideDeckProgram slideDeckProgram) {
+        public override async Task<Tuple<int, string>> SaveAndGetId(SlideDeckProgram slideDeckProgram) {
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
             foreach (var entry in slideDeckProgram.Entries) {
                 entry.SlideDeck = null;
@@ -34,9 +34,9 @@ namespace Learning.Server.Repositories {
             }
             await _dbContext.SaveChangesAsync();
        
-            return slideDeckProgram.Id;
+            return Tuple.Create(slideDeckProgram.Id,string.Empty);
         }
-        public override Task<int> SaveDtoAndGetId(object obj) { 
+        public override Task<Tuple<int, string>> SaveDtoAndGetId(object obj) { 
             var program = obj as SlideDeckProgram;
             if (program != null) {
                return SaveAndGetId(program);
@@ -44,7 +44,7 @@ namespace Learning.Server.Repositories {
             return null;
         }
 
-        public override Task<SlideDeckProgram> SaveDtoAndGetEntity(object obj) {
+        public override Task<Tuple<SlideDeckProgram, string>> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
         public async Task<List<SlideDeckProgram>> GetAllAsUser() {

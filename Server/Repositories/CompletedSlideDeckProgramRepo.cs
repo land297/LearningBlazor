@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface ICompletedSlideDeckProgramRepo {
-        Task<CompletedSlideDeckProgram> Save(CompletedSlideDeckProgram completedProgram);
+        Task<Tuple<CompletedSlideDeckProgram,string>> Save(CompletedSlideDeckProgram completedProgram);
         Task<IList<CompletedSlideDeckProgram>> GetAll();
         Task<IList<CompletedSlideDeckProgram>> GetAllForUserAvatar(int id);
         Task<CompletedSlideDeckProgram> GetShared(int id);
@@ -26,7 +26,7 @@ namespace Learning.Server.Repositories {
             //_dbContext = dbContext;
             _userService = userService;
         }
-        public async Task<CompletedSlideDeckProgram> Save(CompletedSlideDeckProgram completedProgram) {
+        public async Task<Tuple<CompletedSlideDeckProgram, string>> Save(CompletedSlideDeckProgram completedProgram) {
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
             completedProgram.SlideDeckProgram = null;
             completedProgram.UserAvatar = null;
@@ -39,7 +39,7 @@ namespace Learning.Server.Repositories {
                 await _dbContext.CompletedSlideDeckPrograms.AddAsync(completedProgram);
             }
             await _dbContext.SaveChangesAsync();
-            return completedProgram;
+            return Tuple.Create(completedProgram,string.Empty);
             
         }
         public async Task<IList<CompletedSlideDeckProgram>> GetAllForUserAvatar(int id) {
@@ -55,7 +55,7 @@ namespace Learning.Server.Repositories {
         //    throw new NotImplementedException();
         //}
 
-        public override Task<CompletedSlideDeckProgram> SaveDtoAndGetEntity(object obj) {
+        public override Task<Tuple<CompletedSlideDeckProgram,string>> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
 

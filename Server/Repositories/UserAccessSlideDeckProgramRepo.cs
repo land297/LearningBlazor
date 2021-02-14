@@ -12,7 +12,7 @@ namespace Learning.Server.Repositories {
     public interface IUserAccessSlideDeckProgramRepo {
         Task<List<UserAccessSlideDeckProgram>> Get(UserAvatar userAvatar);
         Task<List<UserAccessSlideDeckProgram>> Get(User user);
-        Task<UserAccessSlideDeckProgram> SaveAndGetEntity(UserAccessSlideDeckProgram entity);
+        Task<Tuple<UserAccessSlideDeckProgram, string>> SaveAndGetEntity(UserAccessSlideDeckProgram entity);
         Task<UserAccessSlideDeckProgram> RemoveWithId(int id);
         Task<UserAccessSlideDeckProgram> GetIncluded(int id);
     }
@@ -40,11 +40,11 @@ namespace Learning.Server.Repositories {
             return Remove(DbSet.FirstOrDefaultAsync(x => x.Id == id));
         }
 
-        public override Task<int> SaveDtoAndGetId(object obj) {
+        public override Task<Tuple<int, string>> SaveDtoAndGetId(object obj) {
             throw new NotImplementedException();
         }
 
-        public override async Task<UserAccessSlideDeckProgram> SaveAndGetEntity(UserAccessSlideDeckProgram ua) {
+        public override async Task<Tuple<UserAccessSlideDeckProgram, string>> SaveAndGetEntity(UserAccessSlideDeckProgram ua) {
             if (ua.UserAvatar != null) {
                 ua.UserAvatarId = ua.UserAvatar.Id;
                 ua.UserAvatar = null;
@@ -58,20 +58,20 @@ namespace Learning.Server.Repositories {
                 ua.User = null;
             }
             var sr = await base.SaveAndGetEntity(ua);
-            if (sr != null) {
+            if (sr.Item1 != null) {
                 var slideDeckProgram = await _slideDeckProgramRepo.GetFirst(ua.SlideDeckProgramId);
                 if (slideDeckProgram != null) {
-                    sr.SlideDeckProgram = slideDeckProgram;
+                    sr.Item1.SlideDeckProgram = slideDeckProgram;
                     
                 } else {
-                    await base.Remove(sr);
+                    await base.Remove(sr.Item1);
                     throw new Exception($"SlideDeckProgram with Id {ua.SlideDeckProgramId} doesn't exist");
                 }
             }
             return sr;
         }
 
-        public override Task<UserAccessSlideDeckProgram> SaveDtoAndGetEntity(object obj) {
+        public override Task<Tuple<UserAccessSlideDeckProgram, string>> SaveDtoAndGetEntity(object obj) {
             throw new NotImplementedException();
         }
     }

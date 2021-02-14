@@ -16,15 +16,29 @@ namespace Learning.Server.Repositories.Base {
         //Task<Tentiy> Get(Task<Tentiy> task);
         Task<Tentiy> Get(int id);
         Task<List<Tentiy>> GetAll();
-        Task<int> SaveAndGetId(Tentiy entity);
-        Task<int> SaveDtoAndGetId(object dto);
-        Task<Tentiy> SaveAndGetEntity(Tentiy entity);
-        Task<Tentiy> SaveDtoAndGetEntity(object dto);
+        Task<Tuple<int, string>> SaveAndGetId(Tentiy entity);
+        Task<Tuple<int, string>> SaveDtoAndGetId(object dto);
+        Task<Tuple<Tentiy, string>> SaveAndGetEntity(Tentiy entity);
+        Task<Tuple<Tentiy, string>> SaveDtoAndGetEntity(object dto);
         //Task<Tentiy> Remove(Task<Tentiy> task);
         Task<Tentiy> Remove(Tentiy entity);
         Task<Tentiy> Remove(int id);
     }
 
+    public class RepoValidation {
+        public bool Valid { get; set;}
+        public string Message { get; set; }
+        public RepoValidation(bool valid, string message) {
+            Valid = valid;
+            Message = message;
+        }
+        public static RepoValidation GetValid() {
+            return new RepoValidation(true, string.Empty);
+        }
+        public static RepoValidation GetInValid(string message) {
+            return new RepoValidation(false, message);
+        }
+    }
     public abstract class RepoBase2<T> : IRepoBase3<T> where T : IdEntity<T> {
         protected readonly AppDbContext _dbContext;
         public DbSet<T> DbSet { get; private set; }
@@ -33,7 +47,7 @@ namespace Learning.Server.Repositories.Base {
             DbSet = _dbContext.Set<T>();
         }
         public Dictionary<Type, Func<object, T>> DtoToEntityTransforms = new Dictionary<Type, Func<object, T>>();
-        public Func<T, Task<bool>> ValidateEntityStateBeforeSave;
+        public Func<T, Task<RepoValidation>> ValidateEntityStateBeforeSave;
 
         public async Task<T> Remove(Task<T> task) {
             var result = await task;
@@ -66,7 +80,7 @@ namespace Learning.Server.Repositories.Base {
         public Task<List<T>> GetAll() {
             return DbSet.ToListAsync();
         }
-        public virtual async Task<int> SaveDtoAndGetId(object obj) {
+        public virtual async Task<Tuple<int, string>> SaveDtoAndGetId(object obj) {
             if (DtoToEntityTransforms.ContainsKey(obj.GetType())) {
                 var entity = DtoToEntityTransforms[obj.GetType()](obj);
                 if (entity != null) {
@@ -75,11 +89,11 @@ namespace Learning.Server.Repositories.Base {
             }
             return default;
         }
-        public virtual async Task<int> SaveAndGetId(T entity) {
+        public virtual async Task<Tuple<int, string>> SaveAndGetId(T entity) {
             if (ValidateEntityStateBeforeSave != null) {
-                var isValid = await ValidateEntityStateBeforeSave.Invoke(entity);
-                if (!isValid) {
-                    return default;
+                var state = await ValidateEntityStateBeforeSave.Invoke(entity);
+                if (!state.Valid) {
+                    return Tuple.Create<int, string>(default, state.Message);
                 }
             }
             if (entity.Id != default(int)) {
@@ -89,9 +103,9 @@ namespace Learning.Server.Repositories.Base {
                 await DbSet.AddAsync(entity);
             }
             await _dbContext.SaveChangesAsync();
-            return entity.Id;
+            return Tuple.Create<int, string>(entity.Id,string.Empty);
         }
-        public virtual async Task<T> SaveDtoAndGetEntity(object obj) {
+        public virtual async Task<Tuple<T,string>> SaveDtoAndGetEntity(object obj) {
             if (DtoToEntityTransforms.ContainsKey(obj.GetType())) {
                 var entity = DtoToEntityTransforms[obj.GetType()](obj);
                 if (entity != null) {
@@ -100,14 +114,15 @@ namespace Learning.Server.Repositories.Base {
             } 
             return default;
         }
-        public virtual async Task<T> SaveAndGetEntity(T entity) {
-            if (ValidateEntityStateBeforeSave != null) {
-                var isValid = await ValidateEntityStateBeforeSave.Invoke(entity);
-                if (!isValid) {
-                    return default;
+        public virtual async Task<Tuple<T,string>> SaveAndGetEntity(T entity) {
+            try {
+                if (ValidateEntityStateBeforeSave != null) {
+                    var state = await ValidateEntityStateBeforeSave.Invoke(entity);
+                    if (!state.Valid) {
+                        return Tuple.Create<T,string>(null, state.Message);
+                    }
                 }
-            }
-            try {   
+             
                 if (entity.Id != default(int)) {
                     var result = await GetFirst(x => x.Id == entity.Id);
                     result.CopyValues(result, ref entity);
@@ -115,7 +130,7 @@ namespace Learning.Server.Repositories.Base {
                     await DbSet.AddAsync(entity);
                 }
                 await _dbContext.SaveChangesAsync();
-                return entity;
+                return Tuple.Create(entity, string.Empty);
             } catch (Exception ex) {
                 // TODO: logger logg ex ?
                 throw;

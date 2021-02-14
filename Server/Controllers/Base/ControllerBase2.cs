@@ -43,20 +43,20 @@ namespace Learning.Server.Controllers.Base {
         }
 
         [NonAction]
-        public async Task<IActionResult> CreatedIntUri3<T>(Func<Task<T>> task, Func<T, string> uri) {
+        public async Task<IActionResult> CreatedIntUri3<T>(Func<Task<Tuple<T,string>>> task, Func<T, string> uri) {
             try {
                 var entity = await task.Invoke();
-                if (entity.Equals(default(T))) {
-                    return NotFound();
+                if (entity.Item1 == null || entity.Item1.Equals(default(T))) {
+                    return BadRequest(entity.Item2);
                 } else {
-                    return Created($"{uri(entity)}", entity);
+                    return Created($"{uri(entity.Item1)}", entity);
                 }
             } catch (Exception ex) {
                 var accesslevel = _userService.GetAccessLevel();
                 if (accesslevel == Shared.Models.Enums.UserRole.Admin || accesslevel == Shared.Models.Enums.UserRole.ContentCreator) {
-                    return BadRequest(ex.Message);
+                    return Problem(ex.Message);
                 }
-                return BadRequest("Sorry, we could not handle this request");
+                return Problem("Sorry, we could not handle this request");
             }
         }
 

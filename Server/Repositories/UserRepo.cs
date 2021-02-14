@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IUserRepo {
-        Task<int> SaveDtoAndGetId(object user);
+        Task<Tuple<int, string>> SaveDtoAndGetId(object user);
         Task<bool> UsersExists(User user);
         Task<User> Get(int id);
         Task<User> GetUser(string email);
@@ -25,7 +25,7 @@ namespace Learning.Server.Repositories {
             DtoToEntityTransforms.Add(typeof(UserRegistration), TransformDto);
             ValidateEntityStateBeforeSave = async (User user) => {
                 var exists = await UsersExits(user.Email);
-                return exists ? false : true; };
+                return exists ? RepoValidation.GetInValid("Email in use") : RepoValidation.GetValid(); };
         }
 
         public User TransformDto(object obj) {
