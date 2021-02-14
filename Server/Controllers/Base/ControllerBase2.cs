@@ -1,4 +1,5 @@
 ﻿using Learning.Server.Repositories.Base;
+using Learning.Server.Service;
 using Learning.Shared;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,10 @@ using System.Threading.Tasks;
 namespace Learning.Server.Controllers.Base {
     public abstract class ControllerBase2<TEntity> : ControllerBase where TEntity : IdEntity<TEntity> {
         protected IRepoBase3<TEntity> RepoBase;
-        public ControllerBase2(object obj) {
+        IUserService _userService;
+        public ControllerBase2(object obj, IUserService userService) {
             RepoBase = obj as IRepoBase3<TEntity>;
+            _userService = userService;
         }
 
         /*
@@ -88,7 +91,11 @@ namespace Learning.Server.Controllers.Base {
                     return Created($"{uri(entity)}", entity);
                 }
             } catch (Exception ex) {
-                return BadRequest(ex.Message);
+                var accesslevel = _userService.GetAccessLevel();
+                if (accesslevel == Shared.Models.Enums.UserRole.Admin || accesslevel == Shared.Models.Enums.UserRole.ContentCreator) {
+                    return BadRequest(ex.Message);
+                }
+                return BadRequest("Sorry, we could not handle this request");
             }
         }
 

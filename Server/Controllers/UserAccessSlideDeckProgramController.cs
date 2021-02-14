@@ -1,5 +1,6 @@
 ﻿using Learning.Server.Controllers.Base;
 using Learning.Server.Repositories;
+using Learning.Server.Service;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,9 @@ namespace Learning.Server.Controllers {
     public class UserAccessSlideDeckProgramController : ControllerBase2<UserAccessSlideDeckProgram> {
         private readonly IUserAccessSlideDeckProgramRepo _userAccessSlideDeckProgramRepo;
         readonly IUserRepo _userRepo;
-        public UserAccessSlideDeckProgramController(IUserAccessSlideDeckProgramRepo userAccessSlideDeckProgramRepo, IUserRepo userRepo) : base (userAccessSlideDeckProgramRepo){
+        public UserAccessSlideDeckProgramController(IUserAccessSlideDeckProgramRepo userAccessSlideDeckProgramRepo, 
+            IUserRepo userRepo,
+            IUserService us) : base (userAccessSlideDeckProgramRepo,us){
             _userAccessSlideDeckProgramRepo = userAccessSlideDeckProgramRepo;
             _userRepo = userRepo;
         }
@@ -49,7 +52,7 @@ namespace Learning.Server.Controllers {
         public async Task<IActionResult> Post(UserAccessSlideDeckProgram userAccess) {
             // TODO: need to check if user can get unpublished or not
 
-            return await CreatedObject(_userAccessSlideDeckProgramRepo.SaveAndGetEntity(userAccess),"unkown uri return");
+            return await CreatedIntUri3(_userAccessSlideDeckProgramRepo.SaveAndGetEntity(userAccess),(x) => "api/UserAccessSlideDeckProgram/" + x.Id);
         }
     }
 }

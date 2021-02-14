@@ -15,6 +15,7 @@ namespace Learning.Server.Service {
         int GetUserId();
         int GetUserId(ClaimsPrincipal user);
         UserRole GetAccessLevel(User user);
+        UserRole GetAccessLevel();
     }
 
     public class UserService : IUserService {
@@ -32,6 +33,18 @@ namespace Learning.Server.Service {
         }
         public int GetUserId(ClaimsPrincipal user) => int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
         public int GetUserId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        public UserRole GetAccessLevel() {
+            // :)
+            return int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Role)) switch
+            {
+                0 => UserRole.Default,
+                1 => UserRole.Admin,
+                2 => UserRole.ContentCreator,
+                3 => UserRole.Basic,
+                _ => UserRole.Basic
+            };
+        }
 
         public UserRole GetAccessLevel(User user) {
             // :)
