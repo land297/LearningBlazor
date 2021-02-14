@@ -21,7 +21,8 @@ namespace Learning.Server.Controllers {
     public class UserController : ControllerBase2<User> {
         IUserService _userService;
         //IRepoBase3<User> _repo;
-        public UserController(IUserService userService, IUserRepo repo3) : base (repo3) {
+        public UserController(IUserService userService, IUserRepo repo3,
+             IUserService us) : base (repo3,us) {
             _userService = userService;
             //_repo = repo3;
         }

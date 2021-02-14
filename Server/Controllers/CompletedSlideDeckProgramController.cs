@@ -1,5 +1,6 @@
 ﻿using Learning.Server.Controllers.Base;
 using Learning.Server.Repositories;
+using Learning.Server.Service;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,8 @@ namespace Learning.Server.Controllers {
     public class CompletedSlideDeckProgramController : ControllerBase2<CompletedSlideDeckProgram> {
         private readonly ICompletedSlideDeckProgramRepo _completedProgramRepo;
 
-        public CompletedSlideDeckProgramController(ICompletedSlideDeckProgramRepo completedProgramRepo) : base (completedProgramRepo) {
+        public CompletedSlideDeckProgramController(ICompletedSlideDeckProgramRepo completedProgramRepo,
+             IUserService us) : base (completedProgramRepo,us) {
             _completedProgramRepo = completedProgramRepo;
         }
         [HttpPost]

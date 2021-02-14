@@ -1,6 +1,7 @@
 ﻿using Learning.Server.Controllers.Base;
 using Learning.Server.Repositories;
 using Learning.Server.Repositories.Base;
+using Learning.Server.Service;
 using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,8 @@ namespace Learning.Server.Controllers {
         readonly IUserAvatarRepo _userAvatarRepo;
         readonly ILogger _logger;
         public UserAvatarController(ILogger<UserAvatarController> logger,
-            IUserAvatarRepo repo3) : base(repo3) {
+            IUserAvatarRepo repo3,
+            IUserService us) : base(repo3,us) {
             _logger = logger;
             _userAvatarRepo = repo3;
         }
