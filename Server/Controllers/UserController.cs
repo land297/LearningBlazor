@@ -34,17 +34,17 @@ namespace Learning.Server.Controllers {
         [Authorize(Roles = "Admin")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            return await Ok<List<User>>(RepoBase.GetAll());
+            return await Ok<List<User>>(() => RepoBase.GetAll());
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
-            return await Ok<User>(RepoBase.Get(id));
+            return await Ok<User>(() => RepoBase.Get(id));
         }
         [Authorize]
         [HttpGet("self")]
         public async Task<IActionResult> GetSelf() {
-            return await Ok<User>(RepoBase.Get(_userService.GetUserId()));
+            return await Ok<User>(() => RepoBase.Get(_userService.GetUserId()));
         }
     }
 }

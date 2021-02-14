@@ -26,16 +26,16 @@ namespace Learning.Server.Controllers {
         }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            return await Ok(_completedProgramRepo.GetAll());
+            return await Ok(() => _completedProgramRepo.GetAll());
             
         }
         [HttpGet("all/{id}")]
         public async Task<IActionResult> GetAll(int id) {
-            return await Ok(_completedProgramRepo.GetAllForUserAvatar(id));
+            return await Ok(() => _completedProgramRepo.GetAllForUserAvatar(id));
         }
         [HttpGet("shared/{id}")]
         public async Task<IActionResult> GetShared(int id) {
-            return await Ok(_completedProgramRepo.GetShared(id));
+            return await Ok(() => _completedProgramRepo.GetShared(id));
         }
     }
 }

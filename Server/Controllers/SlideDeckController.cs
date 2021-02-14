@@ -25,29 +25,29 @@ namespace Learning.Server.Controllers {
         [HttpPost]
         public async Task<IActionResult> Post(SlideDeck slideDeck) {
             //TODO: check if user is authorized
-            return await CreatedIntUri(_slideDeckRepo.SaveAndGetId(slideDeck),"api/SlideDeck/",slideDeck);
+            return await CreatedIntUri3<int>(() =>_slideDeckRepo.SaveAndGetId(slideDeck),(id) => "api/SlideDeck/" + id);
             
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsUser() {
-            return await Ok(_slideDeckRepo.GetAllAsUser());
+            return await Ok(() => _slideDeckRepo.GetAllAsUser());
         }
         [HttpGet("contentcreator")]
         public async Task<IActionResult> GetAllAsContentCreator() {
-            return await Ok(_slideDeckRepo.GetAllAsContentCreator());
+            return await Ok(() => _slideDeckRepo.GetAllAsContentCreator());
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
             // TODO: need to check if user can get unpublished or not
             
-            return await Ok(_slideDeckRepo.Get(id));
+            return await Ok(() => _slideDeckRepo.Get(id));
         }
         [HttpGet("{slug}")]
         public async Task<IActionResult> Get(string slug) {
             // TODO: need to check if user can get unpublished or not
 
-            return await Ok(_slideDeckRepo.Get(slug));
+            return await Ok(() => _slideDeckRepo.Get(slug));
         }
 
     }

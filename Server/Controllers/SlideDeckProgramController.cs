@@ -27,15 +27,15 @@ namespace Learning.Server.Controllers {
         [HttpPost]
         public async Task<IActionResult> Save(SlideDeckProgram slideDeckProgram) {
             //TODO: check if user is authorized
-            return await CreatedIntUri(_slideDeckProgramRepo.SaveAndGetId(slideDeckProgram),$"api/SlideDeckProgram/",slideDeckProgram);
+            return await CreatedIntUri3(() => _slideDeckProgramRepo.SaveAndGetId(slideDeckProgram),(id) => $"api/SlideDeckProgram/" + id);
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsUser() {
-            return await Ok(_slideDeckProgramRepo.GetAllAsUser());
+            return await Ok(() => _slideDeckProgramRepo.GetAllAsUser());
         }
         [HttpGet("contentcreator")]
         public async Task<IActionResult> GetAllAsContentCreator() {
-            return await Ok(_slideDeckProgramRepo.GetAllAsContentCreator());
+            return await Ok(() => _slideDeckProgramRepo.GetAllAsContentCreator());
         }
         //TODO: refactor get methods
         [HttpGet("{id:int}")]
@@ -49,7 +49,7 @@ namespace Learning.Server.Controllers {
             return await Get<SlideDeckProgram>(_slideDeckProgramRepo.GetFirst(slug));
         }
         public async Task<IActionResult> Get<T>(Task<T> taskToGetFirst) {
-            return await Ok<T>(taskToGetFirst);
+            return await Ok<T>(() => taskToGetFirst);
         }
     }
 }

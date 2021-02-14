@@ -29,9 +29,9 @@ namespace Learning.Server.Controllers.Base {
          * 
          */
         [NonAction]
-        public async Task<IActionResult> Ok<T>(Task<T> task) {
+        public async Task<IActionResult> Ok<T>(Func<Task<T>> task) {
             try {
-                var result = await task;
+                var result = await task.Invoke();
                 if (result == null) {
                     return NotFound();
                 } else {
@@ -41,46 +41,7 @@ namespace Learning.Server.Controllers.Base {
                 return BadRequest(ex.Message);
             }
         }
-        //[NonAction]
-        //public async Task<IActionResult> CreatedObject<T>(Task<T> task, string uri) {
-        //    //TODO: this method return shit..
-        //    try {
-        //        var result = await task;
-        //        if (result == null) {
-        //            return NotFound();
-        //        } else {
-        //            return Created($"{uri}{result}", result);
-        //        }
-        //    } catch (Exception ex) {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-        [NonAction]
-        public async Task<IActionResult> CreatedIntUri(Task<int> task, string uri, object obj) {
-            try {
-                var id = await task;
-                if (id == default(int)) {
-                    return NotFound();
-                } else {
-                    return Created($"{uri}/{id}",obj);
-                }
-            } catch (Exception ex) {
-                return BadRequest(ex.Message);
-            }
-        }
-        [NonAction]
-        public async Task<IActionResult> CreatedIntUri2(Task<int> task, Func<int,string> uri, object obj) {
-            try {
-                var id = await task;
-                if (id == default(int)) {
-                    return NotFound();
-                } else {
-                    return Created($"{uri(id)}", obj);
-                }
-            } catch (Exception ex) {
-                return BadRequest(ex.Message);
-            }
-        }
+
         [NonAction]
         public async Task<IActionResult> CreatedIntUri3<T>(Func<Task<T>> task, Func<T, string> uri) {
             try {

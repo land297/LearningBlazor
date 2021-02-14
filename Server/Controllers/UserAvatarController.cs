@@ -34,28 +34,28 @@ namespace Learning.Server.Controllers {
         [HttpPut("setactive/{id}")]
         public async Task<IActionResult> SetActive(int id) {
             _logger.LogInformation("setting active", id);
-            return await Ok(_userAvatarRepo.SetActiveInContext(id));
+            return await Ok(() => _userAvatarRepo.SetActiveInContext(id));
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
-            return await Ok(_userAvatarRepo.GetInContext(id));
+            return await Ok(() => _userAvatarRepo.GetInContext(id));
         }
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id) {
-            return await Ok(_userAvatarRepo.Delete(id));
+            return await Ok(() => _userAvatarRepo.Delete(id));
         }
         [HttpPost("foruser")]
         public async Task<IActionResult> GetAllForUser(User user) {
-            return await Ok(_userAvatarRepo.GetAllForUser_NoBlob(user));
+            return await Ok(() => _userAvatarRepo.GetAllForUser_NoBlob(user));
         }
         [HttpGet("foruserActive")]
         public async Task<IActionResult> GetActiveForUser() {
-            return await Ok(_userAvatarRepo.GetActiveInContext());
+            return await Ok(() => _userAvatarRepo.GetActiveInContext());
         }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            return await base.Ok(_userAvatarRepo.GetAllInContext());
+            return await base.Ok(() => _userAvatarRepo.GetAllInContext());
         }
     }
 }
