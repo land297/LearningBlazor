@@ -82,9 +82,9 @@ namespace Learning.Server.Controllers.Base {
             }
         }
         [NonAction]
-        public async Task<IActionResult> CreatedIntUri3<T>(Task<T> task, Func<T, string> uri) {
+        public async Task<IActionResult> CreatedIntUri3<T>(Func<Task<T>> task, Func<T, string> uri) {
             try {
-                var entity = await task;
+                var entity = await task.Invoke();
                 if (entity.Equals(default(T))) {
                     return NotFound();
                 } else {

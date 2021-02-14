@@ -28,7 +28,7 @@ namespace Learning.Server.Controllers {
         
         [HttpPost]
         public async Task<IActionResult> Post(UserAvatar userAvatar) {
-            return await CreatedIntUri3<int>(_userAvatarRepo.SaveInContext(userAvatar),(i) => "api/UserAvatar/" + i);
+            return await CreatedIntUri3<int>(() =>_userAvatarRepo.SaveInContext(userAvatar),(i) => "api/UserAvatar/" + i);
         }
 
         [HttpPut("setactive/{id}")]

@@ -36,12 +36,12 @@ namespace Learning.Server.Service {
 
         public UserRole GetAccessLevel() {
             // :)
-            return int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Role)) switch
+            var role = _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+            return role switch
             {
-                0 => UserRole.Default,
-                1 => UserRole.Admin,
-                2 => UserRole.ContentCreator,
-                3 => UserRole.Basic,
+                "Admin" => UserRole.Admin,
+                "ContentCreator" => UserRole.ContentCreator,
+                "Basic" => UserRole.Basic,
                 _ => UserRole.Basic
             };
         }

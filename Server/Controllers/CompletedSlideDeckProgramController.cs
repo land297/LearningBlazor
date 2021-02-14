@@ -21,7 +21,7 @@ namespace Learning.Server.Controllers {
         }
         [HttpPost]
         public async Task<IActionResult> Post(CompletedSlideDeckProgram completedProgram) {
-            return await CreatedIntUri3(_completedProgramRepo.Save(completedProgram),
+            return await CreatedIntUri3(() =>_completedProgramRepo.Save(completedProgram),
                 (entity) => { return $"api/user/{entity.Id}"; });
         }
         [HttpGet("all")]
