@@ -1,4 +1,5 @@
-﻿using Learning.Client.Shared;
+﻿using Learning.Client.Services.Base;
+using Learning.Client.Shared;
 using Learning.Shared;
 using Learning.Shared.DbModels;
 using System;
@@ -15,130 +16,53 @@ namespace Learning.Client.Services {
         Task<sr<UserAvatar>> Save(UserAvatar userAvatar);
         Task<sr<List<UserAvatar>>> GetAllFor(User user);
         Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar);
-        Task<sr<UserAvatar>> Delete(UserAvatar userAvatar);
+        Task<sr<bool>> Delete(UserAvatar userAvatar);
         Task<sr<UserAvatar>> GetActive();
         }
 
     public class UserAvatarService : IUserAvatarService {
         readonly HttpClient _http;
+        ServiceBase2 _base;
         public UserAvatarService(HttpClient http) {
             _http = http;
+            _base = new ServiceBase2(http);
         }
 
         
         public async Task<sr<UserAvatar>> Save(UserAvatar userAvatar) {
-            var response = await _http.PostAsJsonAsync("api/userAvatar", userAvatar);
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var t = await stream.TryDeserializeJsonCamelCaseAsync<int>();
-                if (t.Success) {
-                    userAvatar.Id = t.Data;
-                    return sr<UserAvatar>.GetSuccess(userAvatar);
-                } else {
-                    var s = await response.Content.ReadAsStringAsync();
-                    return sr<UserAvatar>.Get(s);
-                }
-            } else {
-                var error = await response.Content.ReadAsStringAsync();
-                return sr<UserAvatar>.Get(error);
+            var response =  await _base.Post<UserAvatar, int>("api/userAvatar",userAvatar);
+            if (response.Success) {
+                userAvatar.Id = response.Data;
+                return sr<UserAvatar>.GetSuccess(userAvatar);
             }
+            return sr<UserAvatar>.Get(response.Message);
         }
         public async Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar) {
-            var response = await _http.PutAsJsonAsync($"api/userAvatar/setactive/{userAvatar.Id}", userAvatar.Id);
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
-                if (t.Success) {
-                    return sr<UserAvatar>.GetSuccess(t.Data);
-                } else {
-                    var s = await response.Content.ReadAsStringAsync();
-                    return sr<UserAvatar>.Get(s);
-                }
-            } else {
-                var error = await response.Content.ReadAsStringAsync();
-                return sr<UserAvatar>.Get(error);
-            }
+            return await _base.Put<int,UserAvatar>($"api/userAvatar/setactive/{userAvatar.Id}", userAvatar.Id);
         }
-        public async Task<sr<UserAvatar>> Delete(UserAvatar userAvatar) {
-            var response = await _http.DeleteAsync($"api/userAvatar/{userAvatar.Id}");
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
-                if (t.Success) {
-                    return sr<UserAvatar>.GetSuccess(t.Data);
-                } else {
-                    var s = await response.Content.ReadAsStringAsync();
-                    return sr<UserAvatar>.Get(s);
-                }
-            } else {
-                var error = await response.Content.ReadAsStringAsync();
-                return sr<UserAvatar>.Get(error);
-            }
+        public async Task<sr<bool>> Delete(UserAvatar userAvatar) {
+            var response = await _base.Delete($"api/userAvatar/{userAvatar.Id}");
+            return response;
         }
         public async Task<sr<UserAvatar>> GetActive() {
-            var response = await _http.GetAsync($"api/useravatar/foruserActive");
-
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
-                if (t.Success) {
-                    return sr<UserAvatar>.GetSuccess(t.Data);
-                } else {
-                    var s = await response.Content.ReadAsStringAsync();
-                    return sr<UserAvatar>.Get(s);
-                }
-            } else {
-                var error = await response.Content.ReadAsStringAsync();
-                return sr<UserAvatar>.Get(error);
-            }
+            var response = await _base.Get<UserAvatar>($"api/useravatar/foruserActive");
+            return response;
+ 
         }
         public async Task<sr<UserAvatar>> Get(int id) {
-            var response = await _http.GetAsync($"api/useravatar/{id}");
+            var response = await _base.Get<UserAvatar>($"api/useravatar/{id}");
+            return response;
             
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var t = await stream.TryDeserializeJsonCamelCaseAsync<UserAvatar>();
-                if (t.Success) {
-                    return sr<UserAvatar>.GetSuccess(t.Data);
-                } else {
-                    var s = await response.Content.ReadAsStringAsync();
-                    return sr<UserAvatar>.Get(s);
-                }
-            } else {
-                var error = await response.Content.ReadAsStringAsync();
-                return sr<UserAvatar>.Get(error);
-            }
         }
         public async Task<sr<List<UserAvatar>>> GetAll() {
-            var response = await _http.GetAsync($"api/userAvatar/all");
-
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                //var userAvatar = await stream.DeserializeJsonCamelCaseAsync<List<UserAvatar>>();
-                //return sr<List<UserAvatar>>.GetSuccess(userAvatar);
-                var t = await stream.TryDeserializeJsonCamelCaseAsync<List<UserAvatar>>();
-                if (t.Success) {
-                    return sr<List<UserAvatar>>.GetSuccess(t.Data);
-                } else {
-                    var s = await response.Content.ReadAsStringAsync();
-                    return sr<List<UserAvatar>>.Get(s);
-                }
-            } else {
-                var error = await response.Content.ReadAsStringAsync();
-                return sr<List<UserAvatar>>.Get(error);
-            }
+            var response = await _base.Get<List<UserAvatar>>($"api/useravatar/all");
+            return response;
+            
         }
         public async Task<sr<List<UserAvatar>>> GetAllFor(User user) {
-             var response = await _http.PostAsJsonAsync<User>($"api/userAvatar/foruser", user);
+            var response = await _base.Post<User,List<UserAvatar>>($"api/useravatar/all", user);
+            return response;
             
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var userAvatar = await stream.DeserializeJsonCamelCaseAsync<List<UserAvatar>>();
-                return sr<List<UserAvatar>>.GetSuccess(userAvatar);
-            } else {
-                var error = await response.Content.ReadAsStringAsync();
-                return sr<List<UserAvatar>>.Get(error + " " + response.StatusCode + " " + response.RequestMessage.RequestUri);
-            }
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Learning.Server.Controllers.Base {
                 if (entity.Item1 == null || entity.Item1.Equals(default(T))) {
                     return BadRequest(entity.Item2);
                 } else {
-                    return Created($"{uri(entity.Item1)}", entity);
+                    return Created($"{uri(entity.Item1)}", entity.Item1);
                 }
             } catch (Exception ex) {
                 var accesslevel = _userService.GetAccessLevel();
