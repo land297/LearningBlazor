@@ -1,4 +1,5 @@
-﻿using Learning.Client.Shared;
+﻿using Learning.Client.Services.Base;
+using Learning.Client.Shared;
 using Learning.Shared;
 using Learning.Shared.DbModels;
 using System;
@@ -19,20 +20,16 @@ namespace Learning.Client.Services {
 
     public class SlideDeckService : ISlideDeckService {
         private readonly HttpClient _http;
+        private readonly ServiceBase2 _base;
         public SlideDeckService(HttpClient http) {
             _http = http;
+            _base = new ServiceBase2(http);
         }
         public async Task<sr<SlideDeck>> Save(SlideDeck slideDeck) {
             // TODO: add user to set author
             slideDeck.AuthorId = 1;
 
-            var response = await _http.PostAsJsonAsync<SlideDeck>("api/slideDeck", slideDeck);
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                slideDeck = await stream.DeserializeJsonCamelCaseAsync<SlideDeck>();
-                return sr<SlideDeck>.GetSuccess(slideDeck);
-            }
-            return sr<SlideDeck>.Get();
+            return await _base.Post<SlideDeck,SlideDeck>("api/slideDeck", slideDeck);
         }
         public async Task<sr<SlideDeck>> Get(int id) {
             return await GetAny(id);
@@ -42,18 +39,7 @@ namespace Learning.Client.Services {
         }
         private async Task<sr<SlideDeck>> GetAny(object any) {
             //TODO: id 3 issues
-            try {
-                var response = await _http.GetAsync($"api/slideDeck/{any}");
-                if (response.IsSuccessStatusCode) {
-                    var stream = await response.Content.ReadAsStreamAsync();
-                    var slideDeck = await stream.DeserializeJsonCamelCaseAsync<SlideDeck>();
-                    return sr<SlideDeck>.GetSuccess(slideDeck);
-                }
-                return sr<SlideDeck>.Get(response.ReasonPhrase);
-            } catch (Exception e) {
-                Console.WriteLine(e.Message);
-                return sr<SlideDeck>.Get(e.Message);
-            }
+            return await _base.Get<SlideDeck>("api/slideDeck/{any}");
         }
         public async Task<sr<List<SlideDeck>>> GetPublished() {
             return await Get(true);
@@ -62,18 +48,9 @@ namespace Learning.Client.Services {
             return await Get(false);
         }
         private async Task<sr<List<SlideDeck>>> Get(bool onlyPublished) {
-            HttpResponseMessage response;
-            if (onlyPublished) {
-                response = await _http.GetAsync("api/slideDeck");
-            } else {
-                response = await _http.GetAsync("api/slideDeck/contentcreator");
-            }
-            if (response.IsSuccessStatusCode) {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var data = await stream.DeserializeJsonCamelCaseAsync<List<SlideDeck>>();
-                return sr<List<SlideDeck>>.GetSuccess(data);
-            }
-            return sr<List<SlideDeck>>.Get();
+            var uri = onlyPublished ? "api/slideDeck" : "api/slideDeck/contentcreator";
+      
+            return await _base.Get<List<SlideDeck>>(uri);
         }
     }
 }

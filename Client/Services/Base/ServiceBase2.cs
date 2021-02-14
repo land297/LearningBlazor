@@ -18,22 +18,22 @@ namespace Learning.Client.Services.Base {
 
             return await ReadResponse<T>(response);
         }
-        public async Task<sr<Robj>> Post<TJson,Robj>(string uri, TJson json) {
+        public async Task<sr<RValue>> Post<TJson,RValue>(string uri, TJson json) {
             var response = await _http.PostAsJsonAsync(uri, json);
-            return await ReadResponse<Robj>(response);
+            return await ReadResponse<RValue>(response);
         }
 
-        public async Task<sr<Robj>> Put<TJson, Robj>(string uri, TJson json) {
+        public async Task<sr<RValue>> Put<TJson, RValue>(string uri, TJson json) {
             var response = await _http.PutAsJsonAsync(uri, json);
 
-            return await ReadResponse<Robj>(response);
+            return await ReadResponse<RValue>(response);
         }
-        private static async Task<sr<Robj>> ReadResponse<Robj>(HttpResponseMessage response) {
+        private static async Task<sr<RValue>> ReadResponse<RValue>(HttpResponseMessage response) {
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();
-                var t = await stream.TryDeserializeJsonCamelCaseAsync<Robj>();
+                var t = await stream.TryDeserializeJsonCamelCaseAsync<RValue>();
                 if (t.Success) {
-                    return sr<Robj>.GetSuccess(t.Data);
+                    return sr<RValue>.GetSuccess(t.Data);
                 } else {
                     var s = await response.Content.ReadAsStringAsync();
 
@@ -41,11 +41,11 @@ namespace Learning.Client.Services.Base {
                     Console.WriteLine("!!" + response.RequestMessage.RequestUri);
                     Console.WriteLine("!!" + response.RequestMessage.Content);
 
-                    return sr<Robj>.Get(t.Message + " " + response.RequestMessage.RequestUri + " " + response.Headers.Location + " " + s);
+                    return sr<RValue>.Get(t.Message + " " + response.RequestMessage.RequestUri + " " + response.Headers.Location + " " + s);
                 }
             } else {
                 var error = await response.Content.ReadAsStringAsync();
-                return sr<Robj>.Get(response.Headers.Location + error);
+                return sr<RValue>.Get(response.Headers.Location + error);
             }
         }
 
