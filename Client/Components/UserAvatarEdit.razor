@@ -10,14 +10,13 @@
             @if (!string.IsNullOrWhiteSpace(UserAvatar.CoverImage)) {
                 <div>
                     <img src="@UserAvatar.CoverImage" class="width:100%;" />
-
                 </div>
             }
             <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
-            <MudFab HtmlTag="label"
+            <MudFab HtmlTag="label" Class="pa-2"
                     Color="Color.Secondary"
                     Icon="@Filled.Image"
-                    Label="Load Cover Image"
+                    Label=""
                     for="fileInput" />
 
         </MudPaper>

@@ -8,19 +8,6 @@
 
 <Learning.Client.Components.UserAvatarEdit UserAvatar="UserAvatar" OnSave="SaveUserAvatar" />
 
-@if (CurrentUserAvatars.Count > 0) {
-    foreach (var item in CurrentUserAvatars) {
-        <MudButton Typo="Typo.body1" OnClick="(async () => await SetAvatarActive(item.Name))">Set @item.Name active</MudButton>
-
-        <div>
-            <img src="@item.CoverImage" class="width:100%;" />
-
-        </div>
-        <MudButton Typo="Typo.body1" OnClick="(async () => await DeleteAvatar(item.Name))">Delete @item.Name</MudButton>
-    }
-}
-
-
 
 @code {
     [Parameter]
