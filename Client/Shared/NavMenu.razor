@@ -1,9 +1,13 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using BlazorState
+@inherits BlazorStateComponent
+@using Learning.Client.Features
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">Learning</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
-   
+
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
@@ -15,8 +19,8 @@
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter ( @CounterState.Count )
+</NavLink>
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="fetchdata">
@@ -55,7 +59,7 @@
                         <span class="oi oi-list-rich" aria-hidden="true"></span> View SlideDeckProgram 4
                     </NavLink>
                 </li>
- 
+
 
 
             </Authorized>
@@ -93,16 +97,19 @@
         </AuthorizeView>
 
 
-</ul>
+    </ul>
 </div>
 
 @code {
+    CounterState CounterState => GetState<CounterState>();
+
+    private int currentCount => CounterState.Count;
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
-    {
+    private void ToggleNavMenu() {
         collapseNavMenu = !collapseNavMenu;
     }
 }

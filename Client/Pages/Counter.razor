@@ -1,4 +1,7 @@
 ﻿@page "/counter"
+@using BlazorState
+@inherits BlazorStateComponent
+@using Learning.Client.Features
 
 <h1>Counter</h1>
 
@@ -36,10 +39,12 @@
     </MudItem>
 </MudGrid>
 @code {
-    private int currentCount = 0;
+    CounterState CounterState => GetState<CounterState>();
 
-    private void IncrementCount()
-    {
-        currentCount++;
+    private int currentCount => CounterState.Count;
+
+    private void IncrementCount() {
+        //currentCount++;
+        Mediator.Send(new CounterState.IncrementCountAction { Amount = 5 });
     }
 }

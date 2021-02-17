@@ -1,5 +1,7 @@
 using Blazored.LocalStorage;
+using BlazorState;
 using Learning.Client.Services;
+using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,14 +35,26 @@ namespace Learning.Client {
             builder.Services.AddSyncfusionBlazor();
 
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddBlazorState((aOptions) => {
+                aOptions.Assemblies =
+                new Assembly[]
+                {
+                        typeof(Program).GetTypeInfo().Assembly,
+                };
+                //aOptions.UseReduxDevToolsBehavior = true;
+            });
+                
+
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore(options => {
                 options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("role1"));
             });
+
+
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
             
             builder.Services.AddScoped(x => new CoverImageService());
-            
+            //builder.Services.AddMediatR();
             builder.Services.AddScoped<IVideoService, VideoService>();
             builder.Services.AddScoped<ISlideDeckService, SlideDeckService>();
             builder.Services.AddScoped<ISlideDeckProgramService, SlideDeckProgramService>();
