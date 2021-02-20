@@ -45,7 +45,7 @@ namespace Learning.Client.Services.Base {
                 }
             } else {
                 var error = await response.Content.ReadAsStringAsync();
-                return sr<RValue>.Get(response.Headers.Location + error);
+                return sr<RValue>.Get(error);
             }
         }
 

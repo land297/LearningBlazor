@@ -39,7 +39,7 @@ namespace Learning.Client.Services {
         }
         private async Task<sr<SlideDeck>> GetAny(object any) {
             //TODO: id 3 issues
-            return await _base.Get<SlideDeck>("api/slideDeck/{any}");
+            return await _base.Get<SlideDeck>($"api/slideDeck/{any}");
         }
         public async Task<sr<List<SlideDeck>>> GetPublished() {
             return await Get(true);

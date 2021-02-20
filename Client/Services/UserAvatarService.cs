@@ -1,7 +1,9 @@
-﻿using Learning.Client.Services.Base;
+﻿using Learning.Client.Features;
+using Learning.Client.Services.Base;
 using Learning.Client.Shared;
 using Learning.Shared;
 using Learning.Shared.DbModels;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,9 +25,11 @@ namespace Learning.Client.Services {
     public class UserAvatarService : IUserAvatarService {
         readonly HttpClient _http;
         ServiceBase2 _base;
-        public UserAvatarService(HttpClient http) {
+        public IMediator Mediator { get; set; }
+        public UserAvatarService(HttpClient http, IMediator mediator) {
             _http = http;
             _base = new ServiceBase2(http);
+            Mediator = mediator;
         }
 
         
@@ -38,6 +42,7 @@ namespace Learning.Client.Services {
             return sr<UserAvatar>.Get(response.Message);
         }
         public async Task<sr<UserAvatar>> SetActive(UserAvatar userAvatar) {
+            await Mediator.Send(new ActiveUserAvatarState.ChangeActiveUserAvatarAction { UserAvatar = userAvatar });
             return await _base.Put<int,UserAvatar>($"api/userAvatar/setactive/{userAvatar.Id}", userAvatar.Id);
         }
         public async Task<sr<bool>> Delete(UserAvatar userAvatar) {

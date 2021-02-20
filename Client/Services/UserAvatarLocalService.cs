@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
+using MediatR;
+using Learning.Client.Features;
 
 namespace Learning.Client.Services {
     public interface IUserAvatarLocalService {
@@ -15,6 +17,8 @@ namespace Learning.Client.Services {
     }
 
     public class UserAvatarLocalService : IUserAvatarLocalService {
+        public IMediator Mediator { get; set; }
+
         public event Action<UserAvatar> UserAvatarChanged;
         public UserAvatar ActiveUserAvatar { get; private set; }
 
@@ -25,7 +29,7 @@ namespace Learning.Client.Services {
 
         public UserAvatarLocalService(IUserService userService,
             ILocalStorageService localStorageService, IAuthService authService,
-            IUserAvatarService userAvatarService1) {
+            IUserAvatarService userAvatarService1, IMediator mediator) {
             _userService = userService;
             _userService.AuthenticatedUserChanged += _userAvatarService_OnChange;
 
@@ -36,6 +40,8 @@ namespace Learning.Client.Services {
             _authService.LoggedOut += _authService_LoggedOut;
 
             _userAvatarService = userAvatarService1;
+
+            Mediator = mediator;
         }
 
         private async void _authService_LoggedOut() {
@@ -62,6 +68,7 @@ namespace Learning.Client.Services {
             ActiveUserAvatar = userAvatar;
 
             UserAvatarChanged?.Invoke(ActiveUserAvatar);
+            await Mediator.Send(new ActiveUserAvatarState.ChangeActiveUserAvatarAction { UserAvatar  = ActiveUserAvatar });
         }
         public async Task Delete(UserAvatar userAvatar) {
             if (userAvatar != null) {

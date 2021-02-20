@@ -8,13 +8,17 @@ namespace Learning.Client.Features {
     using MediatR;
     using System.Threading;
 
-    public partial class CounterState : State<CounterState> {
+    public partial class CounterState : State<CounterState>, INotification {
         public int Count { get; private set; }
         public override void Initialize() => Count = 3;
 
 
         public class IncrementCountAction : IAction {
             public int Amount { get; set; }
+        }
+
+        public class CounterIsFullAction : IAction {
+
         }
 
 

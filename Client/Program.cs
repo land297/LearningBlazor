@@ -27,7 +27,18 @@ namespace Learning.Client {
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddMudBlazorDialog();
-            builder.Services.AddMudBlazorSnackbar();
+            builder.Services.AddMudBlazorSnackbar(config =>
+            {
+                config.PositionClass = Defaults.Classes.Position.BottomLeft;
+
+                config.PreventDuplicates = false;
+                config.NewestOnTop = false;
+                config.ShowCloseIcon = true;
+                config.VisibleStateDuration = 10000;
+                config.HideTransitionDuration = 500;
+                config.ShowTransitionDuration = 500;
+                //config.SnackbarDefaultVariant = Variant.Filled;
+            });
             builder.Services.AddMudBlazorResizeListener();
 
             // TODO: this will be on GithHub public for all and on the client when running?

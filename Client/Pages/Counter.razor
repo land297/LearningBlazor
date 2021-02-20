@@ -39,9 +39,11 @@
     </MudItem>
 </MudGrid>
 @code {
-    CounterState CounterState => GetState<CounterState>();
+    CounterState CounterState =>GetState<CounterState>();
 
     private int currentCount => CounterState.Count;
+
+ 
 
     private void IncrementCount() {
         //currentCount++;

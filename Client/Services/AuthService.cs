@@ -1,6 +1,8 @@
 ﻿using Blazored.LocalStorage;
+using Learning.Client.Features;
 using Learning.Shared;
 using Learning.Shared.DataTransferModel;
+using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
@@ -30,12 +32,15 @@ namespace Learning.Client.Services {
         public event Action LoggedIn;
         public event Action LoggedOut;
         public bool IsLoggedIn { get; private set; }
+        public IMediator Mediator { get; set; }
 
         public AuthService(HttpClient http, ILocalStorageService localStorageService, 
-            AuthenticationStateProvider authStateProvider) {
+            AuthenticationStateProvider authStateProvider,
+            IMediator mediator) {
             _http = http;
             _localStorageService = localStorageService;
             _authStateProvider = authStateProvider;
+            Mediator = mediator;
         }
 
         public async Task<sr<string>> Login(Login login) {
@@ -43,13 +48,17 @@ namespace Learning.Client.Services {
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode) {
                 await _localStorageService.SetItemAsync("token", content);
-  
+
+                
+                
                 IsLoggedIn = true;
+                await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true });
                 LoggedIn?.Invoke();
                 return sr<string>.GetSuccess(content);
             } else {
                 await _localStorageService.SetItemAsync("token", string.Empty);
                 IsLoggedIn = false;
+                await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = false });
                 LoggedOut?.Invoke();
                 return sr<string>.Get(content);
             }
@@ -60,6 +69,7 @@ namespace Learning.Client.Services {
             await _localStorageService.SetItemAsync("token", string.Empty);
 
             IsLoggedIn = false;
+            await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = false });
             LoggedOut?.Invoke();
             await _authStateProvider.GetAuthenticationStateAsync();
             return sr<string>.GetSuccess("Loguut");

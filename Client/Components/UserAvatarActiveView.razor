@@ -1,32 +1,61 @@
 ﻿@using Learning.Shared.DbModels
 @inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal
+@inject Learning.Client.Services.IUserAvatarService UserAvatarService
+@using BlazorState
+@inherits BlazorStateComponent
+@using Learning.Client.Features
 
-<MudText Typo="Typo.caption">@AvatarName</MudText>
-@if (UserAvatar != null) {
-    <img src="@UserAvatar.CoverImage" class="width:100%;" />
-    <MudText Typo="Typo.caption">@UserAvatar.Name</MudText>
+@if (LoggedInState.IsLoggedIn) {
+    <MudText Typo="Typo.caption">True</MudText>
+} else {
+    <MudText Typo="Typo.caption">False</MudText>
+}
+
+@if (ActiveUserAvatarState.UserAvatar != null) {
+    <img src="@ActiveUserAvatarState.UserAvatar.CoverImage" class="width:100%;" />
+    <MudText Typo="Typo.caption">@ActiveUserAvatarState.UserAvatar.Name</MudText>
 }
 
 
 @code {
-    [Parameter]
-    public UserAvatar UserAvatar { get; set; }
-
-    string AvatarName { get { return UserAvatar == null ? "xxx" : UserAvatar.Name; } }
-
-    protected override async Task OnInitializedAsync() {
-        UserAvatarLocal.UserAvatarChanged += ActiveUserAvatarChange;
-        ActiveUserAvatarChange(null);
-        await Task.Delay(0);
-    }
-    async void ActiveUserAvatarChange(UserAvatar userAvatar) {
-        Console.WriteLine("!! UserAvatarActiveView - ActiveUserAvatarChange");
-        if (userAvatar == null) {
-            UserAvatar = await UserAvatarLocal.Get(false);
-        } else {
-            UserAvatar = userAvatar;
+    ActiveUserAvatarState ActiveUserAvatarState => GetState<ActiveUserAvatarState>();
+    //LoggedInState LoggedInState2 => GetState<LoggedInState>();
+    LoggedInState LoggedInState {
+        get {
+            Console.WriteLine("!! loggedInStateCahnge - UserAvatarActiveView");
+            var state = GetState<LoggedInState>();
+            if (state.IsLoggedIn) {
+                //GetActiveUserAvatar();
+            }
+            return state;
         }
-
-        StateHasChanged();
     }
+
+    async Task GetActiveUserAvatar() {
+        var response = await UserAvatarService.GetActive();
+        if (response.Success) {
+            await Mediator.Send(new ActiveUserAvatarState.ChangeActiveUserAvatarAction { UserAvatar = response.Data });
+        }
+    }
+    //[Parameter]
+    //public UserAvatar UserAvatar { get; set; }
+
+    //string AvatarName { get { return UserAvatar == null ? "xxx" : UserAvatar.Name; } }
+
+    //protected override async Task OnInitializedAsync() {
+
+    //    UserAvatarLocal.UserAvatarChanged += ActiveUserAvatarChange;
+    //    ActiveUserAvatarChange(null);
+    //    await Task.Delay(0);
+    //}
+    //async void ActiveUserAvatarChange(UserAvatar userAvatar) {
+    //    Console.WriteLine("!! UserAvatarActiveView - ActiveUserAvatarChange");
+    //    if (userAvatar == null) {
+    //        UserAvatar = await UserAvatarLocal.Get(false);
+    //    } else {
+    //        UserAvatar = userAvatar;
+    //    }
+
+    //    StateHasChanged();
+    //}
 }

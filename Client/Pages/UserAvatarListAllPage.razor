@@ -52,6 +52,7 @@
         }
     }
     async Task SetAvatarActive(string name) {
-        await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
+        await UserAvatars.SetActive(CurrentUserAvatars.First(x => x.Name == name));
+        //await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
     }
 }

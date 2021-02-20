@@ -1,5 +1,7 @@
 ﻿using Blazored.LocalStorage;
+using Learning.Client.Features;
 using Learning.Shared.DataTransferModel;
+using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
@@ -15,10 +17,11 @@ namespace Learning.Client {
     public class CustomAuthStateProvider : AuthenticationStateProvider {
         private readonly ILocalStorageService localStorageService;
         private readonly HttpClient _http;
-
-        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http) {
+        public IMediator Mediator { get; set; }
+        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http, IMediator mediator) {
             this.localStorageService = localStorageService;
             _http = http;
+            Mediator = mediator;
         }
         
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
@@ -54,6 +57,7 @@ namespace Learning.Client {
                     Console.WriteLine("token is valid");
                     // adding the token to all http calls
                     _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true });
                 }
                 
             }
