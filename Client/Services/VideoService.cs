@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 
 namespace Learning.Client.Services {
     public interface IVideoService {
+
         Task<sr<List<Media>>> GetVideos();
+        Task<sr<List<Media>>> GetImages();
     }
 
     public class VideoService : IVideoService {
@@ -27,6 +29,22 @@ namespace Learning.Client.Services {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
                 var list = await System.Text.Json.JsonSerializer.DeserializeAsync<List<Media>>(stream,options);
+
+                return sr<List<Media>>.GetSuccess(list);
+
+            }
+
+            return sr<List<Media>>.Get();
+        }
+        public async Task<sr<List<Media>>> GetImages() {
+            var response = await _http.GetAsync("api/video/all/images");
+            if (response.IsSuccessStatusCode) {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var options = new JsonSerializerOptions()
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                var list = await System.Text.Json.JsonSerializer.DeserializeAsync<List<Media>>(stream, options);
 
                 return sr<List<Media>>.GetSuccess(list);
 

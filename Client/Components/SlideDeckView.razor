@@ -11,14 +11,14 @@
 
                 </div>
             }
-        </MudPaper>
-        @if (SlideDeck.Slides != null) {
-            @foreach (var slide in SlideDeck.Slides) {
-            <MudContainer Class="pa-2 mx-2">
-                <Learning.Client.Components.SlideView Slide="slide"></Learning.Client.Components.SlideView>
-            </MudContainer>
+            @if (SlideDeck.Slides != null) {
+                @foreach (var slide in SlideDeck.Slides) {
+                    <br />
+                    <Learning.Client.Components.SlideView Slide="slide"></Learning.Client.Components.SlideView>
                 }
-        }
+            }
+        </MudPaper>
+
 
     </MudItem>
 </MudGrid>

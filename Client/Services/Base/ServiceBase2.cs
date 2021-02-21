@@ -35,6 +35,7 @@ namespace Learning.Client.Services.Base {
                 if (t.Success) {
                     return sr<RValue>.GetSuccess(t.Data);
                 } else {
+                    Console.WriteLine("!! Readresponse not success");
                     var s = await response.Content.ReadAsStringAsync();
 
                     Console.WriteLine("!!" + s);

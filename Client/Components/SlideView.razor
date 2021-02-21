@@ -1,19 +1,21 @@
 ﻿@using Learning.Shared.DbModels
-
-<div class="m-2">
+<div class="mud-info">
     <MudText Typo="Typo.body1">@((MarkupString)Slide.TextContent)</MudText>
-</div>
-@if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
-    <img class="rounded m-2" src="@Slide.ImageUrl" />
-}
-@if (!string.IsNullOrWhiteSpace(Slide.VideoUrl)) {
-    <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
-                    style="max-width:400px;"
-                    controls="controls">
-        <source src="@Slide.VideoUrl" type="video/mp4" />
-    </BlazoredVideo>
-}
+    @if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
+        <br />
+        <img class="rounded m-2" src="@Slide.ImageUrl" style="width:100%; height:100%;" />
+        <img class="rounded m-2" src="@Slide.ImageUrl" style="max-width:100%; max-height:100%;" />
+    }
 
+    @if (!string.IsNullOrWhiteSpace(Slide.VideoUrl)) {
+        <br />
+        <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
+                       style="max-width:400px;"
+                       controls="controls">
+            <source src="@Slide.VideoUrl" type="video/mp4" />
+        </BlazoredVideo>
+    }
+</div>
 
 @code {
     [Parameter]

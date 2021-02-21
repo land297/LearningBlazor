@@ -24,5 +24,14 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
+        [HttpGet("all/images")]
+        public async Task<IActionResult> GetAllImages() {
+            var result = await _videoRepo.GetAllImages();
+            if (!result.Success) {
+                return BadRequest(result.Message);
+            } else {
+                return Ok(result.Data);
+            }
+        }
     }
 }

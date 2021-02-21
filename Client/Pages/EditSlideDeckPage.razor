@@ -12,9 +12,9 @@
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
 } else {
-    <Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck" OnSave="SaveSlideDeck" Videos="Videos"></Learning.Client.Components.EditSlideDeck>
+    <Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck"  Videos="Videos"></Learning.Client.Components.EditSlideDeck>
 
-    <MudButton OnClick="TestApa">Tet</MudButton>
+    
 }
 @code {
     [Parameter]
@@ -24,6 +24,7 @@
 
     private SlideDeck SlideDeck = new SlideDeck();
     private List<Media> Videos;
+    private List<Media> Images;
 
     private bool hasLoaded = false;
     protected override async Task OnInitializedAsync() {
@@ -33,6 +34,14 @@
         } else {
             Snackbar.Add($"Could not load video source. Error: {r.Message}", Severity.Error);
         }
+
+        r = await VideoService.GetImages();
+        if (r.Success) {
+            Images = r.Data;
+        } else {
+            Snackbar.Add($"Could not load Images source. Error: {r.Message}", Severity.Error);
+        }
+       
 
         if (Id != default(int)) {
             var sr = await SlideDeckService.Get(Id);
@@ -51,22 +60,14 @@
         }
         hasLoaded = true;
     }
-    async Task TestApa() {
-        var sr = await SlideDeckService.Get(3);
-        if (sr.Success) {
-            SlideDeck = sr.Data;
-        } else {
-            Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
-        }
-    }
 
-
-    async Task SaveSlideDeck() {
-        var response = await SlideDeckService.Save(SlideDeck);
-        if (response.Success) {
-            Snackbar.Add($"Saved", Severity.Success);
-        } else {
-            Snackbar.Add($"Could not save. Error: {response.Message}", Severity.Error);
-        }
-    }
+    //OnSave="SaveSlideDeck"
+    //async Task SaveSlideDeck() {
+    //    var response = await SlideDeckService.Save(SlideDeck);
+    //    if (response.Success) {
+    //        Snackbar.Add($"Saved", Severity.Success);
+    //    } else {
+    //        Snackbar.Add($"Could not save. Error: {response.Message}", Severity.Error);
+    //    }
+    //}
 }

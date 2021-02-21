@@ -1,5 +1,10 @@
 ﻿@using Learning.Shared.DbModels
 @using Syncfusion.Blazor.RichTextEditor
+@using Learning.Shared.DataTransferModel
+@inject Learning.Client.Services.ISlideDeckService SlideDeckService
+@inject Learning.Client.Services.IVideoService  VideoService
+@inject ISnackbar Snackbar
+
 <MudPaper Elevation="3">
     @*<MudText Typo="Typo.h6">Page: (@Index)</MudText>*@
     <MudText Typo="Typo.subtitle1">Description</MudText>
@@ -20,6 +25,17 @@
             <source src="@Slide.VideoUrl" type="video/mp4" />
         </BlazoredVideo>
     }
+    @if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
+        <div>
+            <img src="@Slide.ImageUrl" class="width:100%;" />
+
+        </div>
+    }
+    <InputFile id="fileInputslide" OnChange="UploadFiles" hidden multiple />
+    <MudFab HtmlTag="label"
+            Color="Color.Success"
+            Icon="@Filled.AttachFile"
+            for="fileInputslide" />
     <MudIconButton Icon="@Icons.Material.Delete" OnClick="@(() => OnDelete.InvokeAsync(Slide))"></MudIconButton>
 </MudPaper>
 
@@ -50,6 +66,7 @@
         new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
         new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
     };
+
     public void SelectedVideo(string value) {
         var video = Videos.FirstOrDefault(v => v.DisplayName == value);
         SlideVideoUrlValue = video.FullFileName;
@@ -61,5 +78,24 @@
 
         // TODO : chaning video after first selection doesn't work. waiting for update on library
 
+    }
+    private async Task UploadFiles(InputFileChangeEventArgs e) {
+        foreach (var file in e.GetMultipleFiles(1)) {
+            var stream = file.OpenReadStream();
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            stream.Close();
+
+            FileUpload uploadedFile = new FileUpload();
+            uploadedFile.FileName = file.Name;
+            uploadedFile.FileContent = buffer.ToArray();
+
+
+            var response = await SlideDeckService.UploadImage(uploadedFile);
+            if (response.Success) {
+                Slide.ImageUrl = response.Data.FullFileName;
+            }
+        }
+        //TODO upload the files to the server
     }
 }

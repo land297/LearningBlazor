@@ -1,6 +1,7 @@
 ﻿using Learning.Client.Services.Base;
 using Learning.Client.Shared;
 using Learning.Shared;
+using Learning.Shared.DataTransferModel;
 using Learning.Shared.DbModels;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace Learning.Client.Services {
     public interface ISlideDeckService {
-        Task<sr<SlideDeck>> Save(SlideDeck slideDeck);
+        Task<sr<int>> Save(SlideDeck slideDeck);
         Task<sr<List<SlideDeck>>> GetPublished();
         Task<sr<List<SlideDeck>>> GetAsContentCreator();
         Task<sr<SlideDeck>> Get(int id);
         Task<sr<SlideDeck>> Get(string slug);
+        Task<sr<Media>> UploadImage(FileUpload file);
     }
 
     public class SlideDeckService : ISlideDeckService {
@@ -25,11 +27,11 @@ namespace Learning.Client.Services {
             _http = http;
             _base = new ServiceBase2(http);
         }
-        public async Task<sr<SlideDeck>> Save(SlideDeck slideDeck) {
+        public async Task<sr<int>> Save(SlideDeck slideDeck) {
             // TODO: add user to set author
             slideDeck.AuthorId = 1;
 
-            return await _base.Post<SlideDeck,SlideDeck>("api/slideDeck", slideDeck);
+            return await _base.Post<SlideDeck,int>("api/slideDeck", slideDeck);
         }
         public async Task<sr<SlideDeck>> Get(int id) {
             return await GetAny(id);
@@ -51,6 +53,10 @@ namespace Learning.Client.Services {
             var uri = onlyPublished ? "api/slideDeck" : "api/slideDeck/contentcreator";
       
             return await _base.Get<List<SlideDeck>>(uri);
+        }
+
+        public async Task<sr<Media>> UploadImage(FileUpload file) {
+            return await _base.Post<FileUpload, Media>("api/slideDeck/file", file);
         }
     }
 }
