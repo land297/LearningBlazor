@@ -36,7 +36,7 @@
         @if (SlideDeck.Slides != null) {
             @foreach (var slide in SlideDeck.Slides) {
                 <MudContainer Class="pa-2 mx-2">
-                    <Learning.Client.Components.EditSlide Slide="slide" Videos="Videos" OnDelete="DeleteSlide"></Learning.Client.Components.EditSlide>
+                    <Learning.Client.Components.EditSlide Slide="slide" Videos="Videos" Images="Images" OnDelete="DeleteSlide"></Learning.Client.Components.EditSlide>
                 </MudContainer>
 
             }
@@ -56,6 +56,8 @@
 @code {
     [Parameter]
     public SlideDeck SlideDeck { get; set; }
+    [Parameter]
+    public List<Media> Images { get; set; }
     //[Parameter]
     //public EventCallback<SlideDeck> OnSave { get; set; } = DefaultOnSave;
     [Parameter]

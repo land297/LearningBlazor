@@ -25,6 +25,13 @@
             <source src="@Slide.VideoUrl" type="video/mp4" />
         </BlazoredVideo>
     }
+    <MudSelect T="string" Label="Image" ValueChanged="SelectedImage">
+        @if (Images != null) {
+            foreach (var image in Images) {
+                <MudSelectItem Value="@(image.DisplayName)" />
+            }
+        }
+    </MudSelect>
     @if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
         <div>
             <img src="@Slide.ImageUrl" class="width:100%;" />
@@ -44,6 +51,8 @@
     public Slide Slide { get; set; }
     [Parameter]
     public List<Media> Videos { get; set; }
+    [Parameter]
+    public List<Media> Images { get; set; }
     [Parameter]
     public int Index { get; set; }
     [Parameter]
@@ -71,6 +80,18 @@
         var video = Videos.FirstOrDefault(v => v.DisplayName == value);
         SlideVideoUrlValue = video.FullFileName;
         Slide.VideoUrl = video.FullFileName;
+        //MyBlazorVideo.StalledReloadControl();
+        //MyBlazorVideo.ReloadControl();
+        //await JSRuntime.InvokeVoidAsync("Blazored.invoke", "MyBlazorVideo", "pause");
+
+
+        // TODO : chaning video after first selection doesn't work. waiting for update on library
+
+    }
+    public void SelectedImage(string value) {
+        var image = Images.FirstOrDefault(v => v.DisplayName == value);
+        //SlideVideoUrlValue = video.FullFileName;
+        Slide.ImageUrl = image.FullFileName;
         //MyBlazorVideo.StalledReloadControl();
         //MyBlazorVideo.ReloadControl();
         //await JSRuntime.InvokeVoidAsync("Blazored.invoke", "MyBlazorVideo", "pause");
