@@ -3,7 +3,7 @@
 @using Learning.Shared.DbModels
 
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
-@inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal
+@*@inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal*@
 @inject ISnackbar Snackbar
 
 <Learning.Client.Components.UserAvatarEdit UserAvatar="UserAvatar" OnSave="SaveUserAvatar" />
@@ -17,28 +17,28 @@
     List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
 
     protected override async Task OnInitializedAsync() {
-        var response = await UserAvatars.GetAll();
-        if (response.Success) {
-            CurrentUserAvatars = response.Data;
-        } else {
-            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
-        }
+        //var response = await UserAvatars.GetAll();
+        //if (response.Success) {
+        //    CurrentUserAvatars = response.Data;
+        //} else {
+        //    Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+        //}
 
         if (Id != default(int)) {
             var response2 = await UserAvatars.Get(Id);
             if (response2.Success) {
                 UserAvatar = response2.Data;
             } else {
-                Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+                Snackbar.Add($"Could not get stuff from server. Error: {response2.Message}", Severity.Error);
             }
         }
 
     }
-    async Task SetAvatarActive(string name) {
-        await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
-    }
+    //async Task SetAvatarActive(string name) {
+    //    await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
+    //}
     async Task DeleteAvatar(string name) {
-        await UserAvatarLocal.Delete(CurrentUserAvatars.First(x => x.Name == name));
+        //await UserAvatarLocal.Delete(CurrentUserAvatars.First(x => x.Name == name));
         var response = await UserAvatars.GetAll();
         if (response.Success) {
             CurrentUserAvatars = response.Data;

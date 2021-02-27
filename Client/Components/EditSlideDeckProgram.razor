@@ -16,11 +16,11 @@
             <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
             <MudFab HtmlTag="label"
                     Color="Color.Secondary"
-                    Icon="@Filled.Image"
+                    Icon="@Icons.Material.Filled.Image"
                     Label="Load Cover Image"
                     for="fileInput" />
 
-            <MudFab Color="Color.Secondary" Icon="@Icons.Material.Add" Size="Size.Small" OnClick="AddEntry" />
+            <MudFab Color="Color.Secondary" Icon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="AddEntry" />
         </MudPaper>
     </MudItem>
     <MudItem xs="12">
@@ -42,7 +42,7 @@
                 </MudSelect>
                 <MudSwitch @bind-Checked="@Label_Switch2" Label="Is published" Color="Color.Primary" />
                 <MudSwitch @bind-Checked="@Label_Switch3" Label="Is deleted" Color="Color.Primary" />
-                <MudIconButton Icon="@Icons.Material.Save" OnClick="(() => OnSave.InvokeAsync(SlideDeckProgram))"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Save" OnClick="(() => OnSave.InvokeAsync(SlideDeckProgram))"></MudIconButton>
             </MudPaper>
     </MudItem>
 

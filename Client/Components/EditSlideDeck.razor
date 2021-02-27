@@ -18,7 +18,7 @@
             <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
             <MudFab HtmlTag="label"
                     Color="Color.Secondary"
-                    Icon="@Filled.Image"
+                    Icon="@Icons.Material.Filled.Image"
                     Label="Cover Image"
                     for="fileInput" />
         </MudPaper>
@@ -27,7 +27,7 @@
 
             <MudFab HtmlTag="label"
                     Color="Color.Secondary"
-                    Icon="@Icons.Material.Add"
+                    Icon="@Icons.Material.Filled.Add"
                     Label="Add Slide"
                     OnClick="AddSlide" />
 
@@ -49,7 +49,7 @@
         </MudSelect>
         <MudSwitch @bind-Checked="@Label_Switch2" Label="Is published" Color="Color.Primary" />
         <MudSwitch @bind-Checked="@Label_Switch3" Label="Is deleted" Color="Color.Primary" />
-        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Save" OnClick="(async () => await SaveClicked())"></MudIconButton>
+        <MudIconButton Color="Color.Primary" Icon="@Icons.Material.Filled.Save" OnClick="(async () => await SaveClicked())"></MudIconButton>
     </MudPaper>
     </MudItem>
 </MudGrid>

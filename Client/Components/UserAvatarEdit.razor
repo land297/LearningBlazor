@@ -15,14 +15,14 @@
             <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
             <MudFab HtmlTag="label" Class="pa-2"
                     Color="Color.Secondary"
-                    Icon="@Filled.Image"
+                    Icon="@Icons.Material.Filled.Image"
                     Label=""
                     for="fileInput" />
 
         </MudPaper>
 
         <MudPaper Elevation="3" Class="pa-2 mx-2">
-            <MudIconButton Icon="@Icons.Material.Save" OnClick="(() => OnSave.InvokeAsync(UserAvatar))"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Save" OnClick="(() => OnSave.InvokeAsync(UserAvatar))"></MudIconButton>
         </MudPaper>
     </MudItem>
 </MudGrid>

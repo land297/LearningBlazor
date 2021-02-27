@@ -27,11 +27,11 @@ namespace Learning.Client.Services {
             return await _base.Post<CompletedSlideDeckProgram, CompletedSlideDeckProgram>("api/CompletedSlideDeckProgram", completedProgram);
         }
         public async Task<sr<List<CompletedSlideDeckProgram>>> GetAll(UserAvatar userAvatar) {
-            return await _base.Get<List<CompletedSlideDeckProgram>>($"api/CompletedSlideDeckProgramall/{userAvatar.Id}");
+            return await _base.Get<List<CompletedSlideDeckProgram>>($"api/CompletedSlideDeckProgram/all/{userAvatar.Id}");
 
         }
         public async Task<sr<CompletedSlideDeckProgram>> GetShared(int id) {
-            return await _base.Get<CompletedSlideDeckProgram>($"api/CompletedSlideDeckProgramall/shared/{id}");
+            return await _base.Get<CompletedSlideDeckProgram>($"api/CompletedSlideDeckProgram/all/shared/{id}");
         }
     }
 }

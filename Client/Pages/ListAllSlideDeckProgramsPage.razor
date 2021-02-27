@@ -15,12 +15,14 @@
             <MudTh>Description</MudTh>
             <MudTh>Page count</MudTh>
             <MudTh>AccessLevel</MudTh>
+            <MudTh>Is published</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Title</MudTd>
             <MudTd>@context.Description</MudTd>
             <MudTd>@context.Entries.Count</MudTd>
             <MudTd>@context.AccessLevel</MudTd>
+            <MudTd>@context.IsPublished</MudTd>
             <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{context.Id}"))">View</MudButton></MudTd>
             <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeckProgram/{context.Id}"))">Edit</MudButton></MudTd>
 

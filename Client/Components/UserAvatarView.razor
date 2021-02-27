@@ -17,12 +17,14 @@
         </MudPaper>
         @if (UserAvatar.CompletedSlideDeckPrograms != null) {
             @foreach (var cslp in UserAvatar.CompletedSlideDeckPrograms) {
-                <MudContainer Class="pa-2 mx-2">
-                    <MudText Typo="Typo.body1">@cslp.SlideDeckProgram.Title</MudText>
-                    <MudText Typo="Typo.body1">@cslp.Comment</MudText>
-                    <MudRating SelectedValue=@cslp.UserAvatarFeedback ReadOnly="true"></MudRating>
-                    <MudButton OnClick="@(() => NavigationManager.NavigateTo($"sharedCompletedProgram/{cslp.Id}"))">Share</MudButton>
-                </MudContainer>
+    <MudContainer Class="pa-2 mx-2">
+        <MudText Typo="Typo.body1">@cslp.SlideDeckProgram.Title</MudText>
+        <MudText Typo="Typo.body1">@cslp.Comment</MudText>
+        <MudText Typo="Typo.body1">@cslp.CompletedOn</MudText>
+        <MudText Typo="Typo.body2">@cslp.IsPublic</MudText>
+        <MudRating ReadOnly="true" SelectedValue=@cslp.UserAvatarFeedback ></MudRating>
+        <MudButton OnClick="@(() => NavigationManager.NavigateTo($"sharedCompletedProgram/{cslp.Id}"))">Share</MudButton>
+    </MudContainer>
 
             }
         }

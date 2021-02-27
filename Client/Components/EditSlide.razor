@@ -41,9 +41,9 @@
     <InputFile id="fileInputslide" OnChange="UploadFiles" hidden multiple />
     <MudFab HtmlTag="label"
             Color="Color.Success"
-            Icon="@Filled.AttachFile"
+            Icon="@Icons.Material.Filled.AttachFile"
             for="fileInputslide" />
-    <MudIconButton Icon="@Icons.Material.Delete" OnClick="@(() => OnDelete.InvokeAsync(Slide))"></MudIconButton>
+    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => OnDelete.InvokeAsync(Slide))"></MudIconButton>
 </MudPaper>
 
 @code {
