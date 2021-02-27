@@ -33,12 +33,12 @@
     </MudItem>
     <MudItem>
         @if (UserAccessSlideDeckPrograms != null) {
-            @foreach (var slidedeckprogram in UserAccessSlideDeckPrograms) {
+            @foreach (var userAccessslidedeckprogram in UserAccessSlideDeckPrograms) {
         <MudContainer Class="pa-2 mx-2">
-            <MudText Typo="Typo.body1">@slidedeckprogram.SlideDeckProgram.Title</MudText>
-            <MudText Typo="Typo.body1">@slidedeckprogram.SlideDeckProgram.Description</MudText>
-            <MudText Typo="Typo.body1">@slidedeckprogram.Comments</MudText>
-            <MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slidedeckprogram.Id}"))">Just do it</MudButton>
+            <MudText Typo="Typo.body1">@userAccessslidedeckprogram.SlideDeckProgram.Title</MudText>
+            <MudText Typo="Typo.body1">@userAccessslidedeckprogram.SlideDeckProgram.Description</MudText>
+            <MudText Typo="Typo.body1">@userAccessslidedeckprogram.Comments</MudText>
+            <MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{userAccessslidedeckprogram.SlideDeckProgramId}"))">Just do it</MudButton>
         </MudContainer>
 
             }
