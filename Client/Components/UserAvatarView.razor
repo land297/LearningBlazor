@@ -2,7 +2,7 @@
 @inject NavigationManager NavigationManager
 
 <MudGrid>
-    <MudItem xs="12" sm="6">
+    <MudItem xs="12">
         <MudPaper Elevation="3" Class="pa-2 mx-2">
             <MudText Typo="Typo.h6">User Avatar</MudText>
             <MudText Typo="Typo.body1">@UserAvatar.Name</MudText>
@@ -15,16 +15,30 @@
             }
 
         </MudPaper>
+    </MudItem>
+    <MudItem>
         @if (UserAvatar.CompletedSlideDeckPrograms != null) {
             @foreach (var cslp in UserAvatar.CompletedSlideDeckPrograms) {
-    <MudContainer Class="pa-2 mx-2">
-        <MudText Typo="Typo.body1">@cslp.SlideDeckProgram.Title</MudText>
-        <MudText Typo="Typo.body1">@cslp.Comment</MudText>
-        <MudText Typo="Typo.body1">@cslp.CompletedOn</MudText>
-        <MudText Typo="Typo.body2">@cslp.IsPublic</MudText>
-        <MudRating ReadOnly="true" SelectedValue=@cslp.UserAvatarFeedback ></MudRating>
-        <MudButton OnClick="@(() => NavigationManager.NavigateTo($"sharedCompletedProgram/{cslp.Id}"))">Share</MudButton>
-    </MudContainer>
+            <MudContainer Class="pa-2 mx-2">
+                <MudText Typo="Typo.body1">@cslp.SlideDeckProgram.Title</MudText>
+                <MudText Typo="Typo.body1">@cslp.Comment</MudText>
+                <MudText Typo="Typo.body1">@cslp.CompletedOn</MudText>
+                <MudText Typo="Typo.body2">@cslp.IsPublic</MudText>
+                <MudRating ReadOnly="true" SelectedValue=@cslp.UserAvatarFeedback ></MudRating>
+                <MudButton OnClick="@(() => NavigationManager.NavigateTo($"sharedCompletedProgram/{cslp.Id}"))">Share</MudButton>
+            </MudContainer>
+
+            }
+        }
+    </MudItem>
+    <MudItem>
+        @if (UserAccessSlideDeckPrograms != null) {
+            @foreach (var slidedeckprogram in UserAccessSlideDeckPrograms) {
+                <MudContainer Class="pa-2 mx-2">
+                    <MudText Typo="Typo.body1">@slidedeckprogram.SlideDeckProgram.Title</MudText>
+                    <MudText Typo="Typo.body1">@slidedeckprogram.SlideDeckProgram.Description</MudText>
+                    <MudText Typo="Typo.body1">@slidedeckprogram.Comments</MudText>
+                </MudContainer>
 
             }
         }
@@ -34,4 +48,6 @@
 @code {
     [Parameter]
     public UserAvatar UserAvatar { get; set; }
+    [Parameter]
+    public List<UserAccessSlideDeckProgram> UserAccessSlideDeckPrograms { get; set; }
 }

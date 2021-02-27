@@ -2,15 +2,17 @@
 @using Learning.Shared.DbModels
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
 @inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedPrograms
+@inject Learning.Client.Services.IUserAccessSlideDeckProgramService UserAccess
 @inject ISnackbar Snackbar
 
-<Learning.Client.Components.UserAvatarView UserAvatar="UserAvatar" />
+<Learning.Client.Components.UserAvatarView UserAvatar="UserAvatar" UserAccessSlideDeckPrograms="UserAccessSlideDeckPrograms"/>
 
 @code {
-        [Parameter]
-        public int Id { get; set; }
+    [Parameter]
+    public int Id { get; set; }
 
-        UserAvatar UserAvatar = new UserAvatar();
+    UserAvatar UserAvatar = new UserAvatar();
+    List<UserAccessSlideDeckProgram> UserAccessSlideDeckPrograms;
 
     protected override async Task OnInitializedAsync() {
         var response2 = await UserAvatars.Get(Id);
@@ -25,6 +27,13 @@
                 UserAvatar.CompletedSlideDeckPrograms = response3.Data;
             } else {
                 Snackbar.Add($"Could not get stuff from server. Error: {response3.Message}", Severity.Error);
+            }
+
+            var response4 = await UserAccess.GetViaUserAvatar(UserAvatar.Id);
+            if (response4.Success) {
+                UserAccessSlideDeckPrograms = response4.Data;
+            } else {
+                Snackbar.Add($"Could not get stuff from server. Error: {response4.Message}", Severity.Error);
             }
         }
 
