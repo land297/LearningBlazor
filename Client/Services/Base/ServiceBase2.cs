@@ -18,6 +18,14 @@ namespace Learning.Client.Services.Base {
 
             return await ReadResponse<T>(response);
         }
+        /// <summary>
+        /// Post to uri with json object return. First generic type is input and second is return type
+        /// </summary>
+        /// <typeparam name="TJson">Post argument type</typeparam>
+        /// <typeparam name="RValue">Return type</typeparam>
+        /// <param name="uri">Uri to post</param>
+        /// <param name="json">Argument object</param>
+        /// <returns></returns>
         public async Task<sr<RValue>> Post<TJson,RValue>(string uri, TJson json) {
             var response = await _http.PostAsJsonAsync(uri, json);
             return await ReadResponse<RValue>(response);

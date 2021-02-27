@@ -1,7 +1,8 @@
 ﻿@using Learning.Shared.DbModels
+@using Learning.Shared.Models
 
-<MudGrid>
-    <MudItem xs="12" sm="6">
+<MudGrid Spacing="4">
+    <MudItem xs="12">
         <MudPaper Elevation="3" Class="pa-2 mx-2">
             <MudText Typo="Typo.h6">SlideDeckProgram</MudText>
             <MudTextField @bind-Value="SlideDeckProgram.Title" Label="Title" Variant="Variant.Text"></MudTextField>
@@ -21,21 +22,32 @@
 
             <MudFab Color="Color.Secondary" Icon="@Icons.Material.Add" Size="Size.Small" OnClick="AddEntry" />
         </MudPaper>
-        @if (SlideDeckProgram.Entries != null) {
-            @foreach (var entry in SlideDeckProgram.Entries) {
-                <MudContainer Class="pa-2 mx-2">
-                    <Learning.Client.Components.EditSlideDeckProgramEntry Entry="entry" AvailableSlideDecks="AvailableSlideDecks" OnDelete="DeleteEntry"></Learning.Client.Components.EditSlideDeckProgramEntry>
-                </MudContainer>
+    </MudItem>
+    <MudItem xs="12">
+            @if (SlideDeckProgram.Entries != null) {
+                @foreach (var entry in SlideDeckProgram.Entries) {
+                    <MudPaper Elevation="3" Class="pa-5 mx-2 blue-grey lighten 4">
+                        <Learning.Client.Components.EditSlideDeckProgramEntry Entry="entry" AvailableSlideDecks="AvailableSlideDecks" OnDelete="DeleteEntry"></Learning.Client.Components.EditSlideDeckProgramEntry>
+                    </MudPaper>
 
+                }
             }
-        }
-        <MudPaper Elevation="3" Class="pa-2 mx-2">
-            <MudIconButton Icon="@Icons.Material.Save" OnClick="(() => OnSave.InvokeAsync(SlideDeckProgram))"></MudIconButton>
-        </MudPaper>
     </MudItem>
-    <MudItem>
+    <MudItem xs="12">
+            <MudPaper Elevation="3" Class="pa-5 mx-2">
+                <MudSelect T="string" Label="Access Level" Value="@SlideDeckProgram.AccessLevel.ToString()" ValueChanged="SelectedSlideDeckAccessLevel">
+                    <MudSelectItem Value="@("All")" />
+                    <MudSelectItem Value="@("Premium")" />
+                    <MudSelectItem Value="@("Free")" />
+                </MudSelect>
+                <MudSwitch @bind-Checked="@Label_Switch2" Label="Is published" Color="Color.Primary" />
+                <MudSwitch @bind-Checked="@Label_Switch3" Label="Is deleted" Color="Color.Primary" />
+                <MudIconButton Icon="@Icons.Material.Save" OnClick="(() => OnSave.InvokeAsync(SlideDeckProgram))"></MudIconButton>
+            </MudPaper>
+    </MudItem>
 
-    </MudItem>
+
+    
 </MudGrid>
 @code {
     [Parameter]
@@ -45,7 +57,31 @@
     public EventCallback<SlideDeckProgram> OnSave { get; set; }
     [Parameter]
     public List<SlideDeck> AvailableSlideDecks { get; set; }
+    public bool Label_Switch2 {
+        get {
+            return SlideDeckProgram.IsPublished;
+        }
+        set {
+            if (value) {
+                SlideDeckProgram.Published = DateTime.UtcNow;
+            } else {
+                SlideDeckProgram.Published = DateTime.MinValue;
+            }
+        }
+    }
+    public bool Label_Switch3 {
+        get {
+            return SlideDeckProgram.IsDeleted;
+        }
+        set {
+            SlideDeckProgram.IsDeleted = value;
+        }
+    }
+    void SelectedSlideDeckAccessLevel(string value) {
+        SlideDeckProgram.AccessLevel = (Enums.AccessLevel)Enum.Parse(typeof(Enums.AccessLevel), value);
+        //Entry.SlideDeckId = Entry.SlideDeck.Id;
 
+    }
     public void AddEntry(MouseEventArgs e) {
         SlideDeckProgram.Entries.Add(new SlideDeckProgramEntry());
     }

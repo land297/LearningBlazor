@@ -1,9 +1,12 @@
-﻿
-@using Learning.Shared.DbModels
+﻿@using Learning.Shared.DbModels
 
-<MudTextField @bind-Value="Entry.Duration" HelperText="Duration" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="sec" />
-<MudTextField @bind-Value="Entry.Repititions" HelperText="Repititions" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="sec" />
-<MudTextField @bind-Value="Entry.Comments" Label="Comments" Variant="Variant.Text" Lines="5"></MudTextField>
+@if (Entry.SlideDeck != null) {
+    <Learning.Client.Components.SlideDeckView SlideDeck="@Entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
+}
+<br />
+<br />
+<br />
+
 <MudSelect T="string" Label="SlideDecksPublished" ValueChanged="SelectedSlideDeck">
     @if (AvailableSlideDecks != null) {
         foreach (var slideDeck in AvailableSlideDecks) {
@@ -11,10 +14,12 @@
         }
     }
 </MudSelect>
+<MudTextField @bind-Value="Entry.Duration" HelperText="Duration" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="sec" />
+<MudTextField @bind-Value="Entry.Repititions" HelperText="Repititions" Variant="Variant.Filled" Adornment="Adornment.End" AdornmentText="sec" />
+<MudTextField @bind-Value="Entry.Comments" Label="Comments" Variant="Variant.Text" Lines="5"></MudTextField>
 
-@if (Entry.SlideDeck != null) { 
-    <Learning.Client.Components.SlideDeckView SlideDeck="@Entry.SlideDeck"></Learning.Client.Components.SlideDeckView>    
-}
+
+
 <MudIconButton Icon="@Icons.Material.Delete" OnClick="@(() => OnDelete.InvokeAsync(Entry))"></MudIconButton>
 @code {
     [Parameter]

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Client.Services {
     public interface ISlideDeckProgramService {
-        Task<sr<SlideDeckProgram>> Save(SlideDeckProgram slideDeckProgram);
+        Task<sr<int>> Save(SlideDeckProgram slideDeckProgram);
         Task<sr<List<SlideDeckProgram>>> GetPublished();
         Task<sr<List<SlideDeckProgram>>> GetAsContentCreator();
         Task<sr<SlideDeckProgram>> Get(int id);
@@ -25,10 +25,10 @@ namespace Learning.Client.Services {
             _http = http;
             _base = new ServiceBase2(http);
         }
-        public async Task<sr<SlideDeckProgram>> Save(SlideDeckProgram slideDeckProgram) {
+        public async Task<sr<int>> Save(SlideDeckProgram slideDeckProgram) {
             // TODO: add user to set author
             slideDeckProgram.AuthorId = 1;
-            return await _base.Post<SlideDeckProgram,SlideDeckProgram>("api/slideDeckProgram", slideDeckProgram);
+            return await _base.Post<SlideDeckProgram,int>("api/slideDeckProgram", slideDeckProgram);
         }
         public async Task<sr<SlideDeckProgram>> Get(int id) {
             return await GetAny(id);
