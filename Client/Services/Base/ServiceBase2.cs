@@ -45,9 +45,11 @@ namespace Learning.Client.Services.Base {
                 } else {
                     Console.WriteLine("!! Readresponse not success");
                     var s = await response.Content.ReadAsStringAsync();
-
+                    Console.WriteLine("1");
                     Console.WriteLine("!!" + s);
+                    Console.WriteLine("2");
                     Console.WriteLine("!!" + response.RequestMessage.RequestUri);
+                    Console.WriteLine("3");
                     Console.WriteLine("!!" + response.RequestMessage.Content);
 
                     return sr<RValue>.Get(t.Message + " " + response.RequestMessage.RequestUri + " " + response.Headers.Location + " " + s);

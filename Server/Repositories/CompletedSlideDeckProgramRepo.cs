@@ -48,7 +48,15 @@ namespace Learning.Server.Repositories {
         }
         public async Task<CompletedSlideDeckProgram> GetShared(int id) {
             var userId = _userService.GetUserId();
-            return await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).SingleOrDefaultAsync();
+            
+            var result = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).SingleOrDefaultAsync();
+            if (userId > 0) {
+                result.IsPublic = true;
+                await _dbContext.SaveChangesAsync();
+            } else if (!result.IsPublic) {
+                result = null;
+            }
+            return result;
         }
 
         //public override Task<int> SaveDtoAndGetId(object obj) {

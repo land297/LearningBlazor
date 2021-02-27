@@ -32,7 +32,12 @@ namespace Learning.Server.Service {
             return await _userRepo.Get(GetUserId());
         }
         public int GetUserId(ClaimsPrincipal user) => int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
-        public int GetUserId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        public int GetUserId() {
+            if (int.TryParse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out int result)) {
+                return result;
+            }
+            return -1;
+        }
 
         public UserRole GetAccessLevel() {
             // :)

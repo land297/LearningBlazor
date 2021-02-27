@@ -33,7 +33,7 @@ namespace Learning.Server.Controllers {
         public async Task<IActionResult> GetAll(int id) {
             return await Ok(() => _completedProgramRepo.GetAllForUserAvatar(id));
         }
-        [HttpGet("shared/{id}")]
+        [HttpGet("all/shared/{id}")]
         public async Task<IActionResult> GetShared(int id) {
             return await Ok(() => _completedProgramRepo.GetShared(id));
         }
