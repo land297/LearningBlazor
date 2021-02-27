@@ -9,6 +9,7 @@
 @inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedProgram
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 @if (!hasLoaded) {
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
@@ -22,48 +23,50 @@
     <MudRating @bind-SelectedValue="selectedVal"></MudRating>
     <MudButton OnClick="Save">Save</MudButton>
 }
-    @code {
-        [Parameter]
-        public int Id { get; set; }
-        [Parameter]
-        public string Slug { get; set; }
-        private SlideDeckProgram SlideDeckProgram=new SlideDeckProgram();
-        private bool hasLoaded=false;
-        private bool isCompleted=false;
-        protected override async Task OnInitializedAsync() {
-            if (Id !=default(int)) {
-                var sr=await SlideDeckProgramService.Get(Id);
-                if (sr.Success) {
-                    SlideDeckProgram=sr.Data;
-                } else {
-                    Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
-                }
-            }
-            hasLoaded=true;
-        }
-
-        string CompletedDescription;
-        int selectedVal = 0;
-        public async Task Save() {
-            isCompleted = true;
-            var completed = new CompletedSlideDeckProgram();
-            completed.SlideDeckProgramId = SlideDeckProgram.Id;
-            completed.UserAvatarId = UserAvatarLocal.ActiveUserAvatar.Id;
-            completed.Comment = CompletedDescription;
-            completed.CompletedOn = DateTime.UtcNow;
-            completed.UserAvatarFeedback = selectedVal;
-
-            var sr = await CompletedProgram.Save(completed);
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string Slug { get; set; }
+    private SlideDeckProgram SlideDeckProgram = new SlideDeckProgram();
+    private bool hasLoaded = false;
+    private bool isCompleted = false;
+    protected override async Task OnInitializedAsync() {
+        if (Id != default(int)) {
+            var sr = await SlideDeckProgramService.Get(Id);
             if (sr.Success) {
-                //SlideDeckProgram = sr.Data;
+                SlideDeckProgram = sr.Data;
             } else {
-                Snackbar.Add($"Could not save completed program source. Error: {sr.Message}", Severity.Error);
+                Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
             }
-            await Task.Delay(0);
         }
-        public async Task ProgramCompleted(SlideDeckProgram progarm) {
-            isCompleted=true;
+        hasLoaded = true;
+    }
 
-            await Task.Delay(0);
+    string CompletedDescription;
+    int selectedVal = 0;
+    public async Task Save() {
+
+        isCompleted = true;
+        var completed = new CompletedSlideDeckProgram();
+        completed.SlideDeckProgramId = SlideDeckProgram.Id;
+        completed.UserAvatarId = UserAvatarLocal.ActiveUserAvatar.Id;
+        completed.Comment = CompletedDescription;
+        completed.CompletedOn = DateTime.UtcNow;
+        completed.UserAvatarFeedback = selectedVal;
+
+        var sr = await CompletedProgram.Save(completed);
+        if (sr.Success) {
+            Snackbar.Add($"Saved", Severity.Success);
+            NavigationManager.NavigateTo("/");
+        } else {
+            Snackbar.Add($"Could not save completed program source. Error: {sr.Message}", Severity.Error);
         }
+
+    }
+    public async Task ProgramCompleted(SlideDeckProgram progarm) {
+        isCompleted = true;
+
+        await Task.Delay(0);
+    }
 }
