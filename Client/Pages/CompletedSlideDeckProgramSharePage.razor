@@ -5,14 +5,27 @@
 @using Learning.Shared.DbModels
 @inject ISnackbar Snackbar
 
-<h3>CompletedSlideDeckProgramSharePage</h3>
+
 @if (csdp != null) {
-    <MudContainer Class="pa-2 mx-2">
+<MudPaper>
+    <MudContainer Class="pa-2 mx-2" MaxWidth="MaxWidth.Small">
+        <MudText Typo="Typo.h1">Completed program!</MudText>
+        <br />
         <MudText Typo="Typo.body1">@csdp.UserAvatar.Name</MudText>
-        <MudText Typo="Typo.body1">@csdp.SlideDeckProgram.Title</MudText>
+        @if (!string.IsNullOrWhiteSpace(csdp.UserAvatar.CoverImage)) {
+            <div>
+                <img src="@csdp.UserAvatar.CoverImage" class="width:100%;" />
+
+            </div>
+        }
+        <br />
+        <MudText Typo="Typo.body1">Completed @csdp.SlideDeckProgram.Title on @csdp.CompletedOn</MudText>
+        <br />
         <MudText Typo="Typo.body1">@csdp.Comment</MudText>
+        <br />
         <MudRating SelectedValue=@csdp.UserAvatarFeedback ReadOnly="true"></MudRating>
     </MudContainer>
+</MudPaper>
 }
 
 @code {

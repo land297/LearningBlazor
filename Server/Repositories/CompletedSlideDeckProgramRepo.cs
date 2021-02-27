@@ -22,9 +22,13 @@ namespace Learning.Server.Repositories {
         {
         //private readonly AppDbContext _dbContext;
         readonly IUserService _userService;
-        public CompletedSlideDeckProgramRepo(AppDbContext dbContext, IUserService userService) : base(dbContext){
+        readonly IUserAvatarRepo _userAvatar;
+        public CompletedSlideDeckProgramRepo(AppDbContext dbContext, IUserService userService,
+            IUserAvatarRepo userAvatar) : base(dbContext){
             //_dbContext = dbContext;
             _userService = userService;
+            _userAvatar = userAvatar;
+                
         }
         public async Task<Tuple<CompletedSlideDeckProgram, string>> Save(CompletedSlideDeckProgram completedProgram) {
             // TOOD : how to handle this, we cannot have existing slideDecks as EF will try to insert them again with same Id
@@ -48,8 +52,9 @@ namespace Learning.Server.Repositories {
         }
         public async Task<CompletedSlideDeckProgram> GetShared(int id) {
             var userId = _userService.GetUserId();
-            
-            var result = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).Include(x => x.UserAvatar).SingleOrDefaultAsync();
+
+            var result = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).SingleOrDefaultAsync();
+            result.UserAvatar = await _userAvatar.Get(result.UserAvatarId);
             if (userId > 0) {
                 result.IsPublic = true;
                 await _dbContext.SaveChangesAsync();

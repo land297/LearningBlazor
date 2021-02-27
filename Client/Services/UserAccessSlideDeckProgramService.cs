@@ -34,7 +34,7 @@ namespace Learning.Client.Services {
             return response;
         }
         public async Task<sr<UserAccessSlideDeckProgram>> GetAccessWithId(int id) {
-            return await _base.Get<UserAccessSlideDeckProgram>("api/UserAccessSlideDeckProgram/{id}");
+            return await _base.Get<UserAccessSlideDeckProgram>($"api/UserAccessSlideDeckProgram/{id}");
             
         }
         public async Task<sr<bool>> DeleteAccessWithId(int id) {
