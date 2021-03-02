@@ -18,14 +18,18 @@
 
 
 @code {
+    Action GetUser;
     ActiveUserAvatarState ActiveUserAvatarState => GetState<ActiveUserAvatarState>();
     //LoggedInState LoggedInState2 => GetState<LoggedInState>();
+    LoggedInState lastState;
     LoggedInState LoggedInState {
         get {
             Console.WriteLine("!! loggedInStateCahnge - UserAvatarActiveView");
             var state = GetState<LoggedInState>();
-            if (state.IsLoggedIn) {
+            if (state.IsLoggedIn && lastState?.IsLoggedIn != state.IsLoggedIn) {
                 //GetActiveUserAvatar();
+                lastState = state;
+                Task.Factory.StartNew(GetActiveUserAvatar);
             }
             return state;
         }
@@ -36,6 +40,11 @@
         if (response.Success) {
             await Mediator.Send(new ActiveUserAvatarState.ChangeActiveUserAvatarAction { UserAvatar = response.Data });
         }
+    }
+
+    protected override Task OnInitializedAsync() {
+        
+        return base.OnInitializedAsync();
     }
     //[Parameter]
     //public UserAvatar UserAvatar { get; set; }

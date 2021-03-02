@@ -65,7 +65,7 @@ namespace Learning.Client.Services {
             
         }
         public async Task<sr<List<UserAvatar>>> GetAllFor(User user) {
-            var response = await _base.Post<User,List<UserAvatar>>($"api/useravatar/all", user);
+            var response = await _base.Post<User,List<UserAvatar>>($"api/useravatar/foruser", user);
             return response;
             
         }

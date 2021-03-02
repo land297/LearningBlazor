@@ -6,12 +6,13 @@
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
 
-<Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck" OnSave="SaveSlideDeck" Videos="Videos"></Learning.Client.Components.EditSlideDeck>
+<Learning.Client.Components.EditSlideDeck SlideDeck="SlideDeck" Videos="Videos" Images="Images"></Learning.Client.Components.EditSlideDeck>
 
 @code {
     //TODO: refactor with editSlideDeckPage 
     private SlideDeck SlideDeck = new SlideDeck();
     private List<Media> Videos;
+    private List<Media> Images;
 
     protected override async Task OnInitializedAsync() {
         var r = await VideoService.GetVideos();
@@ -20,18 +21,13 @@
         } else {
             //dispaly toast
         }
-
+        r = await VideoService.GetImages();
+        if (r.Success) {
+            Images = r.Data;
+        } else {
+            Snackbar.Add($"Could not load Images source. Error: {r.Message}", Severity.Error);
+        }
         await Task.Delay(100);
     }
 
-
-
-    async Task SaveSlideDeck() {
-        var response = await SlideDeckService.Save(SlideDeck);
-        if (response.Success) {
-            Snackbar.Add($"Saved", Severity.Success);
-        } else {
-            Snackbar.Add($"Could not save. Error: {response.Message}", Severity.Error);
-        }
-    }
 }
