@@ -33,18 +33,19 @@
 @if (SlideDeckProgramsPublished != null) {
     <MudGrid>
         @foreach (var slidedeckProgram in SlideDeckProgramsPublished) {
-            <MudItem xs="12" sm="6">
-                <MudPaper Elevation="3" Class="pa-2 mr-2">
-                    <MudText Typo="Typo.h6">@slidedeckProgram.Title</MudText>
-                    @if (!string.IsNullOrWhiteSpace(slidedeckProgram.CoverImage)) {
-                        <div>
-                            <img src="@slidedeckProgram.CoverImage" class="width:100%;" />
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="3" Class="pa-2 mr-2">
+                <MudText Typo="Typo.h6">@slidedeckProgram.Title</MudText>
+                @if (!string.IsNullOrWhiteSpace(slidedeckProgram.CoverImage)) {
+                    <div>
+                        <img src="@slidedeckProgram.CoverImage" class="width:100%;" />
 
-                        </div>
-                    }
-                    <MudText Typo="Typo.body1">@slidedeckProgram.Description</MudText>
-                </MudPaper>
-            </MudItem>
+                    </div>
+                }
+                <MudText Typo="Typo.body1">@slidedeckProgram.Description</MudText>
+                <MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slidedeckProgram.Id}"))">View</MudButton>
+            </MudPaper>
+        </MudItem>
         }
     </MudGrid>
 }
