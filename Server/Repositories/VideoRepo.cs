@@ -17,7 +17,7 @@ namespace Learning.Server.Repositories {
         Task<sr<IList<Media>>> GetAllVideos();
         Task<sr<IList<Media>>> GetAllImages();
         FileUpload file { get; set; }
-        public Task Test();
+        //public Task Test();
         public Task<Media> SaveIamgeToFtp();
     }
 
@@ -61,9 +61,9 @@ namespace Learning.Server.Repositories {
         }
 
         public FileUpload file { get; set; }
-        public async Task Test() {
-            //await Task.Factory.StartNew<bool>(SaveIamgeToFtp);
-        }
+        //public async Task Test() {
+        //    //await Task.Factory.StartNew<bool>(SaveIamgeToFtp);
+        //}
 
         public async Task<Media> SaveIamgeToFtp() {
             //csharptest/csharptest

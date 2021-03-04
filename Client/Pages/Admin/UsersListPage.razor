@@ -14,7 +14,7 @@
             <MudTh>Id</MudTh>
             <MudTh>Email</MudTh>
             <MudTh>Avatars</MudTh>
-            <MudTh>AccessLevel</MudTh>
+            <MudTh>Role</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Id</MudTd>
@@ -48,7 +48,7 @@
                     </RowTemplate>
                 </MudTable>
             </MudTd>
-        
+            <MudTd>@context.UserRole</MudTd>
 
         </RowTemplate>
     </MudTable>
@@ -227,6 +227,7 @@
 
     }
     public async void CloseOverlay() {
+        await Task.Delay(0);
         isVisible = !isVisible;
     }
 
