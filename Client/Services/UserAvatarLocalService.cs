@@ -36,8 +36,8 @@ namespace Learning.Client.Services {
             _localStorageService = localStorageService;
             
             _authService = authService;
-            _authService.LoggedIn += _authService_LoggedIn;
-            _authService.LoggedOut += _authService_LoggedOut;
+            //_authService.LoggedIn += _authService_LoggedIn;
+            //_authService.LoggedOut += _authService_LoggedOut;
 
             _userAvatarService = userAvatarService1;
 
@@ -48,12 +48,12 @@ namespace Learning.Client.Services {
             await Set(null);
         }
 
-        private async void _authService_LoggedIn() {
-            //throw new NotImplementedException();
-            //var state = await _authStateProvider.GetAuthenticationStateAsync();
-            //var user = state.User;
-            // get active user avatar from database
-        }
+        //private async void _authService_LoggedIn() {
+        //    //throw new NotImplementedException();
+        //    //var state = await _authStateProvider.GetAuthenticationStateAsync();
+        //    //var user = state.User;
+        //    // get active user avatar from database
+        //}
 
         private async void _userAvatarService_OnChange() {
             await Get();
