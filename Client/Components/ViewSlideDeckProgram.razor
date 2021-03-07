@@ -71,7 +71,7 @@
     IEnumerator<SlideDeckProgramEntry> entries;
 
     protected override async Task OnInitializedAsync() {
-        if (SlideDeckProgram.Entries != null) {
+        if (SlideDeckProgram != null && SlideDeckProgram.Entries != null) {
             entries = SlideDeckProgram.Entries.GetEnumerator();
             entries.MoveNext();
             entry = entries.Current;
