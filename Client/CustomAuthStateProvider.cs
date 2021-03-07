@@ -57,7 +57,7 @@ namespace Learning.Client {
                     Console.WriteLine("token is valid");
                     // adding the token to all http calls
                     _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true });
+                    await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true, UserId = "localStorage" });
                 }
                 
             }

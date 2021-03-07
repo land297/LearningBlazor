@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 namespace Learning.Client.Features {
     public partial class LoggedInState : State<LoggedInState> {
         public bool IsLoggedIn { get; private set; }
+        public string UserId { get; private set; }
         public override void Initialize() => IsLoggedIn = false;
 
 
         public class LoggedInAction : IAction {
             public bool IsLoggedIn { get; set; }
+            public string UserId { get; set; }
         }
 
 
@@ -24,6 +26,7 @@ namespace Learning.Client.Features {
 
             public override Task<Unit> Handle(LoggedInAction action, CancellationToken aCancellationToken) {
                 State.IsLoggedIn = action.IsLoggedIn;
+                State.UserId = action.UserId;
                 return Unit.Task;
             }
         }

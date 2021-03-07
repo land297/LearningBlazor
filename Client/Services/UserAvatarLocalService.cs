@@ -9,7 +9,7 @@ using Learning.Client.Features;
 
 namespace Learning.Client.Services {
     public interface IUserAvatarLocalService {
-        Task<UserAvatar> Get(bool raiseEvent);
+        //Task<UserAvatar> Get(bool raiseEvent);
         UserAvatar ActiveUserAvatar { get; }
         Task Set(UserAvatar userAvatar);
         Task Delete(UserAvatar userAvatar);
@@ -31,7 +31,7 @@ namespace Learning.Client.Services {
             ILocalStorageService localStorageService, IAuthService authService,
             IUserAvatarService userAvatarService1, IMediator mediator) {
             _userService = userService;
-            _userService.AuthenticatedUserChanged += _userAvatarService_OnChange;
+            //_userService.AuthenticatedUserChanged += _userAvatarService_OnChange;
 
             _localStorageService = localStorageService;
             
@@ -55,9 +55,9 @@ namespace Learning.Client.Services {
         //    // get active user avatar from database
         //}
 
-        private async void _userAvatarService_OnChange() {
-            await Get();
-        }
+        //private async void _userAvatarService_OnChange() {
+        //    await Get();
+        //}
 
         public async Task Set(UserAvatar userAvatar) {
             //var id = _userService.GetUserId();
@@ -75,24 +75,24 @@ namespace Learning.Client.Services {
                 await _userAvatarService.Delete(userAvatar);
             }
         }
-        public async Task<UserAvatar> Get(bool raiseEvent = true) {
-            if (_userService.GetUserId() == string.Empty) { return null; }
-            //var id = _userService.GetUserId();
-            //if (string.IsNullOrEmpty(id)) { return null; }
-            Console.WriteLine("!! UserAvatarLocalService Get");
-            ActiveUserAvatar = await _localStorageService.GetItemAsync<UserAvatar>("activeUserAvatar" + _userService.GetUserId());
-            if (ActiveUserAvatar != null && ActiveUserAvatar.UserId.ToString() == _userService.GetUserId()) {
-                Console.WriteLine("!! returning active avatar " + ActiveUserAvatar.Name);
-            } else {
-                var response = await _userAvatarService.GetActive();
-                if (response.Success) {
-                    await Set(response.Data);
-                }
-            }
-            if (raiseEvent) {
-                UserAvatarChanged?.Invoke(ActiveUserAvatar);
-            }
-            return ActiveUserAvatar;
-        }
+        //public async Task<UserAvatar> Get(bool raiseEvent = true) {
+        //    if (_userService.GetUserId() == string.Empty) { return null; }
+        //    //var id = _userService.GetUserId();
+        //    //if (string.IsNullOrEmpty(id)) { return null; }
+        //    Console.WriteLine("!! UserAvatarLocalService Get");
+        //    ActiveUserAvatar = await _localStorageService.GetItemAsync<UserAvatar>("activeUserAvatar" + _userService.GetUserId());
+        //    if (ActiveUserAvatar != null && ActiveUserAvatar.UserId.ToString() == _userService.GetUserId()) {
+        //        Console.WriteLine("!! returning active avatar " + ActiveUserAvatar.Name);
+        //    } else {
+        //        var response = await _userAvatarService.GetActive();
+        //        if (response.Success) {
+        //            await Set(response.Data);
+        //        }
+        //    }
+        //    if (raiseEvent) {
+        //        UserAvatarChanged?.Invoke(ActiveUserAvatar);
+        //    }
+        //    return ActiveUserAvatar;
+        //}
     }
 }

@@ -41,18 +41,24 @@ namespace Learning.Client.Services {
             _localStorageService = localStorageService;
             _authStateProvider = authStateProvider;
             Mediator = mediator;
+
+            //_authStateProvider.AuthenticationStateChanged += _authStateProvider_AuthenticationStateChanged;
         }
 
+        //private void _authStateProvider_AuthenticationStateChanged(Task<AuthenticationState> task) {
+        //    var state = task.Result.User.Identity.IsAuthenticated;
+        //    Console.WriteLine("!! _authStateProvider_AuthenticationStateChanged login " + state);
+        //}
+
         public async Task<sr<string>> Login(Login login) {
+            Console.WriteLine("!! AuthService login");
             var response = await _http.PostAsJsonAsync("api/auth/login", login);
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode) {
                 await _localStorageService.SetItemAsync("token", content);
-
-                
                 
                 IsLoggedIn = true;
-                await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true });
+                await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true, UserId = login.Email });
                 LoggedIn?.Invoke();
                 return sr<string>.GetSuccess(content);
             } else {
