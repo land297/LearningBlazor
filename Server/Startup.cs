@@ -45,6 +45,7 @@ namespace Learning.Server {
                  };
              });
 
+            services.AddScoped<IAzureRepo, AzureRepo>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<ISlideDeckRepo, SlideDeckRepo>();
@@ -56,6 +57,14 @@ namespace Learning.Server {
             services.AddScoped<ICompletedSlideDeckProgramRepo, CompletedSlideDeckProgramRepo>();
             services.AddScoped<IUserAccessSlideDeckProgramRepo, UserAccessSlideDeckProgramRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
+
+            //services.AddCors(policy =>
+            //{
+            //    policy.AddPolicy("CorsPolicy", opt => opt
+            //    .AllowAnyOrigin()
+            //    .AllowAnyHeader()
+            //    .AllowAnyMethod());
+            //});
 
         }
 
@@ -74,6 +83,9 @@ namespace Learning.Server {
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
+            //app.UseCors("CorsPolicy");
+
+
             app.UseRouting();
             // Added
             app.UseAuthentication();
@@ -84,6 +96,8 @@ namespace Learning.Server {
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
             });
+
+           
         }
     }
 }
