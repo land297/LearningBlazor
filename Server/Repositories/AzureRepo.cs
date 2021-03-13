@@ -1,6 +1,7 @@
 ﻿using Azure.Storage;
 using Azure.Storage.Blobs;
 using Learning.Server.DbContext;
+using Learning.Server.Service;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,12 @@ namespace Learning.Server.Repositories {
 
     public class AzureRepo : IAzureRepo {
         readonly IConfiguration _config;
-        private readonly AppDbContext _dbContext;
-        public AzureRepo(AppDbContext dbContext, IConfiguration config) {
-            _dbContext = dbContext;
+        
+        
+        public AzureRepo( IConfiguration config) {
+           
             _config = config;
+           
         }
 
         public async Task<Uri> UploadFileToStorage(Stream stream, string container, string fileName) {

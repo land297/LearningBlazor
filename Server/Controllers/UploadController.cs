@@ -1,4 +1,6 @@
-﻿using Learning.Server.Repositories;
+﻿using Learning.Server.DbContext;
+using Learning.Server.Repositories;
+using Learning.Server.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +20,12 @@ namespace Learning.Server.Controllers {
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
-
-        public UploadController(IAzureRepo azureRepo) {
+        readonly IUserService _userService;
+        private readonly AppDbContext _dbContext;
+        public UploadController(IAzureRepo azureRepo, IUserService userService, AppDbContext dbContext) {
             _azureRepo = azureRepo;
+            _userService = userService;
+            _dbContext = dbContext;
         }
 
         private IAzureRepo _azureRepo { get; set; }
@@ -41,6 +46,7 @@ namespace Learning.Server.Controllers {
 
             if (section == null)
                 throw new Exception("No sections in multipart defined");
+            var exercise = section.Headers.GetValueOrDefault("exercise");
 
             if (!ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition))
                 throw new Exception("No content disposition in multipart defined");
@@ -50,12 +56,14 @@ namespace Learning.Server.Controllers {
                 fileName = contentDisposition.FileName.ToString();
             }
 
+            fileName = _userService.GetUserId().ToString() + "_" + exercise.ToString() + fileName.Split('.').Last();
             if (string.IsNullOrEmpty(fileName))
                 throw new Exception("No filename defined.");
 
             using var fileStream = section.Body;
             
-            await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh",fileName);
+            var uri = await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh",fileName);
+            
             //await SendFileSomewhere(fileStream);
         }
     }

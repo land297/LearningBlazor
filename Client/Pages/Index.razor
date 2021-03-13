@@ -30,7 +30,7 @@ Welcome to your new app.
 
     private async Task SetCoverImage(InputFileChangeEventArgs e) {
         var maxAllowedFiles = 1;
-        var format = "image/png";
+        //var format = "image/png";
 
         foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles)) {
             //var resizedFile = await imageFile.RequestImageFileAsync(format,
@@ -44,8 +44,10 @@ Welcome to your new app.
             using (var ms = imageFile.OpenReadStream(imageFile.Size)) {
                 var content = new MultipartFormDataContent();
                 content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+                content.Headers.Add("exercise", "123");
                 content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
                 var response = await _http.PostAsync("api/upload", content);
+
                 Console.WriteLine(response.IsSuccessStatusCode);
                 Console.WriteLine(response.StatusCode);
                 Console.WriteLine("trolololol");

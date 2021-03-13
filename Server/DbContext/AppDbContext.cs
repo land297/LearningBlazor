@@ -19,6 +19,9 @@ namespace Learning.Server.DbContext {
         public DbSet<CompletedSlideDeckProgram> CompletedSlideDeckPrograms { get; set; }
         public DbSet<UserAvatar> UserAvatars { get; set; }
         public DbSet<Blob> Blobs { get; set; }
+        public DbSet<AzureBlob> AzureBlobs { get; set; }
+        public DbSet<CompletedProgramReviewable> CompletedProgramReviewables { get; set; }
+        public DbSet<ReviewableAzureBlob> ReviewableAzureBlobs { get; set; }
 
     }
 }
