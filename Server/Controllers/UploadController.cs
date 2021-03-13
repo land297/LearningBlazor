@@ -34,7 +34,7 @@ namespace Learning.Server.Controllers {
         [DisableFormValueModelBinding]
         [RequestSizeLimit(MaxFileSize)]
         [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-        public async Task ReceiveFile() {
+        public async Task<IActionResult> ReceiveFile() {
             if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
                 throw new Exception("Not a multipart request");
 
@@ -45,26 +45,31 @@ namespace Learning.Server.Controllers {
             var section = await reader.ReadNextSectionAsync();
 
             if (section == null)
-                throw new Exception("No sections in multipart defined");
-            var exercise = section.Headers.GetValueOrDefault("exercise");
+                return BadRequest();
+
+            var exercise = Request.Headers.TryGetValue("exercise", out Microsoft.Extensions.Primitives.StringValues value);
+            var t = value.ToString();
 
             if (!ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition))
                 throw new Exception("No content disposition in multipart defined");
 
-            var fileName = contentDisposition.FileNameStar.ToString();
-            if (string.IsNullOrEmpty(fileName)) {
-                fileName = contentDisposition.FileName.ToString();
+            var fileName2 = contentDisposition.FileNameStar.ToString();
+            if (string.IsNullOrEmpty(fileName2)) {
+                fileName2 = contentDisposition.FileName.ToString();
             }
 
-            fileName = _userService.GetUserId().ToString() + "_" + exercise.ToString() + fileName.Split('.').Last();
-            if (string.IsNullOrEmpty(fileName))
+            var fileName = _userService.GetUserId().ToString() + "_" + value.ToString() + "." + fileName2.Split('.').Last();
+            if (string.IsNullOrEmpty(fileName2))
                 throw new Exception("No filename defined.");
 
             using var fileStream = section.Body;
-            
-            var uri = await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh",fileName);
-            
+
+            var uri = await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh", fileName);
+            await _dbContext.AzureBlobs.AddAsync(new Shared.DbModels.AzureBlob() { Uri = uri.ToString(), Name = fileName2 });
+            await _dbContext.SaveChangesAsync();
             //await SendFileSomewhere(fileStream);
+
+            return Ok();
         }
     }
 }
