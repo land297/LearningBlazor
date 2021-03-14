@@ -1,6 +1,7 @@
 ﻿using Learning.Server.DbContext;
 using Learning.Server.Repositories;
 using Learning.Server.Service;
+using Learning.Shared.DbModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,13 @@ namespace Learning.Server.Controllers {
         // limits for request body data.
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
         readonly IUserService _userService;
+        readonly IUserAvatarRepo _userAvatarRepo;
         private readonly AppDbContext _dbContext;
-        public UploadController(IAzureRepo azureRepo, IUserService userService, AppDbContext dbContext) {
+        public UploadController(IAzureRepo azureRepo, IUserService userService, IUserAvatarRepo IUserAvatarRepo, AppDbContext dbContext) {
             _azureRepo = azureRepo;
             _userService = userService;
             _dbContext = dbContext;
+            _userAvatarRepo = IUserAvatarRepo;
         }
 
         private IAzureRepo _azureRepo { get; set; }
@@ -47,25 +50,43 @@ namespace Learning.Server.Controllers {
             if (section == null)
                 return BadRequest();
 
-            var exercise = Request.Headers.TryGetValue("exercise", out Microsoft.Extensions.Primitives.StringValues value);
-            var t = value.ToString();
+            Request.Headers.TryGetValue("CompletedSlideDeckProgram", out Microsoft.Extensions.Primitives.StringValues programIdStringValue);
+            var reviewable = new CompletedProgramReviewable();
+            reviewable.CompletedSlideDeckProgramId = int.Parse(programIdStringValue.ToString());
+            var activeUserAvatar = await _userAvatarRepo.GetActiveInContext();
+            reviewable.UserAvatarId = activeUserAvatar.Id;
 
-            if (!ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition))
-                throw new Exception("No content disposition in multipart defined");
+            var i = 0;
+            do {
+                if (!ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition))
+                    throw new Exception("No content disposition in multipart defined");
 
-            var fileName2 = contentDisposition.FileNameStar.ToString();
-            if (string.IsNullOrEmpty(fileName2)) {
-                fileName2 = contentDisposition.FileName.ToString();
-            }
+                var fileName2 = contentDisposition.FileNameStar.ToString();
+                if (string.IsNullOrEmpty(fileName2)) {
+                    fileName2 = contentDisposition.FileName.ToString();
+                }
 
-            var fileName = _userService.GetUserId().ToString() + "_" + value.ToString() + "." + fileName2.Split('.').Last();
-            if (string.IsNullOrEmpty(fileName2))
-                throw new Exception("No filename defined.");
+                
+                var fileName = _userService.GetUserId().ToString() + "_" + programIdStringValue.ToString() + "_" + activeUserAvatar.Id + "_" + i + "." + fileName2.Split('.').Last();
+                if (string.IsNullOrEmpty(fileName2))
+                    throw new Exception("No filename defined.");
 
-            using var fileStream = section.Body;
+                using var fileStream = section.Body;
 
-            var uri = await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh", fileName);
-            await _dbContext.AzureBlobs.AddAsync(new Shared.DbModels.AzureBlob() { Uri = uri.ToString(), Name = fileName2 });
+                var uri = await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh", fileName);
+
+
+                reviewable.Content.Add(new Shared.DbModels.AzureBlob() { Uri = uri.ToString(), Name = fileName2 });
+                i++;
+                section = await reader.ReadNextSectionAsync();
+            } while (section != null);
+
+
+
+            
+
+
+            await _dbContext.CompletedProgramReviewables.AddAsync(reviewable);
             await _dbContext.SaveChangesAsync();
             //await SendFileSomewhere(fileStream);
 

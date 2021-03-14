@@ -13,6 +13,7 @@
 @using BlazorState
 @inherits BlazorStateComponent
 @using Learning.Client.Features
+@inject HttpClient _http
 
 @if (!hasLoaded) {
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
@@ -26,55 +27,119 @@
     <MudTextField @bind-Value="CompletedDescription" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
     <MudRating @bind-SelectedValue="selectedVal"></MudRating>
     <MudButton OnClick="Save">Save</MudButton>
-    
+    <AuthorizeView Roles="Admin, ContentCreator,Premium">
+        <Authorized>
+            <MudList>
+                @foreach (var file in files) {
+                    <MudListItem Text="@file.Key.Name" />
+                }
+            </MudList>
+            <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
+            <MudFab HtmlTag="label"
+                    Color="Color.Secondary"
+                    Icon="@Icons.Material.Filled.Image"
+                    Label="Load Cover Image"
+                    for="fileInput" />
+        </Authorized>
+    </AuthorizeView>
 </MudContainer>
 }
-        @code {
-            ActiveUserAvatarState ActiveUserAvatarState => GetState<ActiveUserAvatarState>();
+@code {
+        ActiveUserAvatarState ActiveUserAvatarState => GetState<ActiveUserAvatarState>();
 
-            [Parameter]
-            public int DeckId { get; set; }
-            [Parameter]
-            public string Slug { get; set; }
-        private SlideDeckProgram SlideDeckProgram = new SlideDeckProgram();
-        private bool hasLoaded = false;
-        private bool isCompleted = false;
-        protected override async Task OnInitializedAsync() {
-            if (DeckId != default(int)) {
-                var sr = await SlideDeckProgramService.Get(DeckId);
-                if (sr.Success) {
-                    SlideDeckProgram = sr.Data;
-                } else {
-                    Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
-                }
-            }
-            hasLoaded = true;
-        }
-
-        string CompletedDescription;
-        int selectedVal = 0;
-        public async Task Save() {
-
-            isCompleted = true;
-            var completed = new CompletedSlideDeckProgram();
-            completed.SlideDeckProgramId = SlideDeckProgram.Id;
-            completed.UserAvatarId = ActiveUserAvatarState.UserAvatar.Id;
-            completed.Comment = CompletedDescription;
-            completed.CompletedOn = DateTime.UtcNow;
-            completed.UserAvatarFeedback = selectedVal;
-
-            var sr = await CompletedProgram.Save(completed);
+        [Parameter]
+        public int DeckId { get; set; }
+        [Parameter]
+        public string Slug { get; set; }
+    private SlideDeckProgram SlideDeckProgram = new SlideDeckProgram();
+    private bool hasLoaded = false;
+    private bool isCompleted = false;
+    protected override async Task OnInitializedAsync() {
+        if (DeckId != default(int)) {
+            var sr = await SlideDeckProgramService.Get(DeckId);
             if (sr.Success) {
-                Snackbar.Add($"Saved", Severity.Success);
-                NavigationManager.NavigateTo("/");
+                SlideDeckProgram = sr.Data;
             } else {
-                Snackbar.Add($"Could not save completed program source. Error: {sr.Message}", Severity.Error);
+                Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
             }
+        }
+        hasLoaded = true;
+    }
+
+    string CompletedDescription;
+    int selectedVal = 0;
+    CompletedSlideDeckProgram savedProgram;
+    public async Task Save() {
+
+        isCompleted = true;
+        var completed = new CompletedSlideDeckProgram();
+        completed.SlideDeckProgramId = SlideDeckProgram.Id;
+        completed.UserAvatarId = ActiveUserAvatarState.UserAvatar.Id;
+        completed.Comment = CompletedDescription;
+        completed.CompletedOn = DateTime.UtcNow;
+        completed.UserAvatarFeedback = selectedVal;
+
+        var sr = await CompletedProgram.Save(completed);
+        if (sr.Success) {
+            await Upload(sr.Data);
+            Snackbar.Add($"Saved", Severity.Success);
+            NavigationManager.NavigateTo("/");
+        } else {
+            Snackbar.Add($"Could not save completed program source. Error: {sr.Message}", Severity.Error);
+        }
+
+    }
+    public async Task ProgramCompleted(SlideDeckProgram progarm) {
+        isCompleted = true;
+
+        await Task.Delay(0);
+    }
+
+    private Dictionary<IBrowserFile, byte[]> files = new Dictionary<IBrowserFile,byte[]>();
+    private async Task SetCoverImage(InputFileChangeEventArgs e) {
+        //var format = "image/png";
+
+        foreach (var file in e.GetMultipleFiles()) {
+            //var resizedFile = await imageFile.RequestImageFileAsync(format,
+            //    100, 100);
+            //await OnSubmit(imageFile);
+            //var buffer = new byte[imageFile.Size];
+            //await imageFile.OpenReadStream().ReadAsync(buffer);
+
+            //var response = await _http.PostAsync("api/upload/",new StreamContent(resizedFile.OpenReadStream()));
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream(file.Size).ReadAsync(buffer);
+            files.Add(file,buffer);
+            //await Upload();
 
         }
-        public async Task ProgramCompleted(SlideDeckProgram progarm) {
-            isCompleted = true;
 
-            await Task.Delay(0);
+        await Task.Delay(0);
+    }
+
+    private async Task Upload(CompletedSlideDeckProgram savedProgram) {
+        if (files.Count == 0) { return; }
+
+        var content = new MultipartFormDataContent();
+        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+        content.Headers.Add("CompletedSlideDeckProgram", savedProgram.Id.ToString());
+
+        var streams = new List<System.IO.Stream>();
+        foreach (var file in files) {
+
+            var stream = new System.IO.MemoryStream(file.Value);
+            content.Add(new StreamContent(stream, Convert.ToInt32(file.Key.Size)), file.Key.ContentType, file.Key.Name);
+            streams.Add(stream);
         }
+
+        var response = await _http.PostAsync("api/upload", content);
+
+        Console.WriteLine(response.IsSuccessStatusCode);
+        Console.WriteLine(response.StatusCode);
+        Console.WriteLine("trolololol");
+
+        foreach (var stream in streams) {
+            await stream.DisposeAsync();
         }
+    }
+}

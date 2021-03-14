@@ -17,7 +17,7 @@ namespace Learning.Shared.Models {
             All, Premium, Free
         }
         public enum UserRole {
-            Default, Admin, ContentCreator, Basic
+            Default, Admin, ContentCreator, Basic, Premium
         }
     }
 }
