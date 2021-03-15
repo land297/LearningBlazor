@@ -14,6 +14,7 @@ namespace Learning.Client.Services {
         Task<sr<CompletedSlideDeckProgram>> Save(CompletedSlideDeckProgram completedProgram);
         Task<sr<List<CompletedSlideDeckProgram>>> GetAll(UserAvatar userAvatar);
         Task<sr<CompletedSlideDeckProgram>> GetShared(int id);
+        Task<sr<CompletedSlideDeckProgram>> Get(int id);
     }
 
     public class CompletedSlideDeckProgramService : ICompletedSlideDeckProgramService {
@@ -32,6 +33,9 @@ namespace Learning.Client.Services {
         }
         public async Task<sr<CompletedSlideDeckProgram>> GetShared(int id) {
             return await _base.Get<CompletedSlideDeckProgram>($"api/CompletedSlideDeckProgram/all/shared/{id}");
+        }
+        public async Task<sr<CompletedSlideDeckProgram>> Get(int id) {
+            return await _base.Get<CompletedSlideDeckProgram>($"api/CompletedSlideDeckProgram/any/{id}");
         }
     }
 }

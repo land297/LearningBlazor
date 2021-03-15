@@ -132,7 +132,7 @@
             streams.Add(stream);
         }
 
-        var response = await _http.PostAsync("api/upload", content);
+        var response = await _http.PostAsync("api/CompletedProgramReviewables", content);
 
         Console.WriteLine(response.IsSuccessStatusCode);
         Console.WriteLine(response.StatusCode);

@@ -15,6 +15,7 @@ namespace Learning.Server.Repositories {
         Task<IList<CompletedSlideDeckProgram>> GetAll();
         Task<IList<CompletedSlideDeckProgram>> GetAllForUserAvatar(int id);
         Task<CompletedSlideDeckProgram> GetShared(int id);
+        Task<CompletedSlideDeckProgram> GetAny(int id);
     }
 
     public class CompletedSlideDeckProgramRepo : RepoBase2<CompletedSlideDeckProgram>, 
@@ -61,6 +62,12 @@ namespace Learning.Server.Repositories {
             } else if (!result.IsPublic) {
                 result = null;
             }
+            return result;
+        }
+
+        public async Task<CompletedSlideDeckProgram> GetAny(int id) {
+            var result = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).SingleOrDefaultAsync();
+            result.UserAvatar = await _userAvatar.Get(result.UserAvatarId);
             return result;
         }
 

@@ -8,6 +8,7 @@ namespace Learning.Shared.DbModels {
     public class AzureBlob : IdEntity<AzureBlob> {
         public string Uri { get; set; }
         public string Name { get; set; }
+        public string Mime { get; set; }
         public override void CopyValues(AzureBlob source, ref AzureBlob copy) {
             throw new NotImplementedException();
         }

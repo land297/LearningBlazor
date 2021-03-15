@@ -76,6 +76,7 @@ namespace Learning.Client {
 
             builder.Services.AddScoped<ICompletedSlideDeckProgramService, CompletedSlideDeckProgramService>();
             builder.Services.AddScoped<IUserAccessSlideDeckProgramService, UserAccessSlideDeckProgramService>();
+            builder.Services.AddScoped<ICompletedReviewableProgramServices, CompletedReviewableProgramServices>();
 
             await builder.Build().RunAsync();
         }

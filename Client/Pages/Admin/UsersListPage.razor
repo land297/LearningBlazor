@@ -1,5 +1,5 @@
 ﻿@page "/admin/usersList"
-<h3>UsersListPage</h3>
+
 @inject Learning.Client.Services.IUserService UsersService
 @inject Learning.Client.Services.ISlideDeckProgramService SlideDeckProgramService
 @inject Learning.Client.Services.IUserAccessSlideDeckProgramService UserAccessSlideDeckProgramService
@@ -7,6 +7,9 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @using Learning.Shared.DbModels
+
+
+<h3>UsersListPage</h3>
 
 @if (Users != null) {
     <MudTable Items="@Users" Hover="true" Breakpoint="Breakpoint.Sm">

@@ -1,0 +1,41 @@
+﻿@page "/admin/CompletedReviewableProgramPage"
+
+@inject Learning.Client.Services.ICompletedReviewableProgramServices completedReviewablePrograms
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@using Learning.Shared.DbModels
+
+
+<h3>CompletedReviewableProgramPage</h3>
+@if (list != null) {
+    <MudTable Items="@list" Hover="true" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh>CompletedSlideDeckProgramId</MudTh>
+            <MudTh>Id</MudTh>
+            <MudTh>UserAvatarId</MudTh>
+            <MudTh>View</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.CompletedSlideDeckProgramId</MudTd>
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.UserAvatarId</MudTd>
+            <MudTd>
+                <MudButton OnClick="@(() => NavigationManager.
+                                      NavigateTo($"admin/CompletedReviewableProgramViewPage/{context.CompletedSlideDeckProgramId}/{context.UserAvatarId}/{context.Id}"))">View></MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code {
+    List<CompletedProgramReviewable> list;
+    protected override async Task OnInitializedAsync() {
+        var r = await completedReviewablePrograms.GetUnreviewd();
+        if (r.Success) {
+            list = r.Data;
+        } else {
+            Snackbar.Add($"Could not get publushed. Error: {r.Message}", Severity.Error);
+        }
+    }
+}
+

@@ -2,6 +2,7 @@
 using Learning.Server.Repositories;
 using Learning.Server.Service;
 using Learning.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -36,6 +37,11 @@ namespace Learning.Server.Controllers {
         [HttpGet("all/shared/{id}")]
         public async Task<IActionResult> GetShared(int id) {
             return await Ok(() => _completedProgramRepo.GetShared(id));
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("any/{id}")]
+        public async Task<IActionResult> GetAny(int id) {
+            return await Ok(() => _completedProgramRepo.GetAny(id));
         }
     }
 }

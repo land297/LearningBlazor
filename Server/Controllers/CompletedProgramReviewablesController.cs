@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -15,16 +16,16 @@ using System.Threading.Tasks;
 namespace Learning.Server.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class UploadController : ControllerBase {
+    public class CompletedProgramReviewablesController : ControllerBase {
         private const long MaxFileSize = 10L * 1024L * 1024L * 1024L; // 10GB, adjust to your need
-                                                                      
+
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
         readonly IUserService _userService;
         readonly IUserAvatarRepo _userAvatarRepo;
         private readonly AppDbContext _dbContext;
-        public UploadController(IAzureRepo azureRepo, IUserService userService, IUserAvatarRepo IUserAvatarRepo, AppDbContext dbContext) {
+        public CompletedProgramReviewablesController(IAzureRepo azureRepo, IUserService userService, IUserAvatarRepo IUserAvatarRepo, AppDbContext dbContext) {
             _azureRepo = azureRepo;
             _userService = userService;
             _dbContext = dbContext;
@@ -41,7 +42,7 @@ namespace Learning.Server.Controllers {
             if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
                 throw new Exception("Not a multipart request");
 
-            var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType),_defaultFormOptions.MultipartBoundaryLengthLimit);
+            var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType), _defaultFormOptions.MultipartBoundaryLengthLimit);
             var reader = new MultipartReader(boundary, Request.Body);
 
             // note: this is for a single file, you could also process multiple files
@@ -66,7 +67,6 @@ namespace Learning.Server.Controllers {
                     fileName2 = contentDisposition.FileName.ToString();
                 }
 
-                
                 var fileName = _userService.GetUserId().ToString() + "_" + programIdStringValue.ToString() + "_" + activeUserAvatar.Id + "_" + i + "." + fileName2.Split('.').Last();
                 if (string.IsNullOrEmpty(fileName2))
                     throw new Exception("No filename defined.");
@@ -74,16 +74,16 @@ namespace Learning.Server.Controllers {
                 using var fileStream = section.Body;
 
                 var uri = await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh", fileName);
+                
 
-
-                reviewable.Content.Add(new Shared.DbModels.AzureBlob() { Uri = uri.ToString(), Name = fileName2 });
+                reviewable.Content.Add(new Shared.DbModels.AzureBlob() { Uri = uri.ToString(), Name = fileName2, Mime = contentDisposition.Name.ToString()});
                 i++;
                 section = await reader.ReadNextSectionAsync();
             } while (section != null);
 
 
 
-            
+
 
 
             await _dbContext.CompletedProgramReviewables.AddAsync(reviewable);
@@ -92,5 +92,12 @@ namespace Learning.Server.Controllers {
 
             return Ok();
         }
+
+        [HttpGet("unreviewd")]
+        public async Task<IActionResult> GetAllUnreviewd() {
+            var all = await _dbContext.CompletedProgramReviewables.Include(x => x.Content).Where(x => !x.IsReviewed).ToListAsync();
+            return Ok(all);
+        }
+
     }
 }
