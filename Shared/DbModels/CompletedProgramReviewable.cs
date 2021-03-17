@@ -15,6 +15,8 @@ namespace Learning.Shared.DbModels {
         public int UserAvatarId { get; set; }
         public UserAvatar UserAvatar { get; set; }
         public bool IsReviewed { get; set; }
+        public bool IsReviewReadByUser { get; set; }
+        public string ReviewedComment { get; set; }
 
         public List<AzureBlob> Content { get; set; } = new List<AzureBlob>();
         public override void CopyValues(CompletedProgramReviewable source, ref CompletedProgramReviewable copy) {
