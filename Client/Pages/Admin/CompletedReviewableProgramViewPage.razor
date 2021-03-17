@@ -1,4 +1,4 @@
-﻿@page "/CompletedReviewableProgramViewPage/{CompletedSlideDeckProgramId:int}/{UserAvatarId:int}/{CompletedProgramReviewable:int}"
+﻿@page "/admin/CompletedReviewableProgramViewPage/{CompletedProgramReviewableEntry:int}"
 @using Learning.Shared.DbModels
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
 @inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedPrograms
@@ -11,13 +11,13 @@
     <MudText Typo="Typo.body2">@unreviewed.CompletedSlideDeckProgram.Comment</MudText>
     @foreach (var item in unreviewed.Content) {
         <MudText Typo="Typo.body1">@item.Name</MudText>
-        if (item.Mime.Contains("video")) {
+        if (item.Mime !=  null && item.Mime.Contains("video")) {
             <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
                            style="max-width:400px;"
                            controls="controls">
                 <source src="@item.Uri" type="video/mp4" />
             </BlazoredVideo>
-        } else if (item.Mime.Contains("image")) {
+        } else if (item.Mime != null && item.Mime.Contains("image")) {
             <div>
                 <img src="@item.Uri" class="width:100%;" />
             </div>
@@ -27,25 +27,26 @@
     }
 }
 @code {
+    //[Parameter]
+    //public int CompletedSlideDeckProgramId { get; set; }
+    //[Parameter]
+    //public int UserAvatarId { get; set; }
     [Parameter]
-    public int CompletedSlideDeckProgramId { get; set; }
-    [Parameter]
-    public int UserAvatarId { get; set; }
-    [Parameter]
-    public int CompletedProgramReviewable { get; set; }
+    public int CompletedProgramReviewableEntry { get; set; }
 
     CompletedProgramReviewable unreviewed;
     bool loading = true;
     BlazoredVideo MyBlazorVideo;
 
     protected override async Task OnInitializedAsync() {
-        var r = await completedReviewablePrograms.GetUnreviewd(CompletedProgramReviewable);
+        var r = await completedReviewablePrograms.GetUnreviewd(CompletedProgramReviewableEntry);
         if (r.Success) {
             unreviewed = r.Data;
         } else {
             Snackbar.Add($"Could not get CompletedProgramReviewable. Error: {r.Message}", Severity.Error);
         }
 
+        if (unreviewed == null) { return; }
         //var ur = await UserAvatars.Get(UserAvatarId);
         //if (ur.Success) {
         //    unreviewed.UserAvatar = ur.Data;
@@ -53,7 +54,7 @@
         //    Snackbar.Add($"Could not get userAvatar. Error: {r.Message}", Severity.Error);
         //}
 
-        var cr = await CompletedPrograms.Get(UserAvatarId);
+        var cr = await CompletedPrograms.Get(unreviewed.CompletedSlideDeckProgramId);
         if (cr.Success) {
             unreviewed.CompletedSlideDeckProgram = cr.Data;
             unreviewed.UserAvatar = cr.Data.UserAvatar;

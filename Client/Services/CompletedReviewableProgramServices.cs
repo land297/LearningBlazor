@@ -23,7 +23,7 @@ namespace Learning.Client.Services {
             return await _base.Get<List<CompletedProgramReviewable>>("api/CompletedProgramReviewables/unreviewd");
         }
         public async Task<sr<CompletedProgramReviewable>> GetUnreviewd(int id) {
-            return await _base.Get<CompletedProgramReviewable>($"api/CompletedProgramReviewables/unreviewd/{id}");
+            return await _base.Get<CompletedProgramReviewable>($"api/CompletedProgramReviewables/theunreviewd/{id}");
         }
         public async Task<sr<CompletedProgramReviewable>> GetAllForUserAvatar() {
             //return await GetAny(id);

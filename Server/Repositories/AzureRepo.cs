@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace Learning.Server.Repositories {
     public interface IAzureRepo {
         Task<Uri> UploadFileToStorage(Stream stream, string container, string fileName);
+        Task<Uri> GetSasUriForBlob(Uri uri);
     }
 
     public class AzureRepo : IAzureRepo {
@@ -39,10 +40,23 @@ namespace Learning.Server.Repositories {
             // Create the blob client.
             BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
 
+            
             // Upload the file
             await blobClient.UploadAsync(stream, true);
 
             return blobUri;
+        }
+
+        public async Task<Uri> GetSasUriForBlob(Uri uri) {
+            var accuntName = _config["AppSettings:AzureAccountName"];
+            var key = _config["AppSettings:AzureAccountKey"];
+
+            StorageSharedKeyCredential storageCredentials = new StorageSharedKeyCredential(accuntName, key);
+            
+            // Create the blob client.
+            BlobClient blobClient = new BlobClient(uri, storageCredentials);
+            await Task.Delay(0);
+            return blobClient.GenerateSasUri(Azure.Storage.Sas.BlobSasPermissions.Read, DateTimeOffset.Now.AddHours(1));
         }
     }
 }

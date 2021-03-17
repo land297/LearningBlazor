@@ -99,5 +99,14 @@ namespace Learning.Server.Controllers {
             return Ok(all);
         }
 
+        [HttpGet("theunreviewd/{id}")]
+        public async Task<IActionResult> GetUnreviewdFromId(int id) {
+            var entry = await _dbContext.CompletedProgramReviewables.Include(x => x.Content).Where(x => x.Id == id).SingleOrDefaultAsync();
+            foreach (var content in entry.Content) {
+                content.Uri = (await _azureRepo.GetSasUriForBlob(new Uri(content.Uri))).ToString();
+            }
+            return Ok(entry);
+        }
+
     }
 }
