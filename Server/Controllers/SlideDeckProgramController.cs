@@ -31,11 +31,11 @@ namespace Learning.Server.Controllers {
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsUser() {
-            return await Ok(() => _slideDeckProgramRepo.GetAllAsUser());
+            return await TryOk(() => _slideDeckProgramRepo.GetAllAsUser());
         }
         [HttpGet("contentcreator")]
         public async Task<IActionResult> GetAllAsContentCreator() {
-            return await Ok(() => _slideDeckProgramRepo.GetAllAsContentCreator());
+            return await TryOk(() => _slideDeckProgramRepo.GetAllAsContentCreator());
         }
         //TODO: refactor get methods
         [HttpGet("{id:int}")]
@@ -49,7 +49,7 @@ namespace Learning.Server.Controllers {
             return await Get<SlideDeckProgram>(_slideDeckProgramRepo.GetFirst(slug));
         }
         public async Task<IActionResult> Get<T>(Task<T> taskToGetFirst) {
-            return await Ok<T>(() => taskToGetFirst);
+            return await TryOk<T>(() => taskToGetFirst);
         }
     }
 }

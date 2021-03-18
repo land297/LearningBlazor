@@ -27,21 +27,21 @@ namespace Learning.Server.Controllers {
         }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll() {
-            return await Ok(() => _completedProgramRepo.GetAll());
+            return await TryOk(() => _completedProgramRepo.GetAll());
             
         }
         [HttpGet("all/{id}")]
         public async Task<IActionResult> GetAll(int id) {
-            return await Ok(() => _completedProgramRepo.GetAllForUserAvatar(id));
+            return await TryOk(() => _completedProgramRepo.GetAllForUserAvatar(id));
         }
         [HttpGet("all/shared/{id}")]
         public async Task<IActionResult> GetShared(int id) {
-            return await Ok(() => _completedProgramRepo.GetShared(id));
+            return await TryOk(() => _completedProgramRepo.GetShared(id));
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("any/{id}")]
         public async Task<IActionResult> GetAny(int id) {
-            return await Ok(() => _completedProgramRepo.GetAny(id));
+            return await TryOk(() => _completedProgramRepo.GetAny(id));
         }
     }
 }

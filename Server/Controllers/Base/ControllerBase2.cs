@@ -29,7 +29,7 @@ namespace Learning.Server.Controllers.Base {
          * 
          */
         [NonAction]
-        public async Task<IActionResult> Ok<T>(Func<Task<T>> task) {
+        public async Task<IActionResult> TryOk<T>(Func<Task<T>> task) {
             try {
                 var result = await task.Invoke();
                 if (result == null) {

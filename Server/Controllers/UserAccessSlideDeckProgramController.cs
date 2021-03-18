@@ -28,16 +28,16 @@ namespace Learning.Server.Controllers {
         public async Task<IActionResult> GetViaUserAvatar(int id) {
             // TODO: need to check if user can get unpublished or not
             
-            return await Ok(() => _userAccessSlideDeckProgramRepo.Get(new UserAvatar { Id = id }));
+            return await TryOk(() => _userAccessSlideDeckProgramRepo.Get(new UserAvatar { Id = id }));
         
         }
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> RemoveAccessWithId(int id) {
-            return await Ok(() => RepoBase.Remove(id));
+            return await TryOk(() => RepoBase.Remove(id));
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAccessWithId(int id) {
-            return await Ok(() => _userAccessSlideDeckProgramRepo.GetIncluded(id));
+            return await TryOk(() => _userAccessSlideDeckProgramRepo.GetIncluded(id));
         }
         [HttpGet("user")]
         public async Task<IActionResult> GetViaUser(User u) {
@@ -46,7 +46,7 @@ namespace Learning.Server.Controllers {
             if (user == null) {
                 return BadRequest("No user");
             }
-            return await Ok(() => _userAccessSlideDeckProgramRepo.Get(user));
+            return await TryOk(() => _userAccessSlideDeckProgramRepo.Get(user));
         }
         [HttpPost]
         public async Task<IActionResult> Post(UserAccessSlideDeckProgram userAccess) {

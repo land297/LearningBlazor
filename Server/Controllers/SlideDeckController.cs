@@ -41,24 +41,24 @@ namespace Learning.Server.Controllers {
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsUser() {
-            return await Ok(() => _slideDeckRepo.GetAllAsUser());
+            return await TryOk(() => _slideDeckRepo.GetAllAsUser());
         }
         [HttpGet("contentcreator")]
         public async Task<IActionResult> GetAllAsContentCreator() {
-            return await Ok(() => _slideDeckRepo.GetAllAsContentCreator());
+            return await TryOk(() => _slideDeckRepo.GetAllAsContentCreator());
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id) {
             // TODO: need to check if user can get unpublished or not
             
-            return await Ok(() => _slideDeckRepo.Get(id));
+            return await TryOk(() => _slideDeckRepo.Get(id));
         }
         [HttpGet("{slug}")]
         public async Task<IActionResult> Get(string slug) {
             // TODO: need to check if user can get unpublished or not
 
-            return await Ok(() => _slideDeckRepo.Get(slug));
+            return await TryOk(() => _slideDeckRepo.Get(slug));
         }
 
     }
