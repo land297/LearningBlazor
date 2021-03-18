@@ -108,5 +108,17 @@ namespace Learning.Server.Controllers {
             return Ok(entry);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UploadReviewed(CompletedProgramReviewable reviewable) {
+            var entry = await _dbContext.CompletedProgramReviewables.Where(x => x.Id == reviewable.Id).SingleOrDefaultAsync();
+            if (entry != null) {
+                entry.IsReviewed = true;
+                entry.ReviewedComment = reviewable.ReviewedComment;
+                await _dbContext.SaveChangesAsync();
+                return Ok("Ok");
+            }
+            return BadRequest("Does not exist");
+        }
+
     }
 }

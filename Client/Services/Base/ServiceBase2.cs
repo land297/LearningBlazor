@@ -36,6 +36,16 @@ namespace Learning.Client.Services.Base {
 
             return await ReadResponse<RValue>(response);
         }
+        public async Task<sr<bool>> Put<TJson>(string uri, TJson json) {
+            var response = await _http.PutAsJsonAsync(uri, json);
+
+            if (response.IsSuccessStatusCode) {
+                return sr<bool>.GetSuccess(true);
+            } else {
+                var error = await response.Content.ReadAsStringAsync();
+                return sr<bool>.Get(response.Headers.Location + error);
+            }
+        }
         private static async Task<sr<RValue>> ReadResponse<RValue>(HttpResponseMessage response) {
             if (response.IsSuccessStatusCode) {
                 var stream = await response.Content.ReadAsStreamAsync();

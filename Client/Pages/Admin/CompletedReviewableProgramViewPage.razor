@@ -1,5 +1,7 @@
 ﻿@page "/admin/CompletedReviewableProgramViewPage/{CompletedProgramReviewableEntry:int}"
 @using Learning.Shared.DbModels
+@using Syncfusion.Blazor.RichTextEditor
+
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
 @inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedPrograms
 @inject Learning.Client.Services.ICompletedReviewableProgramServices completedReviewablePrograms
@@ -8,23 +10,40 @@
 
 <h3>CompletedReviewableProgramViewPage</h3>
 @if (!loading) {
-    <MudText Typo="Typo.body2">@unreviewed.CompletedSlideDeckProgram.Comment</MudText>
-    @foreach (var item in unreviewed.Content) {
-        <MudText Typo="Typo.body1">@item.Name</MudText>
-        if (item.Mime !=  null && item.Mime.Contains("video")) {
-            <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
-                           style="max-width:400px;"
-                           controls="controls">
-                <source src="@item.Uri" type="video/mp4" />
-            </BlazoredVideo>
-        } else if (item.Mime != null && item.Mime.Contains("image")) {
-            <div>
-                <img src="@item.Uri" class="width:100%;" />
-            </div>
-        } else {
-            <MudText Typo="Typo.body1">Nothing...</MudText>    
-        }
-    }
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudText Typo="Typo.body2">@unreviewed.CompletedSlideDeckProgram.Comment</MudText>
+            @foreach (var item in unreviewed.Content) {
+                <MudText Typo="Typo.body1">@item.Name</MudText>
+                if (item.Mime != null && item.Mime.Contains("video")) {
+                    <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
+                                   style="max-width:400px;"
+                                   controls="controls">
+                        <source src="@item.Uri" type="video/mp4" />
+                    </BlazoredVideo>
+                } else if (item.Mime != null && item.Mime.Contains("image")) {
+                    <div>
+                        <img src="@item.Uri" class="width:100%;" />
+                    </div>
+                } else {
+                    <MudText Typo="Typo.body1">Nothing...</MudText>
+                }
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+            <SfRichTextEditor @bind-Value="@unreviewed.ReviewedComment">
+                <RichTextEditorToolbarSettings Items="@Tools" Type="ToolbarType.MultiRow" />
+            </SfRichTextEditor>
+            <MudIconButton Icon="@Icons.Material.Filled.Save" OnClick="@(async () => await Save())"></MudIconButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+    
+
+
 }
 @code {
     //[Parameter]
@@ -37,6 +56,19 @@
     CompletedProgramReviewable unreviewed;
     bool loading = true;
     BlazoredVideo MyBlazorVideo;
+
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+    {
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.StrikeThrough },
+
+        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+    };
 
     protected override async Task OnInitializedAsync() {
         var r = await completedReviewablePrograms.GetUnreviewd(CompletedProgramReviewableEntry);
@@ -62,5 +94,15 @@
             Snackbar.Add($"Could not get userAvatar. Error: {r.Message}", Severity.Error);
         }
         loading = false;
+    }
+
+    private async Task Save() {
+        unreviewed.IsReviewed = true;
+        var r = await completedReviewablePrograms.Upload(unreviewed);
+        if (r.Success) {
+            Snackbar.Add($"Saved", Severity.Success);
+        } else {
+            Snackbar.Add($"Could not get CompletedProgramReviewable. Error: {r.Message}", Severity.Error);
+        }
     }
 }

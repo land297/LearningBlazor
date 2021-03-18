@@ -12,6 +12,7 @@ namespace Learning.Client.Services {
         Task<sr<CompletedProgramReviewable>> GetAllForUserAvatar();
         Task<sr<List<CompletedProgramReviewable>>> GetUnreviewd();
         Task<sr<CompletedProgramReviewable>> GetUnreviewd(int id);
+        Task<sr<bool>> Upload(CompletedProgramReviewable reviewable);
     }
 
     public class CompletedReviewableProgramServices : ICompletedReviewableProgramServices {
@@ -29,6 +30,11 @@ namespace Learning.Client.Services {
             //return await GetAny(id);
             await Task.Delay(0);
             return null;
+        }
+
+        //TODO: add DTOs 
+        public async Task<sr<bool>> Upload(CompletedProgramReviewable reviewable) {
+            return await _base.Put<CompletedProgramReviewable>($"api/CompletedProgramReviewables", reviewable);
         }
     }
 }
