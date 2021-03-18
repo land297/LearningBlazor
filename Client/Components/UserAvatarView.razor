@@ -19,14 +19,14 @@
     <MudItem>
         @if (UserAvatar.CompletedSlideDeckPrograms != null) {
             @foreach (var cslp in UserAvatar.CompletedSlideDeckPrograms) {
-            <MudContainer Class="pa-2 mx-2">
-                <MudText Typo="Typo.body1">@cslp.SlideDeckProgram.Title</MudText>
-                <MudText Typo="Typo.body1">@cslp.Comment</MudText>
-                <MudText Typo="Typo.body1">@cslp.CompletedOn</MudText>
-                <MudText Typo="Typo.body2">@cslp.IsPublic</MudText>
-                <MudRating ReadOnly="true" SelectedValue=@cslp.UserAvatarFeedback ></MudRating>
-                <MudButton OnClick="@(() => NavigationManager.NavigateTo($"sharedCompletedProgram/{cslp.Id}"))">Share</MudButton>
-            </MudContainer>
+                <MudContainer Class="pa-2 mx-2">
+                    <MudText Typo="Typo.body1">@cslp.SlideDeckProgram.Title</MudText>
+                    <MudText Typo="Typo.body1">@cslp.Comment</MudText>
+                    <MudText Typo="Typo.body1">@cslp.CompletedOn</MudText>
+                    <MudText Typo="Typo.body2">@cslp.IsPublic</MudText>
+                    <MudRating ReadOnly="true" SelectedValue=@cslp.UserAvatarFeedback></MudRating>
+                    <MudButton OnClick="@(() => NavigationManager.NavigateTo($"sharedCompletedProgram/{cslp.Id}"))">Share</MudButton>
+                </MudContainer>
 
             }
         }
@@ -40,8 +40,19 @@
                     <MudText Typo="Typo.body1">@userAccessslidedeckprogram.Comments</MudText>
                     <MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{userAccessslidedeckprogram.SlideDeckProgramId}"))">Just do it</MudButton>
                 </MudContainer>
-             }
-         }
+            }
+        }
+    </MudItem>
+    <MudItem>
+        @if (CompletedProgramReviewables != null) {
+            @foreach (var completedProgramReviewable in CompletedProgramReviewables) {
+                <MudContainer Class="pa-2 mx-2">
+                    <MudText Typo="Typo.body1">@((MarkupString)completedProgramReviewable.ReviewedComment)</MudText>
+                    <MudText Typo="Typo.body1">@completedProgramReviewable.IsReviewed</MudText>
+                    <MudText Typo="Typo.body1">@completedProgramReviewable.CompletedSlideDeckProgramId</MudText>
+                </MudContainer>
+            }
+        }
     </MudItem>
 </MudGrid>
 
@@ -50,4 +61,6 @@
     public UserAvatar UserAvatar { get; set; }
     [Parameter]
     public List<UserAccessSlideDeckProgram> UserAccessSlideDeckPrograms { get; set; }
+    [Parameter]
+    public List<CompletedProgramReviewable> CompletedProgramReviewables { get; set; }
 }

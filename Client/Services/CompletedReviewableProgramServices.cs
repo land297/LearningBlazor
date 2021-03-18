@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Client.Services {
     public interface ICompletedReviewableProgramServices {
-        Task<sr<CompletedProgramReviewable>> GetAllForUserAvatar();
+        Task<sr<List<CompletedProgramReviewable>>> GetAllForUserAvatar(int id);
         Task<sr<List<CompletedProgramReviewable>>> GetUnreviewd();
         Task<sr<CompletedProgramReviewable>> GetUnreviewd(int id);
         Task<sr<bool>> Upload(CompletedProgramReviewable reviewable);
@@ -26,10 +26,8 @@ namespace Learning.Client.Services {
         public async Task<sr<CompletedProgramReviewable>> GetUnreviewd(int id) {
             return await _base.Get<CompletedProgramReviewable>($"api/CompletedProgramReviewables/theunreviewd/{id}");
         }
-        public async Task<sr<CompletedProgramReviewable>> GetAllForUserAvatar() {
-            //return await GetAny(id);
-            await Task.Delay(0);
-            return null;
+        public async Task<sr<List<CompletedProgramReviewable>>> GetAllForUserAvatar(int id) {
+            return await _base.Get<List<CompletedProgramReviewable>>($"api/CompletedProgramReviewables/AllForUserAvatar/{id}");
         }
 
         //TODO: add DTOs 

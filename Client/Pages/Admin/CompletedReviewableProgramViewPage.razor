@@ -12,14 +12,15 @@
 @if (!loading) {
 <MudGrid>
     <MudItem xs="12" sm="6">
-        <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+        <MudPaper Class="d-flex flex-column mud-width-full py-8">
             <MudText Typo="Typo.body2">@unreviewed.CompletedSlideDeckProgram.Comment</MudText>
+            <br />
             @foreach (var item in unreviewed.Content) {
                 <MudText Typo="Typo.body1">@item.Name</MudText>
                 if (item.Mime != null && item.Mime.Contains("video")) {
                     <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
-                                   style="max-width:400px;"
-                                   controls="controls">
+                                    style="max-width:400px;"
+                                    controls="controls">
                         <source src="@item.Uri" type="video/mp4" />
                     </BlazoredVideo>
                 } else if (item.Mime != null && item.Mime.Contains("image")) {
@@ -30,10 +31,12 @@
                     <MudText Typo="Typo.body1">Nothing...</MudText>
                 }
             }
+            <br />
+
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="6">
-        <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+        <MudPaper Class="d-flex flex-column mud-width-full py-8">
             <SfRichTextEditor @bind-Value="@unreviewed.ReviewedComment">
                 <RichTextEditorToolbarSettings Items="@Tools" Type="ToolbarType.MultiRow" />
             </SfRichTextEditor>

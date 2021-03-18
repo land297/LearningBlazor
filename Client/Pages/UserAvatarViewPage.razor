@@ -3,9 +3,12 @@
 @inject Learning.Client.Services.IUserAvatarService UserAvatars
 @inject Learning.Client.Services.ICompletedSlideDeckProgramService CompletedPrograms
 @inject Learning.Client.Services.IUserAccessSlideDeckProgramService UserAccess
+@inject Learning.Client.Services.ICompletedReviewableProgramServices Reviewables
 @inject ISnackbar Snackbar
 
-<Learning.Client.Components.UserAvatarView UserAvatar="UserAvatar" UserAccessSlideDeckPrograms="UserAccessSlideDeckPrograms"/>
+<Learning.Client.Components.UserAvatarView 
+UserAvatar="UserAvatar" UserAccessSlideDeckPrograms="UserAccessSlideDeckPrograms"
+CompletedProgramReviewables="CompletedProgramReviewables"/>
 
 @code {
     [Parameter]
@@ -13,6 +16,7 @@
 
     UserAvatar UserAvatar = new UserAvatar();
     List<UserAccessSlideDeckProgram> UserAccessSlideDeckPrograms;
+    List<CompletedProgramReviewable> CompletedProgramReviewables;
 
     protected override async Task OnInitializedAsync() {
         var response2 = await UserAvatars.Get(Id);
@@ -34,6 +38,13 @@
                 UserAccessSlideDeckPrograms = response4.Data;
             } else {
                 Snackbar.Add($"Could not get stuff from server. Error: {response4.Message}", Severity.Error);
+            }
+
+            var response5 = await Reviewables.GetAllForUserAvatar(UserAvatar.Id);
+            if (response5.Success) {
+                CompletedProgramReviewables = response5.Data;
+            } else {
+                Snackbar.Add($"Could not get stuff from server. Error: {response5.Message}", Severity.Error);
             }
         }
 

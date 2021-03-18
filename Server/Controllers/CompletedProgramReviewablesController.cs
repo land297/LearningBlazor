@@ -108,6 +108,17 @@ namespace Learning.Server.Controllers {
             return Ok(entry);
         }
 
+        [HttpGet("AllForUserAvatar/{id}")]
+        public async Task<IActionResult> GetAllForUserAvatar(int id) {
+            var entries = await _dbContext.CompletedProgramReviewables.Include(x => x.Content).Where(x => x.UserAvatarId == id).ToListAsync();
+            foreach (var entry in entries) {
+                foreach (var content in entry.Content) {
+                    content.Uri = (await _azureRepo.GetSasUriForBlob(new Uri(content.Uri))).ToString();
+                }
+            }
+            return Ok(entries);
+        }
+
         [HttpPut]
         public async Task<IActionResult> UploadReviewed(CompletedProgramReviewable reviewable) {
             var entry = await _dbContext.CompletedProgramReviewables.Where(x => x.Id == reviewable.Id).SingleOrDefaultAsync();
