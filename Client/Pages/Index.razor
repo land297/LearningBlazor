@@ -1,64 +1,72 @@
 ﻿@page "/"
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
+    <MudText Class="mb-8">Welcome to your new app, powerd by MudBlazor!</MudText>
+    <MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
+</MudContainer>
+
+<!--
 @inject Learning.Client.Services.IAuthService Auth
 @inject HttpClient _http
+@using Learning.Client.Components
 
-<h1>Hello, world!</h1>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">-->
+@*<div class="d-flex flex-column mud-width-full">*@
+<!--<h1>Hello, world!</h1>
 
-Welcome to your new app.
+Welcome to your new app.-->
+@*<Login />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    <MudButton OnClick="LogOut">Log out</MudButton>
 
-<Learning.Client.Components.Login />
+    <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
+    <MudFab HtmlTag="label"
+            Color="Color.Secondary"
+            Icon="@Icons.Material.Filled.Image"
+            Label="Load Cover Image"
+            for="fileInput" />*@
+<!--</MudContainer>-->
+@*</div>*@
+<!--@code {-->
+        async Task LogOut() {
 
-<MudButton OnClick="LogOut">Log out</MudButton>
-
-<InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
-<MudFab HtmlTag="label"
-        Color="Color.Secondary"
-        Icon="@Icons.Material.Filled.Image"
-        Label="Load Cover Image"
-        for="fileInput" />
-
-@code {
-
-    async Task LogOut() {
-
-        var response = await Auth.Logout();
+            var response = await Auth.Logout();
 
 
-    }
+        }
 
-    private async Task SetCoverImage(InputFileChangeEventArgs e) {
-        var maxAllowedFiles = 1;
-        //var format = "image/png";
+        private async Task SetCoverImage(InputFileChangeEventArgs e) {
+            var maxAllowedFiles = 1;
+            //var format = "image/png";
 
-        foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles)) {
-            //var resizedFile = await imageFile.RequestImageFileAsync(format,
-            //    100, 100);
-            //await OnSubmit(imageFile);
-            //var buffer = new byte[imageFile.Size];
-            //await imageFile.OpenReadStream().ReadAsync(buffer);
+            foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles)) {
+                //var resizedFile = await imageFile.RequestImageFileAsync(format,
+                //    100, 100);
+                //await OnSubmit(imageFile);
+                //var buffer = new byte[imageFile.Size];
+                //await imageFile.OpenReadStream().ReadAsync(buffer);
 
-            //var response = await _http.PostAsync("api/upload/",new StreamContent(resizedFile.OpenReadStream()));
+                //var response = await _http.PostAsync("api/upload/",new StreamContent(resizedFile.OpenReadStream()));
 
-            using (var ms = imageFile.OpenReadStream(imageFile.Size)) {
-                var content = new MultipartFormDataContent();
-                content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-                content.Headers.Add("ProgramId", "2");
-                //content.Headers.Add("UserAvatarId", "2");
+                using (var ms = imageFile.OpenReadStream(imageFile.Size)) {
+                    var content = new MultipartFormDataContent();
+                    content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+                    content.Headers.Add("ProgramId", "2");
+                    //content.Headers.Add("UserAvatarId", "2");
 
-                content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
-                content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
-                content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
-                content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
+                    content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
+                    content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
+                    content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
+                    content.Add(new StreamContent(ms, Convert.ToInt32(imageFile.Size)), imageFile.ContentType, imageFile.Name);
 
-                var response = await _http.PostAsync("api/upload", content);
+                    var response = await _http.PostAsync("api/upload", content);
 
-                Console.WriteLine(response.IsSuccessStatusCode);
-                Console.WriteLine(response.StatusCode);
-                Console.WriteLine("trolololol");
+                    Console.WriteLine(response.IsSuccessStatusCode);
+                    Console.WriteLine(response.StatusCode);
+                    Console.WriteLine("trolololol");
 
+                }
             }
         }
     }
-}

@@ -27,19 +27,19 @@ namespace Learning.Client {
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddMudServices();
-            builder.Services.AddMudBlazorSnackbar(config =>
-            {
-                config.PositionClass = Defaults.Classes.Position.BottomLeft;
+            //builder.Services.AddMudBlazorSnackbar(config =>
+            //{
+            //    config.PositionClass = Defaults.Classes.Position.BottomLeft;
 
-                config.PreventDuplicates = false;
-                config.NewestOnTop = false;
-                config.ShowCloseIcon = true;
-                config.VisibleStateDuration = 10000;
-                config.HideTransitionDuration = 500;
-                config.ShowTransitionDuration = 500;
-                //config.SnackbarDefaultVariant = Variant.Filled;
-            });
-            builder.Services.AddMudBlazorResizeListener();
+            //    config.PreventDuplicates = false;
+            //    config.NewestOnTop = false;
+            //    config.ShowCloseIcon = true;
+            //    config.VisibleStateDuration = 10000;
+            //    config.HideTransitionDuration = 500;
+            //    config.ShowTransitionDuration = 500;
+            //    //config.SnackbarDefaultVariant = Variant.Filled;
+            //});
+            //builder.Services.AddMudBlazorResizeListener();
 
             // TODO: this will be on GithHub public for all and on the client when running?
             SyncfusionLicenseProvider.RegisterLicense("MzcyMDg2QDMxMzgyZTM0MmUzMG1zdExMNE43amJ3bGwwM0x1dHBNVDJMM2RDc0doZHA2djYyaWpzOU1QL1U9");
@@ -77,6 +77,7 @@ namespace Learning.Client {
             builder.Services.AddScoped<ICompletedSlideDeckProgramService, CompletedSlideDeckProgramService>();
             builder.Services.AddScoped<IUserAccessSlideDeckProgramService, UserAccessSlideDeckProgramService>();
             builder.Services.AddScoped<ICompletedReviewableProgramServices, CompletedReviewableProgramServices>();
+            builder.Services.AddScoped<IMenuContentService, MenuContentService>();
 
             await builder.Build().RunAsync();
         }

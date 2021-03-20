@@ -1,112 +1,145 @@
-﻿@using BlazorState
-@inherits BlazorStateComponent
-@using Learning.Client.Features
+﻿@inject Learning.Client.Services.IMenuContentService Menu
 
-<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">Learning</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<MudDivider Class="mb-4" />
+<MudNavMenu>
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Personal</MudText>
+    <MudNavLink Href="/personal/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
+    <MudNavLink Href="/personal/account" Icon="@Icons.Material.Outlined.Person">Account</MudNavLink>
 
-</div>
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">App Examples</MudText>
+    <MudNavLink Href="application/email" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Email">Email</MudNavLink>
+    <MudNavLink Href="application/chat" Icon="@Icons.Material.Outlined.Forum">Chat</MudNavLink>
+    <MudNavLink Href="application/todo" Icon="@Icons.Custom.Uncategorized.AlertSuccess" Disabled="true">Todo</MudNavLink>
+    <MudNavLink Href="application/users" Icon="@Icons.Material.Outlined.PeopleAlt" Disabled="true">Users</MudNavLink>
+    @foreach (var item in Menu.GetMenues()) {
+        <MudNavLink Href="application/users" Icon="@Icons.Material.Outlined.PeopleAlt" Disabled="true">@item</MudNavLink>
+    }
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Pages</MudText>
+    <MudNavGroup Title="Authentication" Icon="@Icons.Material.Outlined.AssignmentInd" HideExpandIcon="true">
+        <MudNavLink Href="pages/authentication/login" Icon="@Icons.Material.Outlined.InsertDriveFile">Login</MudNavLink>
+        <MudNavLink Href="pages/authentication/register" Icon="@Icons.Material.Outlined.InsertDriveFile">Register</MudNavLink>
+        <MudNavLink Href="pages/authentication/forgot-password" Icon="@Icons.Material.Outlined.InsertDriveFile">Forgot Password</MudNavLink>
+        <MudNavLink Href="pages/authentication/reset-password" Icon="@Icons.Material.Outlined.InsertDriveFile">Reset Password</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Error" HideExpandIcon="true">
+        <MudNavLink Href="pages/error/404" Icon="@Icons.Material.Outlined.InsertDriveFile">404</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Utility" Icon="@Icons.Material.Outlined.Assignment" HideExpandIcon="true">
+        <MudNavLink Href="pages/utility/faq" Icon="@Icons.Material.Outlined.InsertDriveFile">Faq</MudNavLink>
+    </MudNavGroup>
+</MudNavMenu>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter ( @CounterState.Count )
-</NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-        <AuthorizeView Roles="Admin">
-            <Authorized>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/admin/usersList">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> /admin/usersList
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/admin/CompletedReviewableProgramPage">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> /admin/review
-                    </NavLink>
-                </li>
-            </Authorized>
-        </AuthorizeView>
-        <AuthorizeView Roles="Admin, ContentCreator">
-            <Authorized>
+ @code{
+     private List<string> _menus = new List<string>()
+     {
+         "hej","apa","grid"
+     };
+ }
+    <!--<div class="top-row pl-4 navbar navbar-dark">
+        <a class="navbar-brand" href=""></a>
+        <button class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="addSlideDeck">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Add SlideDeck
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="listAllSlideDecksPage">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> List all SlideDecks
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="addSlideDeckProgram">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Add SlideDeckProgram
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="viewSlideDeckProgram/4">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> View SlideDeckProgram 4
-                    </NavLink>
-                </li>
+    </div>
 
+    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+        <ul class="nav flex-column">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span>
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="counter">
+                    <span class="oi oi-plus" aria-hidden="true"></span>
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="fetchdata">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span>
+                </NavLink>
+            </li>
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/admin/usersList">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/admin/CompletedReviewableProgramPage">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Roles="Admin, ContentCreator">
+                <Authorized>
 
-
-            </Authorized>
-            <NotAuthorized>
-
-            </NotAuthorized>
-        </AuthorizeView>
-        <AuthorizeView>
-            <Authorized>
-
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="allUserAvatars">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> list UserAvatar
-                    </NavLink>
-                </li>
-
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="listAllSlideDeckProgramsPage">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> List all listAllSlideDeckProgramsPage
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="addUserAvatar">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> 3 addUserAvatar
-                    </NavLink>
-                </li>
-            </Authorized>
-            <NotAuthorized>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="userRegistration">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> x userRegistration
-                    </NavLink>
-                </li>
-            </NotAuthorized>
-        </AuthorizeView>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="addSlideDeck">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="listAllSlideDecksPage">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="addSlideDeckProgram">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="viewSlideDeckProgram/4">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
 
 
-    </ul>
-</div>
 
-@code {
-    CounterState CounterState => GetState<CounterState>();
+                </Authorized>
+                <NotAuthorized>
+
+                </NotAuthorized>
+            </AuthorizeView>
+            <AuthorizeView>
+                <Authorized>
+
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="allUserAvatars">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="listAllSlideDeckProgramsPage">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="addUserAvatar">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                </Authorized>
+                <NotAuthorized>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="userRegistration">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span>
+                        </NavLink>
+                    </li>
+                </NotAuthorized>
+            </AuthorizeView>
+
+
+        </ul>
+    </div>-->
+    @*@code {
+        CounterState CounterState => GetState<CounterState>
+    ();
 
     private int currentCount => CounterState.Count;
 
@@ -115,6 +148,6 @@
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu() {
-        collapseNavMenu = !collapseNavMenu;
+    collapseNavMenu = !collapseNavMenu;
     }
-}
+    }*@<!--<CounterState>-->
