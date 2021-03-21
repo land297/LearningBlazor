@@ -1,26 +1,33 @@
 ﻿@using Learning.Shared.DbModels
-<div class="mud-info">
-    <MudText Typo="Typo.body1">@((MarkupString)Slide.TextContent)</MudText>
-    @if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
-        <br />
-        @*<img class="rounded m-2" src="@Slide.ImageUrl" style="width:100%; height:100%;" />*@
-        <img class="rounded m-2" src="@Slide.ImageUrl" style="max-width:100%; max-height:100%;" />
-    }
 
-    @if (!string.IsNullOrWhiteSpace(Slide.VideoUrl)) {
-        <br />
-        <BlazoredVideo @ref="MyBlazorVideo" class="w-100 m-2"
-                       style="max-width:400px;"
-                       controls="controls">
-            <source src="@Slide.VideoUrl" type="video/mp4" />
-        </BlazoredVideo>
-    }
-</div>
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText Typo="Typo.body1">@((MarkupString)Slide.TextContent)</MudText>
+
+        @if (!string.IsNullOrWhiteSpace(Slide.ImageUrl)) {
+            <MudDivider Class="mb-4" />
+            @*<img class="rounded m-2" src="@Slide.ImageUrl" style="width:100%; height:100%;" />*@
+            <img class="rounded m-2" src="@Slide.ImageUrl" style="max-width:100%; max-height:100%;" />
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Slide.VideoUrl)) {
+            <MudDivider Class="mb-4" />
+            <BlazoredVideo @ref="_blazoredVideo" class="w-100 m-2"
+                           style="max-width:100%;"
+                           controls="controls">
+                <source src="@Slide.VideoUrl" type="video/mp4" />
+            </BlazoredVideo>
+        }
+    </MudCardContent>
+</MudCard>
 
 @code {
     [Parameter]
     public Slide Slide { get; set; }
-    BlazoredVideo MyBlazorVideo;
+
+    BlazoredVideo _blazoredVideo;
+
+    //style="max-width:400px;
 }
 
 
