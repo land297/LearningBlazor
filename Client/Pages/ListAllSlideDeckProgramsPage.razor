@@ -6,52 +6,63 @@
 @inject ISnackbar Snackbar
 @using Learning.Shared.DbModels
 
-<h3>ListAllSlideDeckProgramsPage</h3>
 
-@if (SlideDeckProgramsAll != null) {
-    <MudTable Items="@SlideDeckProgramsAll" Hover="true" Breakpoint="Breakpoint.Sm">
-        <HeaderContent>
-            <MudTh>Title</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>Page count</MudTh>
-            <MudTh>AccessLevel</MudTh>
-            <MudTh>Is published</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>@context.Title</MudTd>
-            <MudTd>@context.Description</MudTd>
-            <MudTd>@context.Entries.Count</MudTd>
-            <MudTd>@context.AccessLevel</MudTd>
-            <MudTd>@context.IsPublished</MudTd>
-            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{context.Id}"))">View</MudButton></MudTd>
-            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeckProgram/{context.Id}"))">Edit</MudButton></MudTd>
+<AuthorizeView Roles="Admin,ContentCreator">
+    <Authorized>
+        @if (SlideDeckProgramsAll != null) {
+            <MudTable Items="@SlideDeckProgramsAll" Hover="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Title</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh>Page count</MudTh>
+                    <MudTh>AccessLevel</MudTh>
+                    <MudTh>Is published</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="deck">
+                    <MudTd>@deck.Title</MudTd>
+                    <MudTd>@deck.Description</MudTd>
+                    <MudTd>@deck.Entries.Count</MudTd>
+                    <MudTd>@deck.AccessLevel</MudTd>
+                    <MudTd>@deck.IsPublished</MudTd>
+                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{deck.Id}"))">View</MudButton></MudTd>
+                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeckProgram/{deck.Id}"))">Edit</MudButton></MudTd>
 
-        </RowTemplate>
-    </MudTable>
-}
+                </RowTemplate>
+            </MudTable>
+        }
+        <MudDivider Class="mb-8" />
+    </Authorized>
+</AuthorizeView>
 
 @if (SlideDeckProgramsPublished != null) {
-    <MudGrid>
-        @foreach (var slidedeckProgram in SlideDeckProgramsPublished) {
-        <MudItem xs="12" sm="6">
-            <MudPaper Elevation="3" Class="pa-2 mr-2">
-                <MudText Typo="Typo.h6">@slidedeckProgram.Title</MudText>
-                @if (!string.IsNullOrWhiteSpace(slidedeckProgram.CoverImage)) {
+
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        @foreach (var slideDeckProgram in SlideDeckProgramsPublished) {
+            <MudPaper Elevation="3" Class="pa-2 mb-4">
+                <MudText Typo="Typo.h6">@slideDeckProgram.Title</MudText>
+                @if (!string.IsNullOrWhiteSpace(slideDeckProgram.CoverImage)) {
                     <div>
-                        <img src="@slidedeckProgram.CoverImage" class="width:100%;" />
+                        <img src="@slideDeckProgram.CoverImage" class="width:100%;" />
 
                     </div>
                 }
-                <MudText Typo="Typo.body1">@slidedeckProgram.Description</MudText>
-                <MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slidedeckProgram.Id}"))">View</MudButton>
+                <MudText Typo="Typo.body1">@slideDeckProgram.Description</MudText>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>
             </MudPaper>
-        </MudItem>
         }
-    </MudGrid>
+    </MudContainer>
+} else {
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+        <MudDivider Class="mb-8" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+        <MudDivider Class="mb-8" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+    </MudContainer>
 }
 @code {
-        List<SlideDeckProgram> SlideDeckProgramsPublished;
-        List<SlideDeckProgram> SlideDeckProgramsAll;
+    List<SlideDeckProgram> SlideDeckProgramsPublished;
+    List<SlideDeckProgram> SlideDeckProgramsAll;
     protected override async Task OnInitializedAsync() {
         var r = await SlideDeckProgramService.GetPublished();
         if (r.Success) {

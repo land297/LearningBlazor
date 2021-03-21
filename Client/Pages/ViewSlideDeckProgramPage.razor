@@ -14,34 +14,35 @@
 @inherits BlazorStateComponent
 @using Learning.Client.Features
 @inject HttpClient _http
+
 <MudContainer MaxWidth="MaxWidth.Medium">
     @if (!hasLoaded) {
         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+        <MudDivider Class="mb-8" />
         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
     } else if (!isCompleted) {
-
         <Learning.Client.Components.ViewSlideDeckProgram SlideDeckProgram="SlideDeckProgram" OnCompleted="ProgramCompleted"></Learning.Client.Components.ViewSlideDeckProgram>
     } else {
-            <MudText Typo="Typo.h6">@ActiveUserAvatarState.UserAvatar.Name är klar med @SlideDeckProgram.Title</MudText>
-            <MudText Typo="Typo.h6">Bla bla bla, sätta poäng och allt annat grejande..</MudText>
-            <MudTextField @bind-Value="CompletedDescription" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
-            <MudRating @bind-SelectedValue="selectedVal"></MudRating>
-            <MudButton OnClick="Save">Save</MudButton>
-            <AuthorizeView Roles="Admin, ContentCreator,Premium">
-                <Authorized>
-                    <MudList>
-                        @foreach (var file in files) {
-                            <MudListItem Text="@file.Key.Name" />
-                        }
-                    </MudList>
-                    <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
-                    <MudFab HtmlTag="label"
-                            Color="Color.Secondary"
-                            Icon="@Icons.Material.Filled.Image"
-                            Label="Load Cover Image"
-                            for="fileInput" />
-                </Authorized>
-            </AuthorizeView>
+        <MudText Typo="Typo.h6">@ActiveUserAvatarState.UserAvatar.Name är klar med @SlideDeckProgram.Title</MudText>
+        <MudText Typo="Typo.h6">Bla bla bla, sätta poäng och allt annat grejande..</MudText>
+        <MudTextField @bind-Value="CompletedDescription" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
+        <MudRating @bind-SelectedValue="selectedVal"></MudRating>
+        <MudButton OnClick="Save">Save</MudButton>
+        <AuthorizeView Roles="Admin, ContentCreator,Premium">
+            <Authorized>
+                <MudList>
+                    @foreach (var file in files) {
+                        <MudListItem Text="@file.Key.Name" />
+                    }
+                </MudList>
+                <InputFile id="fileInput" OnChange="SetCoverImage" hidden multiple />
+                <MudFab HtmlTag="label"
+                        Color="Color.Secondary"
+                        Icon="@Icons.Material.Filled.Image"
+                        Label="Load Cover Image"
+                        for="fileInput" />
+            </Authorized>
+        </AuthorizeView>
     }
 </MudContainer>
 

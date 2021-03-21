@@ -1,56 +1,69 @@
 ﻿@using Learning.Shared.DbModels
 @using System.Threading;
+@inject NavigationManager NavigationManager
 
-<MudGrid>
-    <MudItem xs="12">
-        <MudPaper Elevation="3" Class="pa-2 mx-2">
-            <MudText Typo="Typo.h6">@SlideDeckProgram.Title</MudText>
-            <MudText Typo="Typo.body1">@SlideDeckProgram.Description</MudText>
-            @if (!string.IsNullOrWhiteSpace(SlideDeckProgram.CoverImage)) {
-                <div>
-                    <img src="@SlideDeckProgram.CoverImage" class="width:100%;" />
-
-                </div>
-            }
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12">
-        @if (entry != null) {
-        <MudPaper Elevation="3" Class="pa-2 mx-2">
-                <Learning.Client.Components.SlideDeckView SlideDeck="entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
-        </MudPaper>
-                }
-        </MudItem>
-    <MudItem xs="12">
-        <MudPaper Elevation="3" Class="pa-2 mx-2">
-            @if (entry != null) {
-                <MudText Typo="Typo.body1">
-                    Entry: @entry.SlideDeck.Title
-                </MudText>
-                <MudText Typo="Typo.body1">
-                    Duration: @TimeLeft / @entry.Duration
-                </MudText>
-                <MudText Typo="Typo.body1">
-                    At entry of total: @entryIndex / @SlideDeckProgram.Entries.Count
-                </MudText>
-
-                <br />
-                <br />
-                <br />
-                <MudToggleIconButton Toggled="@IsPlaying"
-                                     Icon="@Icons.Material.Filled.PlayArrow" Color="@Color.Primary"
-                                     ToggledIcon="@Icons.Material.Filled.Pause" ToggledColor="@Color.Secondary"
-                                     ToggledChanged="(toggleValue) => IncrementSwitchedOn(toggleValue)"
-                                     Size="Size.Large"
-                                     ToggledSize="Size.Large" />
-            }
-
-        </MudPaper>
-
-    </MudItem>
+<MudPaper Class="pa-16 ma-2" Elevation="3">
+    <MudText Typo="Typo.h6">@SlideDeckProgram.Title</MudText>
+    <MudDivider Class="mb-4" />
+    <div class="d-flex justify-space-between py-2 px-1 mt-6">
+        <MudText Typo="Typo.body1">@SlideDeckProgram.Description</MudText>
+        @if (!string.IsNullOrWhiteSpace(SlideDeckProgram.CoverImage)) {
+            <div class="ma-1">
+                <img src="@SlideDeckProgram.CoverImage" class="width:100%;" />
+            </div>
+        }
+    </div>
 
 
-</MudGrid>
+    <MudDivider Class="mb-4" />
+
+
+    @if (!_showingDetailedSlideDeckEntry) {
+        <MudText Typo="Typo.h6">@entry.SlideDeck.Title</MudText>
+        @if (!string.IsNullOrWhiteSpace(entry.SlideDeck.CoverImage)) {
+            <div>
+                <img src="@entry.SlideDeck.CoverImage" class="width:100%;" />
+
+            </div>
+        }
+        <MudText Typo="Typo.body1">@entry.SlideDeck.Description</MudText>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => ToggleDetailedSlideDeckEntry())">Learn More</MudButton>
+
+    } else {
+        <Learning.Client.Components.SlideDeckView SlideDeck="entry.SlideDeck"></Learning.Client.Components.SlideDeckView>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => ToggleDetailedSlideDeckEntry())">Learn Less</MudButton>
+    }
+
+    <MudDivider Class="mb-4" />
+    @if (entry != null) {
+        <div class=d-flex justify-center py-2 px-1 mt-6>
+
+            <MudToggleIconButton Toggled="@IsPlaying"
+                                 Icon="@Icons.Material.Filled.PlayArrow" Color="@Color.Primary"
+                                 ToggledIcon="@Icons.Material.Filled.Pause" ToggledColor="@Color.Secondary"
+                                 ToggledChanged="(toggleValue) => IncrementSwitchedOn(toggleValue)"
+                                 Size="Size.Large"
+                                 ToggledSize="Size.Large" />
+            <MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Large" />
+            <MudText Typo="Typo.body1">
+                @TimeLeft / @entry.Duration
+            </MudText>
+
+            <MudIcon Icon="@Icons.Material.Filled.FormatListNumbered" Size="Size.Large" />
+            <MudText Typo="Typo.body1">
+                @entryIndex / @SlideDeckProgram.Entries.Count
+            </MudText>
+        </div>
+
+
+
+    }
+</MudPaper>
+
+
+
+
+
 
 @code {
     [Parameter]
@@ -69,6 +82,21 @@
     Timer timer;
 
     IEnumerator<SlideDeckProgramEntry> entries;
+
+    public bool _isOpen;
+
+    public void ToggleOpen() {
+        if (_isOpen)
+            _isOpen = false;
+        else
+            _isOpen = true;
+    }
+
+    private bool _showingDetailedSlideDeckEntry = false;
+
+    private void ToggleDetailedSlideDeckEntry() {
+        _showingDetailedSlideDeckEntry = !_showingDetailedSlideDeckEntry;
+    }
 
     protected override async Task OnInitializedAsync() {
         if (SlideDeckProgram != null && SlideDeckProgram.Entries != null) {

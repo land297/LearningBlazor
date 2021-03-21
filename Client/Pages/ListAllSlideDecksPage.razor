@@ -4,7 +4,6 @@
 @inject ISnackbar Snackbar
 @using Learning.Shared.DbModels
 
-<h3>ListAllSlideDecksPage</h3>
 
 <AuthorizeView Roles="Admin,ContentCreator">
     <Authorized>
@@ -28,38 +27,45 @@
                 </RowTemplate>
             </MudTable>
         }
+        <MudDivider Class="mb-8" />
     </Authorized>
 </AuthorizeView>
 
 @if (SlideDecksPublished != null) {
 
-    @*<MudGrid>
-        <MudItem xs="1" sm="3"></MudItem>*@
     <MudContainer MaxWidth="MaxWidth.Medium">
-        @foreach (var slidedeck in SlideDecksAll) {
+        @foreach (var slidedeck in SlideDecksPublished) {
             @*<MudItem xs="10" sm="6">*@
-                <MudPaper Elevation="3" Class="pa-2 mb-4">
-                    <MudText Typo="Typo.h6">@slidedeck.Title</MudText>
-                    @if (!string.IsNullOrWhiteSpace(slidedeck.CoverImage)) {
-                        <div>
-                            <img src="@slidedeck.CoverImage" class="width:100%;" />
+            <MudPaper Elevation="3" Class="pa-2 mb-4">
+                <MudText Typo="Typo.h6">@slidedeck.Title</MudText>
+                @if (!string.IsNullOrWhiteSpace(slidedeck.CoverImage)) {
+                    <div>
+                        <img src="@slidedeck.CoverImage" class="width:100%;" />
 
-                        </div>
-                    }
-                    <MudText Typo="Typo.body1">@slidedeck.Description</MudText>
-                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{slidedeck.Id}"))">Learn More</MudButton>
-                </MudPaper>
+                    </div>
+                }
+                <MudText Typo="Typo.body1">@slidedeck.Description</MudText>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{slidedeck.Id}"))">Learn More</MudButton>
+            </MudPaper>
             @*</MudItem>*@
         }
         @*<MudItem xs="1" sm="3"></MudItem>*@
         @*</MudGrid>*@
-        </MudContainer>
-        }
-
+    </MudContainer>
+} else {
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+    <MudDivider Class="mb-8" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+    <MudDivider Class="mb-8" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
+</MudContainer>
+}
         @code {
             List<SlideDeck> SlideDecksPublished;
             List<SlideDeck> SlideDecksAll;
-protected override async Task OnInitializedAsync() {
+
+    protected override async Task OnInitializedAsync() {
             var r = await SlideDeckService.GetPublished();
             if (r.Success) {
                 SlideDecksPublished = r.Data;

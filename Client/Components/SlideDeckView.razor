@@ -12,12 +12,13 @@
             </div>
         }
     </div>
-        @if (SlideDeck.Slides != null) {
-            @foreach (var slide in SlideDeck.Slides) {
-                <br />
-                <Learning.Client.Components.SlideView Slide="slide"></Learning.Client.Components.SlideView>
-            }
+    <MudDivider Class="mb-2" />
+    @if (SlideDeck.Slides != null) {
+        @foreach (var slide in SlideDeck.Slides) {
+
+            <Learning.Client.Components.SlideView Slide="slide"></Learning.Client.Components.SlideView>
         }
+    }
 </MudPaper>
 }
  
