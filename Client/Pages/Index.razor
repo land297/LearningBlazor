@@ -6,17 +6,17 @@
     <MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
 </MudContainer>
 
-<!--
+
 @inject Learning.Client.Services.IAuthService Auth
 @inject HttpClient _http
 @using Learning.Client.Components
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">-->
-@*<div class="d-flex flex-column mud-width-full">*@
-<!--<h1>Hello, world!</h1>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
 
-Welcome to your new app.-->
-@*<Login />
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+<Login />
 
     <MudButton OnClick="LogOut">Log out</MudButton>
 
@@ -25,10 +25,10 @@ Welcome to your new app.-->
             Color="Color.Secondary"
             Icon="@Icons.Material.Filled.Image"
             Label="Load Cover Image"
-            for="fileInput" />*@
-<!--</MudContainer>-->
-@*</div>*@
-<!--@code {-->
+            for="fileInput" />
+</MudContainer>
+
+@code {
         async Task LogOut() {
 
             var response = await Auth.Logout();
