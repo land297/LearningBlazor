@@ -27,7 +27,7 @@
         <MudText Typo="Typo.h6">Bla bla bla, sätta poäng och allt annat grejande..</MudText>
         <MudTextField @bind-Value="CompletedDescription" Label="Description" Variant="Variant.Text" Lines="5"></MudTextField>
         <MudRating @bind-SelectedValue="selectedVal"></MudRating>
-        <MudButton OnClick="Save">Save</MudButton>
+
         <AuthorizeView Roles="Admin, ContentCreator,Premium">
             <Authorized>
                 <MudList>
@@ -42,7 +42,11 @@
                         Label="Load Cover Image"
                         for="fileInput" />
             </Authorized>
+            <NotAuthorized>
+
+            </NotAuthorized>
         </AuthorizeView>
+        <MudButton OnClick="Save">Save</MudButton>
     }
 </MudContainer>
 

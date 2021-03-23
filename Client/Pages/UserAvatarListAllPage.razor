@@ -5,54 +5,68 @@
 @inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-@if (CurrentUserAvatars.Count != 0) {
-    <MudTable Items="@CurrentUserAvatars" Breakpoint="Breakpoint.Sm">
-        <HeaderContent>
-            <MudTh>View</MudTh>
-            <MudTh>Name</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>Picture</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd><Learning.Client.Components.UserAvatarView UserAvatar="@context" /></MudTd>
-            <MudTd>@context.Name</MudTd>
-            <MudTd>@context.Description</MudTd>
-            <MudTd> <img src="@context.CoverImage" class="width:100%;" /></MudTd>
-            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewUserAvatar/{context.Id}"))">View</MudButton></MudTd>
-            <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"addUserAvatar/{context.Id}"))">Edit</MudButton></MudTd>
-            <MudTd><MudButton OnClick="@(async () => await SetAvatarActive(context.Name))">Set Active</MudButton></MudTd>
-            <MudTd><MudButton OnClick="@((async () => await DeleteAvatar(context.Name)))">Delete</MudButton></MudTd>
+    @if (CurrentUserAvatars.Count != 0) {
+        <MudContainer MaxWidth="MaxWidth.Medium">
 
-        </RowTemplate>
-    </MudTable>
+            @foreach (var item in CurrentUserAvatars) {
+                <MudPaper Elevation="3" Class="mb-6">
+                    <div class="d-flex">
+                        <div class="d-flex flex-column ma-2">
+                            <MudText Typo="Typo.body1" Align="Align.Center">@item.Name</MudText>
+                            <MudAvatar Image="@item.CoverImage" Style="height:100px; width:100px;">
+                            </MudAvatar>
+
+                        </div>
+                        <MudDivider Vertical="true" FlexItem="true" Class="ma-2"/>
+                        <div class="ma-2 flex-column">
+                            <MudText Typo="Typo.body1">Description</MudText>
+                            <MudText Typo="Typo.body2">@item.Description</MudText>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row-reverse">
+                        <MudButton Variant="Variant.Text" class="ml-4" Color="Color.Secondary" OnClick="@(async () => await DeleteAvatar(item.Name))">Delete</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(async () => await SetAvatarActive(item.Name))">Set Active</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewUserAvatar/{item.Id}"))">Learn More</MudButton>
+                    </div>
+                </MudPaper>
+            }
+        </MudContainer>
+    }
+
+    @code {
+            List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
+
+        protected override async Task OnInitializedAsync() {
+            var response = await UserAvatars.GetAll();
+            if (response.Success) {
+                CurrentUserAvatars = response.Data;
+            } else {
+                Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+            }
+        }
 
 
+        async Task DeleteAvatar(string name) {
+            bool? result = await DialogService.ShowMessageBox(
+               "Warning",
+               "Deleting can not be undone!",
+               yesText: "Delete!", cancelText: "Cancel");
+            var state = result == null ? "Cancelled" : "Deleted!";
+            if (state == "Deleted!") {
 
-}
-
-@code {
-    List<UserAvatar> CurrentUserAvatars = new List<UserAvatar>();
-
-    protected override async Task OnInitializedAsync() {
-        var response = await UserAvatars.GetAll();
-        if (response.Success) {
-            CurrentUserAvatars = response.Data;
-        } else {
-            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+                await UserAvatarLocal.Delete(CurrentUserAvatars.First(x => x.Name == name));
+                var response = await UserAvatars.GetAll();
+                if (response.Success) {
+                    CurrentUserAvatars = response.Data;
+                } else {
+                    Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
+                }
+            }
+        }
+        async Task SetAvatarActive(string name) {
+            await UserAvatars.SetActive(CurrentUserAvatars.First(x => x.Name == name));
+            //await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
         }
     }
-    async Task DeleteAvatar(string name) {
-        await UserAvatarLocal.Delete(CurrentUserAvatars.First(x => x.Name == name));
-        var response = await UserAvatars.GetAll();
-        if (response.Success) {
-            CurrentUserAvatars = response.Data;
-        } else {
-            Snackbar.Add($"Could not get stuff from server. Error: {response.Message}", Severity.Error);
-        }
-    }
-    async Task SetAvatarActive(string name) {
-        await UserAvatars.SetActive(CurrentUserAvatars.First(x => x.Name == name));
-        //await UserAvatarLocal.Set(CurrentUserAvatars.First(x => x.Name == name));
-    }
-}
