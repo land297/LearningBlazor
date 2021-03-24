@@ -1,0 +1,22 @@
+﻿@using Learning.Shared.DbModels
+@inject NavigationManager NavigationManager
+
+@foreach (var slideDeckProgram in Context) {
+    <MudPaper Elevation="3" Class="pa-2 mb-4">
+        <MudText Typo="Typo.h6">@slideDeckProgram.Title</MudText>
+        @if (!string.IsNullOrWhiteSpace(slideDeckProgram.CoverImage)) {
+            <div>
+                <img src="@slideDeckProgram.CoverImage" class="width:100%;" />
+
+            </div>
+        }
+        <MudText Typo="Typo.body1">@slideDeckProgram.Description</MudText>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public List<SlideDeckProgram> Context { get; set; }
+}
+
