@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject Learning.Client.Services.IAuthService Auth
 
 <MudLayout>
     <MudAppBar Elevation="0">
@@ -7,7 +8,7 @@
         <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
                 @*<MudAvatar Image="images/avatar_jonny.jpg" />*@
-                Hej
+                <MudButton Variant="Variant.Text" OnClick="@(() => OpenDrawer(Anchor.Bottom))">Development</MudButton>
             </ActivatorContent>
             <ChildContent>
                 @*<PersonCard Class="mt-n2" />*@
@@ -41,7 +42,27 @@
     </MudMainContent>
 </MudLayout>
 
+
+<MudDrawer @bind-Open="@open" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Devlopment</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <Learning.Client.Components.Login />
+
+        <MudButton OnClick="@(async() => await Auth.Logout())">Log out</MudButton>
+    </MudNavMenu>
+</MudDrawer>
+
 @code {
+    bool open;
+    Anchor anchor;
+
+    void OpenDrawer(Anchor anchor) {
+        open = true;
+        this.anchor = anchor;
+    }
+
     bool _drawerOpen = true;
 
     void DrawerToggle() {
@@ -49,7 +70,7 @@
     }
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
+{
         new BreadcrumbItem("Personal", href: "#"),
         new BreadcrumbItem("Dashboard", href: "#"),
     };

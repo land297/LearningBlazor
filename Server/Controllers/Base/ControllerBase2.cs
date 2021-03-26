@@ -16,6 +16,8 @@ namespace Learning.Server.Controllers.Base {
             RepoBase = obj as IRepoBase3<TEntity>;
             _userService = userService;
         }
+        public ControllerBase2() {
+        }
 
         /*
          *      
@@ -52,10 +54,6 @@ namespace Learning.Server.Controllers.Base {
                     return Created($"{uri(entity.Item1)}", entity.Item1);
                 }
             } catch (Exception ex) {
-                var accesslevel = _userService.GetAccessLevel();
-                if (accesslevel == Shared.Models.Enums.UserRole.Admin || accesslevel == Shared.Models.Enums.UserRole.ContentCreator) {
-                    return Problem(ex.Message);
-                }
                 return Problem("Sorry, we could not handle this request");
             }
         }

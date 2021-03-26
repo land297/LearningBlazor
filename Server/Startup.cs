@@ -57,6 +57,7 @@ namespace Learning.Server {
             services.AddScoped<ICompletedSlideDeckProgramRepo, CompletedSlideDeckProgramRepo>();
             services.AddScoped<IUserAccessSlideDeckProgramRepo, UserAccessSlideDeckProgramRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
+            services.AddScoped<IRepoBase3<BlogPost>, BlogRepo > ();
 
             //services.AddCors(policy =>
             //{

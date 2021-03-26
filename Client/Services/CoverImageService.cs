@@ -16,7 +16,7 @@ namespace Learning.Client.Services {
 
             foreach (var imageFile in e.GetMultipleFiles(maxAllowedFiles)) {
                 var resizedImageFile = await imageFile.RequestImageFileAsync(Format,
-                    100, 100);
+                    400, 400);
                 var buffer = new byte[resizedImageFile.Size];
                 await resizedImageFile.OpenReadStream().ReadAsync(buffer);
                 var imageDataUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";

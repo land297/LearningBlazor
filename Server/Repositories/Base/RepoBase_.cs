@@ -60,6 +60,7 @@ namespace Learning.Server.Repositories.Base {
             await _dbContext.SaveChangesAsync();
             return entity;
         }
+        
         public async Task<T> Remove(int id) {
             var entity = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
             DbSet.Remove(entity);
