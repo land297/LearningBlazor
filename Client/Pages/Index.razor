@@ -17,21 +17,33 @@
                 Label="Load Cover Image"
                 for="fileInput" />*@
 
-    @if (PublicBlogPosts != null) { 
+    @if (PublicBlogPosts != null) {
         @foreach (var item in PublicBlogPosts) {
-        <MudPaper Elevation="3">
-            <MudText Typo="Typo.h1">@item.Title</MudText>
-            <MudText Typo="Typo.body1">@((MarkupString)item.Description)</MudText>
-        </MudPaper>
+            <MudPaper Elevation="3" Class="my-4 pa-6">
+                <MudText Align="Align.Center" Typo="Typo.h1">@item.Title</MudText>
+                <MudText Typo="Typo.body1">@((MarkupString)item.Description)</MudText>
+                <AuthorizeView Roles="Admin, superuser">
+                    <Authorized>
+                        <MudButton OnClick="@(async () => await DeleteBlog(item.Id))">Delete blog</MudButton>
+                    </Authorized>
+                </AuthorizeView>
+            </MudPaper>
         }
     }
 
-    <MudTextField @bind-Value="TextValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
-    <SfRichTextEditor @bind-Value="newBlogPost">
-        @*<RichTextEditorToolbarSettings Items="@Tools" Type="ToolbarType.MultiRow" />*@
-    </SfRichTextEditor>
-    <MudButton OnClick="SaveBlog">Save blog</MudButton>
+    <AuthorizeView Roles="Admin, superuser">
+        <Authorized>
+            <MudTextField @bind-Value="TextValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
+            <SfRichTextEditor @bind-Value="newBlogPost">
+                <RichTextEditorImageSettings SaveUrl="api/video/image/up" Path=""></RichTextEditorImageSettings>
+                <RichTextEditorEvents OnImageUploadSuccess="@ImageUploadSuccess" ImageDelete="@AfterImageDeleteSuccess" />
+                @*<RichTextEditorToolbarSettings Items="@Tools" Type="ToolbarType.MultiRow" />*@
+            </SfRichTextEditor>
 
+            <MudSwitch @bind-Checked="@_isNewBlogPublished" Label="Is published" Color="Color.Primary" />
+            <MudButton OnClick="SaveBlog">Save blog</MudButton>
+        </Authorized>
+    </AuthorizeView>
 </MudContainer>
 
 @code 
@@ -39,20 +51,23 @@
     private List<BlogPost> PublicBlogPosts;
     private string newBlogPost;
     private string TextValue;
+    private bool _isNewBlogPublished;
 
+    public string[] header { get; set; }
+
+    private void ImageUploadSuccess(ImageSuccessEventArgs args) {
+        var headers = args.Response.Headers.ToString();
+        header = headers.Split("name: ");
+        header = header[1].Split("\r");
+
+        // Update the modified image name to display a image in the editor.
+        args.File.Name = header[0];
+    }
+    private void AfterImageDeleteSuccess(AfterImageDeleteEventArgs args) {
+        var headers = args.Src;
+    }
     //
-    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
-    {
-        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
-        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
-        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
-        new ToolbarItemModel() { Command = ToolbarCommand.StrikeThrough },
 
-        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
-        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
-    };
 
     protected override async Task OnInitializedAsync() {
         var r = await Blogs.GetAllPublished();
@@ -68,10 +83,16 @@
         var post = new BlogPost();
         post.Title = TextValue;
         post.Description = newBlogPost;
+        if(_isNewBlogPublished) {
+            post.Published = DateTime.UtcNow;
+        }
         await Blogs.Save(post);
-
-
     }
+
+    private async Task DeleteBlog(int id) {
+        await Blogs.Delete(id);
+    }
+
     private async Task SetCoverImage(InputFileChangeEventArgs e) {
         var maxAllowedFiles = 1;
         //var format = "image/png";

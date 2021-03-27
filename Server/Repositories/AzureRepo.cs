@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Server.Repositories {
     public interface IAzureRepo {
-        Task<Uri> UploadFileToStorage(Stream stream, string container, string fileName);
+        Task<Uri> NewBlobFromStream(Stream stream, string container, string fileName);
         Task<Uri> GetSasUriForBlob(Uri uri);
     }
 
@@ -25,7 +25,7 @@ namespace Learning.Server.Repositories {
            
         }
 
-        public async Task<Uri> UploadFileToStorage(Stream stream, string container, string fileName) {
+        public async Task<Uri> NewBlobFromStream(Stream stream, string container, string fileName) {
             var accuntName = _config["AppSettings:AzureAccountName"];
             var key = _config["AppSettings:AzureAccountKey"];
 

@@ -27,6 +27,10 @@ namespace Learning.Server.Controllers {
             return await CreatedIntUri3<int>(() => _blogRepo.SaveAndGetId(blogpost), (id) => "api/blog/" + id);
 
         }
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id) {
+            return await TryOk(() =>_blogRepo.Remove(id));
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllPublicPublished() {

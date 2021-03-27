@@ -11,6 +11,7 @@ namespace Learning.Client.Services {
     public interface IBlogService {
         Task<sr<int>> Save(BlogPost slideDeck);
         Task<sr<List<BlogPost>>> GetAllPublished();
+        Task<sr<bool>> Delete(int id);
     }
 
     public class BlogService : IBlogService {
@@ -27,6 +28,9 @@ namespace Learning.Client.Services {
             return await _base.Post<BlogPost, int>("api/blog", slideDeck);
         }
 
+        public async Task<sr<bool>> Delete(int id) {
+            return await _base.Delete($"api/blog/delete/{id}");
+        }
         public async Task<sr<List<BlogPost>>> GetAllPublished() {
             return await _base.Get<List<BlogPost>>("api/blog");
         }

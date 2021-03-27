@@ -28,10 +28,13 @@
                     <div class="d-flex flex-row-reverse">
                         <MudButton Variant="Variant.Text" class="ml-4" Color="Color.Secondary" OnClick="@(async () => await DeleteAvatar(item.Name))">Delete</MudButton>
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(async () => await SetAvatarActive(item.Name))">Set Active</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"addUserAvatar/{item.Id}"))">Edit</MudButton>
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewUserAvatar/{item.Id}"))">Learn More</MudButton>
                     </div>
                 </MudPaper>
             }
+            <MudDivider DividerType="DividerType.Middle"/>
+            <MudButton OnClick="@(() => NavigationManager.NavigateTo($"addUserAvatar"))">Add new Avatar</MudButton>
         </MudContainer>
     }
 

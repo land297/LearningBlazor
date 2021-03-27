@@ -73,7 +73,7 @@ namespace Learning.Server.Controllers {
 
                 using var fileStream = section.Body;
 
-                var uri = await _azureRepo.UploadFileToStorage(fileStream, "dfghdfh", fileName);
+                var uri = await _azureRepo.NewBlobFromStream(fileStream, "dfghdfh", fileName);
                 
 
                 reviewable.Content.Add(new Shared.DbModels.AzureBlob() { Uri = uri.ToString(), Name = fileName2, Mime = contentDisposition.Name.ToString()});
