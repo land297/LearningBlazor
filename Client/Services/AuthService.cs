@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using Fluxor;
 using Learning.Client.Features;
 using Learning.Shared;
 using Learning.Shared.DataTransferModel;
@@ -28,20 +29,21 @@ namespace Learning.Client.Services {
         readonly HttpClient _http;
         private readonly ILocalStorageService _localStorageService;
         private readonly AuthenticationStateProvider _authStateProvider;
+        private readonly IDispatcher _dispatcher;
 
         public event Action LoggedIn;
         public event Action LoggedOut;
         public bool IsLoggedIn { get; private set; }
-        public IMediator Mediator { get; set; }
+        //public IMediator Mediator { get; set; }
 
         public AuthService(HttpClient http, ILocalStorageService localStorageService, 
             AuthenticationStateProvider authStateProvider,
-            IMediator mediator) {
+            IDispatcher dispatcher) {
             _http = http;
             _localStorageService = localStorageService;
             _authStateProvider = authStateProvider;
-            Mediator = mediator;
-
+            //Mediator = mediator;
+            _dispatcher = dispatcher;
             //_authStateProvider.AuthenticationStateChanged += _authStateProvider_AuthenticationStateChanged;
         }
 
@@ -58,13 +60,13 @@ namespace Learning.Client.Services {
                 await _localStorageService.SetItemAsync("token", content);
                 
                 IsLoggedIn = true;
-                await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true, UserId = login.Email });
+                _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.CheckServerForActiveAvatarAction());
                 LoggedIn?.Invoke();
                 return sr<string>.GetSuccess(content);
             } else {
                 await _localStorageService.SetItemAsync("token", string.Empty);
                 IsLoggedIn = false;
-                await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = false });
+                _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.RemoveActiveAvatarAction());
                 LoggedOut?.Invoke();
                 return sr<string>.Get(content);
             }
@@ -75,7 +77,7 @@ namespace Learning.Client.Services {
             await _localStorageService.SetItemAsync("token", string.Empty);
 
             IsLoggedIn = false;
-            await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = false });
+            _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.RemoveActiveAvatarAction());
             LoggedOut?.Invoke();
             await _authStateProvider.GetAuthenticationStateAsync();
             return sr<string>.GetSuccess("Loguut");

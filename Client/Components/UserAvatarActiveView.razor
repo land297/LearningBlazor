@@ -1,80 +1,16 @@
-﻿@using Learning.Shared.DbModels
-@*@inject Learning.Client.Services.IUserAvatarLocalService UserAvatarLocal*@
-@inject Learning.Client.Services.IUserAvatarService UserAvatarService
-@*@inject Learning.Client.Services.Auth*@
-@using BlazorState
-@inherits BlazorStateComponent
-@using Learning.Client.Features
+﻿@using Fluxor
+@inject IState<Learning.Client.Store.ActiveAvatarUseCase.ActiveAvatarState> ActiveAvatar
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@if (LoggedInState.IsLoggedIn) {
-    <MudText Typo="Typo.caption">True</MudText>
+@if (ActiveAvatar.Value.Avatar != null) {
+    <MudAvatar Image="@ActiveAvatar.Value.Avatar.CoverImage" Size="Size.Large" Class="ma-2" />
+    <img src="@ActiveAvatar.Value.Avatar.CoverImage" class="width:100%;" />
+    <MudText Typo="Typo.caption">@ActiveAvatar.Value.Avatar.Name</MudText>
 } else {
-    <MudText Typo="Typo.caption">False</MudText>
-}
-
-@if (LoggedInState.IsLoggedIn && ActiveUserAvatarState.UserAvatar != null) {
-    <img src="@ActiveUserAvatarState.UserAvatar.CoverImage" class="width:100%;" />
-    <MudText Typo="Typo.caption">@ActiveUserAvatarState.UserAvatar.Name</MudText>
+    <MudAvatar Size="Size.Large" Class="ma-2">A</MudAvatar>
 }
 
 
 @code {
-    Action GetUser;
-    ActiveUserAvatarState ActiveUserAvatarState => GetState<ActiveUserAvatarState>();
-    //LoggedInState LoggedInState2 => GetState<LoggedInState>();
-    LoggedInState lastState;
-    //string lastUsername = string.Empty;
-    LoggedInState LoggedInState {
-        get {
 
-            var state = GetState<LoggedInState>();
-
-            Console.WriteLine("!! loggedInStateCahnge - UserAvatarActiveView " + state );
-
-            if (state.IsLoggedIn &&
-                //lastState?.IsLoggedIn != state.IsLoggedIn &&
-                lastState?.UserId != state.UserId) {
-                Console.WriteLine("!! loggedInStateCahnge - GetActiveUserAvatar");
-                lastState = state;
-                //lastUsername = state.UserId;
-                Task.Factory.StartNew(GetActiveUserAvatar);
-            } 
-            return state;
-        }
-    }
-
-    async Task GetActiveUserAvatar() {
-        var response = await UserAvatarService.GetActive();
-        if (response.Success) {
-            Console.WriteLine("!! GetActiveUserAvatar - response.Data " + response.Data.Name);
-            await Mediator.Send(new ActiveUserAvatarState.ChangeActiveUserAvatarAction { UserAvatar = response.Data });
-            Console.WriteLine("!! GetActiveUserAvatar - ActiveUserAvatarState " + ActiveUserAvatarState.UserAvatar.Name);
-        }
-    }
-
-    protected override Task OnInitializedAsync() {
-
-        return base.OnInitializedAsync();
-    }
-    //[Parameter]
-    //public UserAvatar UserAvatar { get; set; }
-
-    //string AvatarName { get { return UserAvatar == null ? "xxx" : UserAvatar.Name; } }
-
-    //protected override async Task OnInitializedAsync() {
-
-    //    UserAvatarLocal.UserAvatarChanged += ActiveUserAvatarChange;
-    //    ActiveUserAvatarChange(null);
-    //    await Task.Delay(0);
-    //}
-    //async void ActiveUserAvatarChange(UserAvatar userAvatar) {
-    //    Console.WriteLine("!! UserAvatarActiveView - ActiveUserAvatarChange");
-    //    if (userAvatar == null) {
-    //        UserAvatar = await UserAvatarLocal.Get(false);
-    //    } else {
-    //        UserAvatar = userAvatar;
-    //    }
-
-    //    StateHasChanged();
-    //}
 }

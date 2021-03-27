@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using Fluxor;
 using Learning.Client.Features;
 using Learning.Shared.DataTransferModel;
 using MediatR;
@@ -16,12 +17,12 @@ using System.Threading.Tasks;
 namespace Learning.Client {
     public class CustomAuthStateProvider : AuthenticationStateProvider {
         private readonly ILocalStorageService localStorageService;
+        private readonly IDispatcher _dispatcher;
         private readonly HttpClient _http;
-        public IMediator Mediator { get; set; }
-        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http, IMediator mediator) {
+        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http, IDispatcher dispatcher) {
             this.localStorageService = localStorageService;
             _http = http;
-            Mediator = mediator;
+            _dispatcher = dispatcher;
         }
         
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
@@ -57,10 +58,11 @@ namespace Learning.Client {
                     Console.WriteLine("token is valid");
                     // adding the token to all http calls
                     _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    await Mediator.Send(new LoggedInState.LoggedInAction { IsLoggedIn = true, UserId = "localStorage" });
+                    _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.CheckServerForActiveAvatarAction());
                 }
                 
             }
+
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
             var test = state.User.IsInRole("role1");

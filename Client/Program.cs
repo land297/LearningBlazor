@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using BlazorState;
+using Fluxor;
 using Learning.Client.Services;
 using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -54,7 +55,10 @@ namespace Learning.Client {
                 };
                 //aOptions.UseReduxDevToolsBehavior = true;
             });
-                
+
+            // Add the following
+            var currentAssembly = typeof(Program).Assembly;
+            builder.Services.AddFluxor(options => options.ScanAssemblies(currentAssembly));
 
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore(options => {

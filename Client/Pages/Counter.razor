@@ -1,11 +1,15 @@
 ﻿@page "/counter"
-@using BlazorState
-@inherits BlazorStateComponent
+@*@using BlazorState*@
+@*@inherits BlazorStateComponent*@
 @using Learning.Client.Features
-
+@using Fluxor
+@inject IState<Learning.Client.Store.CounterUseCase.CounterState> CounterState
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@inject IDispatcher Dispatcher
 <h1>Counter</h1>
 
-<p>Current count: @currentCount</p>
+@*<p>Current count: @currentCount</p>*@
+<p>Current count: @CounterState.Value.ClickCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 <MudGrid>
@@ -39,14 +43,16 @@
     </MudItem>
 </MudGrid>
 @code {
-    CounterState CounterState =>GetState<CounterState>();
+    //CounterState CounterState => GetState<CounterState>();
 
-    private int currentCount => CounterState.Count;
+    //private int currentCount => CounterState.Count;
 
- 
+
 
     private void IncrementCount() {
+        var action = new Learning.Client.Store.CounterUseCase.IncrementCounterAction();
+        Dispatcher.Dispatch(action);
         //currentCount++;
-        Mediator.Send(new CounterState.IncrementCountAction { Amount = 5 });
+        //Mediator.Send(new CounterState.IncrementCountAction { Amount = 5 });
     }
 }
