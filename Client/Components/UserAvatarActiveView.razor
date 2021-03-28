@@ -1,11 +1,11 @@
 ﻿@using Fluxor
-@inject IState<Learning.Client.Store.ActiveAvatarUseCase.ActiveAvatarState> ActiveAvatar
+@inject IState<Learning.Client.Store.SessionUseCase.SessionState> ActiveAvatar
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @if (ActiveAvatar.Value.Avatar != null) {
     <MudAvatar Image="@ActiveAvatar.Value.Avatar.CoverImage" Size="Size.Large" Class="ma-2" />
-    <img src="@ActiveAvatar.Value.Avatar.CoverImage" class="width:100%;" />
-    <MudText Typo="Typo.caption">@ActiveAvatar.Value.Avatar.Name</MudText>
+    @*<img src="@ActiveAvatar.Value.Avatar.CoverImage" class="width:100%;" />
+    <MudText Typo="Typo.caption">@ActiveAvatar.Value.Avatar.Name</MudText>*@
 } else {
     <MudAvatar Size="Size.Large" Class="ma-2">A</MudAvatar>
 }

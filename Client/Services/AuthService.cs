@@ -60,13 +60,13 @@ namespace Learning.Client.Services {
                 await _localStorageService.SetItemAsync("token", content);
                 
                 IsLoggedIn = true;
-                _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.CheckServerForActiveAvatarAction());
+                _dispatcher.Dispatch(new Store.SessionUseCase.LoggedInViaTokenAction());
                 LoggedIn?.Invoke();
                 return sr<string>.GetSuccess(content);
             } else {
                 await _localStorageService.SetItemAsync("token", string.Empty);
                 IsLoggedIn = false;
-                _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.RemoveActiveAvatarAction());
+                _dispatcher.Dispatch(new Store.SessionUseCase.LoggedOutSessionAction());
                 LoggedOut?.Invoke();
                 return sr<string>.Get(content);
             }
@@ -77,7 +77,7 @@ namespace Learning.Client.Services {
             await _localStorageService.SetItemAsync("token", string.Empty);
 
             IsLoggedIn = false;
-            _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.RemoveActiveAvatarAction());
+            _dispatcher.Dispatch(new Store.SessionUseCase.LoggedOutSessionAction());
             LoggedOut?.Invoke();
             await _authStateProvider.GetAuthenticationStateAsync();
             return sr<string>.GetSuccess("Loguut");

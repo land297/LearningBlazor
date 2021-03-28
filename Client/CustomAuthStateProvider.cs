@@ -58,7 +58,7 @@ namespace Learning.Client {
                     Console.WriteLine("token is valid");
                     // adding the token to all http calls
                     _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    _dispatcher.Dispatch(new Store.ActiveAvatarUseCase.CheckServerForActiveAvatarAction());
+                    _dispatcher.Dispatch(new Store.SessionUseCase.LoggedInViaTokenAction());
                 }
                 
             }
