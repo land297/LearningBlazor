@@ -1,0 +1,95 @@
+﻿@page "/admin/adminVideopage"
+@using Learning.Shared.DbModels
+@inject Learning.Client.Services.IVideoService Videos
+@inject HttpClient _http
+
+@if (_videos != null) {
+    <MudList>
+        @foreach (var video in _videos) {
+            <MudListItem Text="@video.DisplayName" />
+            <MudButton OnClick="(() => _blazoredVideoUrl = video.FullFileName)">View</MudButton>
+        }
+    </MudList>
+}
+
+@if (_blazoredVideoUrl != string.Empty) {
+<MudDivider Class="mb-4" />
+<BlazoredVideo @ref="_blazoredVideo" class="w-100 m-2"
+               style="max-width:100%;"
+               controls="controls">
+    <source src="@_blazoredVideoUrl" type="video/mp4" />
+</BlazoredVideo>
+}
+
+
+<InputFile id="fileInput" OnChange="StageFileForUpload" hidden multiple />
+<MudTextField @bind-Value="TextValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
+<MudFab HtmlTag="label"
+        Color="Color.Secondary"
+        Icon="@Icons.Material.Filled.VideoLabel"
+        Label="Select video file"
+        for="fileInput" />
+<MudList>
+    @foreach (var file in files) {
+        <MudListItem Text="@file.Key.Name" />
+    }
+</MudList>
+<MudButton OnClick="Upload">Upload</MudButton>
+
+@code {
+    private BlazoredVideo _blazoredVideo;
+    private string _blazoredVideoUrl = string.Empty;
+    private List<Media> _videos;
+    private string TextValue = string.Empty;
+
+    protected override async Task OnInitializedAsync() {
+        var response = await Videos.GetVideos();
+        if (response.Success) {
+            _videos = response.Data;
+        }
+
+    }
+
+    private Dictionary<IBrowserFile, byte[]> files = new Dictionary<IBrowserFile, byte[]>();
+
+    private async Task StageFileForUpload(InputFileChangeEventArgs e) {
+        foreach (var file in e.GetMultipleFiles()) {
+            //need to save the byte[] otherwise we loose it in later calls
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream(file.Size).ReadAsync(buffer);
+            files.Add(file, buffer);
+
+        }
+
+        await Task.Delay(0);
+    }
+    private async Task Upload() {
+        if (files.Count == 0) { return; }
+
+        var content = new MultipartFormDataContent();
+        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+        content.Headers.Add("Description", TextValue);
+
+        var streams = new List<System.IO.Stream>();
+        foreach (var file in files) {
+
+            var stream = new System.IO.MemoryStream(file.Value);
+            content.Add(new StreamContent(stream, Convert.ToInt32(file.Key.Size)), file.Key.ContentType, file.Key.Name);
+            streams.Add(stream);
+        }
+
+        var response = await _http.PostAsync("api/video", content);
+
+        Console.WriteLine(response.IsSuccessStatusCode);
+        Console.WriteLine(response.StatusCode);
+
+        foreach (var stream in streams) {
+            await stream.DisposeAsync();
+        }
+
+        var r = await Videos.GetVideos();
+        if (r.Success) {
+            _videos = r.Data;
+        }
+    }
+}

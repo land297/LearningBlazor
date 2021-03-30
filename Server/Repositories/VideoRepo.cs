@@ -19,6 +19,7 @@ namespace Learning.Server.Repositories {
         FileUpload file { get; set; }
         //public Task Test();
         public Task<Media> SaveIamgeToFtp();
+        Task AddVideo(Media media);
     }
 
     public class VideoRepo : IVideoRepo {
@@ -27,18 +28,26 @@ namespace Learning.Server.Repositories {
         public string ContentUri { get; set; } = @"https://land297.se/test";
         public string ContentUriFtp { get; set; } = @"ftp://ftpcluster.loopia.se";
         //https://land297.se/test/upload/video/aggbollarmhaavningar.mp4
-
-        public VideoRepo(AppDbContext dbContext, IConfiguration config) {
+        IAzureRepo _azureRepo;
+        public VideoRepo(AppDbContext dbContext, IConfiguration config, IAzureRepo azurerepo) {
             _dbContext = dbContext;
             _config = config;
+            _azureRepo = azurerepo;
         }
-
+        public async Task AddVideo(Media media) {
+            await _dbContext.Media.AddAsync(media);
+            await _dbContext.SaveChangesAsync();
+        }
         public async Task<sr<IList<Media>>> GetAllVideos() {
             var response = sr<IList<Media>>.Get();
             try {
                 response.Data = await _dbContext.Media.Where(m => m.Type == "video/mp4").ToListAsync();
                 foreach (var video in response.Data) {
-                    video.FullFileName = ContentUri + video.FullFileName;
+                    if (!video.FullFileName.Contains("https://")) {
+                        video.FullFileName = ContentUri + video.FullFileName;
+                    } else {
+                        video.FullFileName = (await _azureRepo.GetSasUriForBlob(new Uri(video.FullFileName))).ToString();
+                    }
                 }
                 response.Success = true;
             } catch (Exception e) {

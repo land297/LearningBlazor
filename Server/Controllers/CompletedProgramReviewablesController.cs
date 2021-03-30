@@ -17,7 +17,7 @@ namespace Learning.Server.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class CompletedProgramReviewablesController : ControllerBase {
-        private const long MaxFileSize = 10L * 1024L * 1024L * 1024L; // 10GB, adjust to your need
+        private const long MaxFileSize = 1L * 1024L * 1024L * 1024L; // 1GB, adjust to your need
 
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.

@@ -1,21 +1,69 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="main">
-        <div class="top-row px-4">
-            <Learning.Client.Components.UserAvatarActiveView />
-            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
-        </div>
-        <AuthorizeView Roles="Admin, superuser">
-            <Authorized>
-                <div class="content px-4">
-                    @Body
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <p>You can only see this if you're an admin or superuser.</p>
-            </NotAuthorized>
-        </AuthorizeView>
+<AuthorizeView Roles="Admin, superuser">
+    <Authorized>
+        <MudLayout>
+            <MudAppBar Elevation="0">
+                <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                    <ActivatorContent>
+                        @*<MudAvatar Image="images/avatar_jonny.jpg" />*@
+                    </ActivatorContent>
+                    <ChildContent>
+                        @*<PersonCard Class="mt-n2" />*@
 
-  
-    </div>
-</div>
+                    </ChildContent>
+                </MudMenu>
+            </MudAppBar>
+            <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+                <MudNavMenu>
+                    <MudNavLink Href="/admin/usersList" Icon="@Icons.Material.Filled.ListAlt">User list</MudNavLink>
+                    <MudNavLink Href="/admin/addSlideDeck" Icon="@Icons.Material.Filled.ListAlt">Add slide deck</MudNavLink>
+                    <MudNavLink Href="/admin/addSlideDeckProgram" Icon="@Icons.Material.Filled.ListAlt">Add slide deck program</MudNavLink>
+                    <MudNavLink Href="/admin/CompletedReviewableProgramPage" Icon="@Icons.Material.Filled.ListAlt">Review required</MudNavLink>
+                    <MudNavLink Href="/admin/adminListAllSlideDecksPage" Icon="@Icons.Material.Filled.ListAlt">Slide decks</MudNavLink>
+                    <MudNavLink Href="/admin/adminlistAllSlideDeckProgramsPage" Icon="@Icons.Material.Filled.ListAlt">Slide deck programs</MudNavLink>
+                    <MudNavLink Href="/admin/adminVideopage" Icon="@Icons.Material.Filled.ListAlt">Manage videos</MudNavLink>
+
+                </MudNavMenu>
+            </MudDrawer>
+            <MudMainContent>
+                   <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+                    @Body
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+        <p>You can only see this if you're an admin or superuser.</p>
+    </NotAuthorized>
+</AuthorizeView>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+@code {
+    bool open;
+    Anchor anchor;
+
+    void OpenDrawer(Anchor anchor) {
+        open = true;
+        this.anchor = anchor;
+    }
+
+    bool _drawerOpen = true;
+
+    void DrawerToggle() {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+{
+        new BreadcrumbItem("Personal", href: "#"),
+        new BreadcrumbItem("Dashboard", href: "#"),
+    };
+}
