@@ -20,6 +20,8 @@ namespace Learning.Server.Repositories {
         //public Task Test();
         public Task<Media> SaveIamgeToFtp();
         Task AddVideo(Media media);
+
+        Task<string> GetUrl(string filename);
     }
 
     public class VideoRepo : IVideoRepo {
@@ -38,6 +40,15 @@ namespace Learning.Server.Repositories {
             await _dbContext.Media.AddAsync(media);
             await _dbContext.SaveChangesAsync();
         }
+        public async Task<string> GetUrl(string filename) {
+                var d = await _dbContext.Media.FirstOrDefaultAsync(m => m.DisplayName == filename);
+                if (d != null) { 
+                        d.FullFileName = (await _azureRepo.GetSasUriForBlob(new Uri(d.FullFileName))).ToString();
+                return d.FullFileName;
+                }
+            return string.Empty;
+        }
+
         public async Task<sr<IList<Media>>> GetAllVideos() {
             var response = sr<IList<Media>>.Get();
             try {

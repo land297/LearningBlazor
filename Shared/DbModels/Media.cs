@@ -10,5 +10,6 @@ namespace Learning.Shared.DbModels {
         public string FullFileName { get; set; }
         public string DisplayName { get; set; }
         public string Type { get; set; }
+        public string Description { get; set; }
     }
 }

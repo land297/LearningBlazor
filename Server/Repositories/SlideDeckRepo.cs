@@ -20,8 +20,9 @@ namespace Learning.Server.Repositories {
     }
 
     public class SlideDeckRepo : RepoBase2<SlideDeck>, ISlideDeckRepo {
-
-        public SlideDeckRepo(AppDbContext dbContext) : base (dbContext){
+        IVideoRepo _videoRepo;
+        public SlideDeckRepo(AppDbContext dbContext, IVideoRepo v) : base (dbContext){
+            _videoRepo = v;
         }
         public override Task<Tuple<int, string>> SaveDtoAndGetId(object obj) {
             throw new NotImplementedException();
@@ -67,15 +68,30 @@ namespace Learning.Server.Repositories {
         }
         private async Task<List<SlideDeck>> Get(bool getUnpublished) {
             if (getUnpublished) {
-                return await _dbContext.SlideDecks.Where(sd => !sd.IsDeleted).Include(sd => sd.Slides).ToListAsync();
+                var d = await _dbContext.SlideDecks.Where(sd => !sd.IsDeleted).Include(sd => sd.Slides).ToListAsync();
+                foreach (var item in d) {
+                    foreach (var slide in item.Slides) {
+                        slide.VideoUrl = await _videoRepo.GetUrl(slide.VideoUrl);
+                    }
+                }
+                return d;
             } else {
-                return await _dbContext.SlideDecks.Where(sd => sd.Published != DateTime.MinValue && !sd.IsDeleted).Include(sd => sd.Slides).ToListAsync();
+                var d =  await _dbContext.SlideDecks.Where(sd => sd.Published != DateTime.MinValue && !sd.IsDeleted).Include(sd => sd.Slides).ToListAsync();
+                foreach (var item in d) {
+                    foreach (var slide in item.Slides) {
+                        slide.VideoUrl = await _videoRepo.GetUrl(slide.VideoUrl);
+                    }
+                }
+                return d;
             }
         }
         public override async Task<SlideDeck> Get(int id) {
             //TODO: WTF does not id 3 work when debugging?!
             System.Diagnostics.Debug.WriteLine(id);
             var sd = await _dbContext.SlideDecks.Include(sd => sd.Slides).FirstOrDefaultAsync(sd => sd.Id == id);
+                foreach (var slide in sd.Slides) {
+                    slide.VideoUrl = await _videoRepo.GetUrl(slide.VideoUrl);
+                }
             System.Diagnostics.Debug.WriteLine(sd);
             return sd;
         }
@@ -83,6 +99,9 @@ namespace Learning.Server.Repositories {
             //TODO: WTF does not id 3 work when debugging?!
             System.Diagnostics.Debug.WriteLine(slug);
             var sd = await _dbContext.SlideDecks.Include(sd => sd.Slides).FirstOrDefaultAsync(sd => sd.Slug == slug);
+            foreach (var slide in sd.Slides) {
+                slide.VideoUrl = await _videoRepo.GetUrl(slide.VideoUrl);
+            }
             System.Diagnostics.Debug.WriteLine(sd);
             return sd;
         }
