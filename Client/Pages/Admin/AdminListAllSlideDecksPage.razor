@@ -22,7 +22,7 @@
                     <MudTd>@deck.Slides.Count</MudTd>
                     <MudTd>@deck.AccessLevel</MudTd>
                     <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{deck.Id}"))">View</MudButton></MudTd>
-                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{deck.Id}"))">Edit</MudButton></MudTd>
+                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"admin/editSlideDeck/{deck.Id}"))">Edit</MudButton></MudTd>
 
                 </RowTemplate>
             </MudTable>

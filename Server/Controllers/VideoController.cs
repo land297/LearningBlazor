@@ -46,7 +46,20 @@ namespace Learning.Server.Controllers {
                 return Ok(result.Data);
             }
         }
-
+        [HttpPost("slideDeckimage/up")]
+        public async Task<IActionResult> slideDeckimage(IList<IFormFile> UploadFiles) {
+            foreach (var item in UploadFiles) {
+                if (item == null) { continue; }
+                string filename = ContentDispositionHeaderValue.Parse(item.ContentDisposition).FileName.ToString().Trim('"').Replace(" ", null);
+                //TODO: not use filename
+                var uri = await _azureRepo.NewBlobFromStream(item.OpenReadStream(), "images", filename);
+                Response.Headers.Add("name", _azureRepo.GetSasUriForBlob(uri).ToString());
+                Response.Headers.Add("namex", uri.ToString());
+                Response.StatusCode = 200;
+                Response.ContentType = "application/json; charset=utf-8";
+            }
+            return Ok();
+        }
         //TODO: add auth
         [HttpPost("image/up")]
         public async Task<IActionResult> Rename(IList<IFormFile> UploadFiles) {

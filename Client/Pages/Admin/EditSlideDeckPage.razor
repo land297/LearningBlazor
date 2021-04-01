@@ -41,12 +41,15 @@
         } else {
             Snackbar.Add($"Could not load Images source. Error: {r.Message}", Severity.Error);
         }
-       
+
 
         if (Id != default(int)) {
             var sr = await SlideDeckService.Get(Id);
             if (sr.Success) {
                 SlideDeck = sr.Data;
+                foreach (var item in SlideDeck.Slides) {
+                    Console.WriteLine("!! " + item.TextContent);
+                }
             } else {
                 Snackbar.Add($"Could not load slideDeck source. Error: {sr.Message}", Severity.Error);
             }

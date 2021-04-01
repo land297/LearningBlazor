@@ -17,16 +17,27 @@ namespace Learning.Server.Controllers {
     [ApiController]
     public class SlideDeckController : ControllerBase2<SlideDeck> {
         private readonly ISlideDeckRepo _slideDeckRepo;
+        private readonly IAzureRepo _azureRepo;
         IVideoRepo _videos;
         public SlideDeckController(ISlideDeckRepo slideDeckRepo,
-             IUserService us, IVideoRepo v) : base (slideDeckRepo,us){
+             IUserService us, IVideoRepo v, IAzureRepo azureRepo) : base (slideDeckRepo,us){
             _slideDeckRepo = slideDeckRepo;
+            _azureRepo = azureRepo;
             _videos = v;
         }
         [Authorize(Roles = "Admin,ContentCreator")]
         [HttpPost]
         public async Task<IActionResult> Post(SlideDeck slideDeck) {
             //TODO: check if user is authorized
+            foreach (var slide in slideDeck.Slides) {
+                var k = slide.TextContent.Split("scr=");
+                for (int i = 1; i < k.Length; i++) {
+                    var sasurl = k[i].Split(" ").First();
+                    var url = sasurl.Split("?").First();
+                    k[i] = "scr=" + k[i].Replace(sasurl, url).Replace("\"", "");
+                }
+                slide.TextContent = string.Join(null,k);
+            }
             return await CreatedIntUri3<int>(() =>_slideDeckRepo.SaveAndGetId(slideDeck),(id) => "api/SlideDeck/" + id);
             
         }
@@ -52,7 +63,21 @@ namespace Learning.Server.Controllers {
         public async Task<IActionResult> Get(int id) {
             // TODO: need to check if user can get unpublished or not
             
-            return await TryOk(() => _slideDeckRepo.Get(id));
+            //return await TryOk(() => _slideDeckRepo.Get(id));
+            return await TryOk(async () => {
+                var deck = await _slideDeckRepo.Get(id);
+                foreach (var slide in deck.Slides.Where(s => !string.IsNullOrWhiteSpace(s.TextContent))) {
+                    var k = slide.TextContent.Split("scr=");
+                    for (int i = 1; i < k.Length; i++) {
+                        var url = k[i].Split(" ").First().Replace("\"","");
+                        var sasurl = _azureRepo.GetSasUriForBlob(new Uri(url)).ToString();
+                        //.Replace("&", "&amp;");
+                        k[i] = "scr=" + k[i].Replace(url,sasurl);
+                    }
+                    slide.TextContent = string.Join(null, k);
+                 }
+                return deck;
+            });
         }
         [HttpGet("{slug}")]
         public async Task<IActionResult> Get(string slug) {

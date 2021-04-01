@@ -5,32 +5,6 @@
 @using Learning.Shared.DbModels
 
 
-<AuthorizeView Roles="Admin,ContentCreator">
-    <Authorized>
-        @if (SlideDecksAll != null) {
-            <MudTable Items="@SlideDecksAll" Hover="true" Breakpoint="Breakpoint.Sm">
-
-                <HeaderContent>
-                    <MudTh>Title</MudTh>
-                    <MudTh>Description</MudTh>
-                    <MudTh>Page count</MudTh>
-                    <MudTh>AccessLevel</MudTh>
-                </HeaderContent>
-                <RowTemplate Context="deck">
-                    <MudTd>@deck.Title</MudTd>
-                    <MudTd>@deck.Description</MudTd>
-                    <MudTd>@deck.Slides.Count</MudTd>
-                    <MudTd>@deck.AccessLevel</MudTd>
-                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{deck.Id}"))">View</MudButton></MudTd>
-                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"editSlideDeck/{deck.Id}"))">Edit</MudButton></MudTd>
-
-                </RowTemplate>
-            </MudTable>
-        }
-        <MudDivider Class="mb-8" />
-    </Authorized>
-</AuthorizeView>
-
 @if (SlideDecksPublished != null) {
 
     <MudContainer MaxWidth="MaxWidth.Medium">

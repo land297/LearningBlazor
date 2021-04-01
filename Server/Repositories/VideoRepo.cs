@@ -43,7 +43,7 @@ namespace Learning.Server.Repositories {
         public async Task<string> GetUrl(string filename) {
                 var d = await _dbContext.Media.FirstOrDefaultAsync(m => m.DisplayName == filename);
                 if (d != null) { 
-                        d.FullFileName = (await _azureRepo.GetSasUriForBlob(new Uri(d.FullFileName))).ToString();
+                        d.FullFileName = ( _azureRepo.GetSasUriForBlob(new Uri(d.FullFileName))).ToString();
                 return d.FullFileName;
                 }
             return string.Empty;
@@ -57,7 +57,7 @@ namespace Learning.Server.Repositories {
                     if (!video.FullFileName.Contains("https://")) {
                         video.FullFileName = ContentUri + video.FullFileName;
                     } else {
-                        video.FullFileName = (await _azureRepo.GetSasUriForBlob(new Uri(video.FullFileName))).ToString();
+                        video.FullFileName = ( _azureRepo.GetSasUriForBlob(new Uri(video.FullFileName))).ToString();
                     }
                 }
                 response.Success = true;

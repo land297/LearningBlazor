@@ -9,7 +9,8 @@
     @*<MudText Typo="Typo.h6">Page: (@Index)</MudText>*@
     <MudText Typo="Typo.subtitle1">Description</MudText>
     <SfRichTextEditor @bind-Value="Slide.TextContent">
-        <RichTextEditorToolbarSettings Items="@Tools" Type="ToolbarType.MultiRow" />
+        <RichTextEditorImageSettings SaveUrl="api/video/slideDeckimage/up" Path=""></RichTextEditorImageSettings>
+        <RichTextEditorEvents OnImageUploadSuccess="@ImageUploadSuccess" ImageDelete="@AfterImageDeleteSuccess" />
     </SfRichTextEditor>
     <MudSelect T="string" Label="Video" ValueChanged="SelectedVideo">
         @if (Videos != null) {
@@ -25,7 +26,7 @@
             <source src="@Slide.VideoUrl" type="video/mp4" />
         </BlazoredVideo>
     }
-    <MudSelect T="string" Label="Image" ValueChanged="SelectedImage">
+    @*<MudSelect T="string" Label="Image" ValueChanged="SelectedImage">
         @if (Images != null) {
             foreach (var image in Images) {
                 <MudSelectItem Value="@(image.DisplayName)" />
@@ -37,7 +38,7 @@
             <img src="@Slide.ImageUrl" class="width:100%;" />
 
         </div>
-    }
+    }*@
     <InputFile id="fileInputslide" OnChange="UploadFiles" hidden multiple />
     <MudFab HtmlTag="label"
             Color="Color.Success"
@@ -62,6 +63,23 @@
     private string SlideVideoUrlValue = string.Empty;
 
     BlazoredVideo MyBlazorVideo;
+
+    private List<string> namex = new List<string>();
+    private void ImageUploadSuccess(ImageSuccessEventArgs args) {
+        var headers = args.Response.Headers.ToString();
+        var header = headers.Split("name: ");
+        header = header[1].Split("\r");
+
+        // Update the modified image name to display a image in the editor.
+        args.File.Name = header[0];
+
+        header = headers.Split("namex: ");
+        header = header[1].Split("\r");
+        namex.Add(header[0]);
+    }
+    private void AfterImageDeleteSuccess(AfterImageDeleteEventArgs args) {
+        var headers = args.Src;
+    }
 
     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
 {

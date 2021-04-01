@@ -90,6 +90,10 @@
     }
 
     async Task SaveClicked() {
+        foreach (var item in SlideDeck.Slides) {
+            Console.WriteLine("!! " + item.TextContent);
+        }
+
         var response = await SlideDeckService.Save(SlideDeck);
         if (response.Success) {
             Snackbar.Add($"Saved", Severity.Success);

@@ -45,6 +45,20 @@ namespace Learning.Server.Controllers.Base {
         }
 
         [NonAction]
+        public async Task<IActionResult> TryOk<T>(Func<T> task) {
+            try {
+                var result = task.Invoke();
+                if (result == null) {
+                    return NotFound();
+                } else {
+                    return Ok(result);
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [NonAction]
         public async Task<IActionResult> CreatedIntUri3<T>(Func<Task<Tuple<T,string>>> task, Func<T, string> uri) {
             try {
                 var entity = await task.Invoke();
