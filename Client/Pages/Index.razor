@@ -33,7 +33,7 @@
 
     <AuthorizeView Roles="Admin, superuser">
         <Authorized>
-            <MudTextField @bind-Value="TextValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField @bind-Value="TextValue" Label="Blog title" Variant="Variant.Outlined"></MudTextField>
             <SfRichTextEditor @bind-Value="newBlogPost">
                 <RichTextEditorImageSettings SaveUrl="api/video/image/up" Path=""></RichTextEditorImageSettings>
                 <RichTextEditorEvents OnImageUploadSuccess="@ImageUploadSuccess" ImageDelete="@AfterImageDeleteSuccess" />

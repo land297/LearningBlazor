@@ -10,17 +10,32 @@
     <MudContainer MaxWidth="MaxWidth.Medium">
         @foreach (var slidedeck in SlideDecksPublished) {
             @*<MudItem xs="10" sm="6">*@
-            <MudPaper Elevation="3" Class="pa-2 mb-4">
-                <MudText Typo="Typo.h6">@slidedeck.Title</MudText>
-                @if (!string.IsNullOrWhiteSpace(slidedeck.CoverImage)) {
-                    <div>
-                        <img src="@slidedeck.CoverImage" class="width:100%;" />
+        <MudPaper Elevation="3" Class="pa-2 mb-4">
+            <MudText Typo="Typo.h6">@slidedeck.Title</MudText>
+            @if (!string.IsNullOrWhiteSpace(slidedeck.CoverImage)) {
+                <div>
+                    <img src="@slidedeck.CoverImage" class="width:100%;" />
 
-                    </div>
-                }
-                <MudText Typo="Typo.body1">@slidedeck.Description</MudText>
+                </div>
+            }
+            <MudText Typo="Typo.body1">@slidedeck.Description</MudText>
+
+            @*TODO use interface, create own component and resuse for programs*@
+            @if (slidedeck.AccessLevel == Learning.Shared.Models.Enums.AccessLevel.Premium) {
+                <AuthorizeView Roles="Admin, ContentCreator, Premium">
+                    <Authorized>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{slidedeck.Id}"))">Learn More</MudButton>
+                    </Authorized>
+                    <NotAuthorized>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"getPremium"))">Get Premium</MudButton>
+                    </NotAuthorized>
+                </AuthorizeView>
+            } else {
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeck/{slidedeck.Id}"))">Learn More</MudButton>
-            </MudPaper>
+            }
+            <MudText Typo="Typo.body2" Class="my-2">@slidedeck.AccessLevel</MudText>
+
+        </MudPaper>
             @*</MudItem>*@
         }
         @*<MudItem xs="1" sm="3"></MudItem>*@
@@ -35,9 +50,9 @@
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="200px" Height="110px" />
 </MudContainer>
 }
-        @code {
-            List<SlideDeck> SlideDecksPublished;
-            List<SlideDeck> SlideDecksAll;
+@code {
+        List<SlideDeck> SlideDecksPublished;
+        List<SlideDeck> SlideDecksAll;
 
     protected override async Task OnInitializedAsync() {
             var r = await SlideDeckService.GetPublished();

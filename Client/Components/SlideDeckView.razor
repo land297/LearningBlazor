@@ -1,4 +1,5 @@
 ﻿@using Learning.Shared.DbModels
+@inject NavigationManager NavigationManager
 
 @if (SlideDeck != null) {
 <MudPaper Class="pa-16 ma-2" Elevation="3">
@@ -15,9 +16,11 @@
     <MudDivider Class="mb-2" />
     @if (SlideDeck.Slides != null) {
         @foreach (var slide in SlideDeck.Slides) {
-
             <Learning.Client.Components.SlideView Slide="slide"></Learning.Client.Components.SlideView>
         }
+    }
+    @if (SlideDeck.Id == 10) {
+<MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo("getPremium"))">Get Premium</MudButton>
     }
 </MudPaper>
 }

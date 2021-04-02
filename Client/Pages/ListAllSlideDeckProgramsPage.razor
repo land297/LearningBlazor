@@ -7,32 +7,6 @@
 @using Learning.Shared.DbModels
 
 
-<AuthorizeView Roles="Admin,ContentCreator">
-    <Authorized>
-        @if (SlideDeckProgramsAll != null) {
-            <MudTable Items="@SlideDeckProgramsAll" Hover="true" Breakpoint="Breakpoint.Sm">
-                <HeaderContent>
-                    <MudTh>Title</MudTh>
-                    <MudTh>Description</MudTh>
-                    <MudTh>Page count</MudTh>
-                    <MudTh>AccessLevel</MudTh>
-                    <MudTh>Is published</MudTh>
-                </HeaderContent>
-                <RowTemplate Context="deck">
-                    <MudTd>@deck.Title</MudTd>
-                    <MudTd>@deck.Description</MudTd>
-                    <MudTd>@deck.Entries.Count</MudTd>
-                    <MudTd>@deck.AccessLevel</MudTd>
-                    <MudTd>@deck.IsPublished</MudTd>
-                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{deck.Id}"))">View</MudButton></MudTd>
-                    <MudTd><MudButton OnClick="@(() => NavigationManager.NavigateTo($"admin/editSlideDeckProgram/{deck.Id}"))">Edit</MudButton></MudTd>
-
-                </RowTemplate>
-            </MudTable>
-        }
-        <MudDivider Class="mb-8" />
-    </Authorized>
-</AuthorizeView>
 
 @if (SlideDeckProgramsPublished != null) {
 

@@ -18,12 +18,16 @@ namespace Learning.Server.Controllers {
     public class SlideDeckController : ControllerBase2<SlideDeck> {
         private readonly ISlideDeckRepo _slideDeckRepo;
         private readonly IAzureRepo _azureRepo;
+        private readonly IUserService _userService;
+        private readonly IUserAvatarRepo _userAvatar;
         IVideoRepo _videos;
         public SlideDeckController(ISlideDeckRepo slideDeckRepo,
-             IUserService us, IVideoRepo v, IAzureRepo azureRepo) : base (slideDeckRepo,us){
+             IUserService us, IVideoRepo v, IAzureRepo azureRepo, IUserService userService,IUserAvatarRepo userAvatarRepo) : base (slideDeckRepo,us){
             _slideDeckRepo = slideDeckRepo;
             _azureRepo = azureRepo;
             _videos = v;
+            _userService = userService;
+            _userAvatar = userAvatarRepo;
         }
         [Authorize(Roles = "Admin,ContentCreator")]
         [HttpPost]
@@ -66,6 +70,20 @@ namespace Learning.Server.Controllers {
             //return await TryOk(() => _slideDeckRepo.Get(id));
             return await TryOk(async () => {
                 var deck = await _slideDeckRepo.Get(id);
+
+                var activeAvatar =  await _userAvatar.GetActiveInContext();
+
+                if (deck.AccessLevel == Shared.Models.Enums.AccessLevel.Premium &&
+                (_userService.GetAccessLevel() != Shared.Models.Enums.UserRole.Premium))
+                //|| activeAvatar.PersonalProgramAccess.Count(x => x.SlideDeckProgramId == deck.Id) == 0)
+                {
+                    // does not have access. return dummy deck!
+                    var dummy = await _slideDeckRepo.Get(10);
+                    dummy.Title = deck.Title;
+                    dummy.Description = deck.Description + Environment.NewLine + Environment.NewLine + dummy.Description;
+                    
+                    return dummy;
+                }
                 foreach (var slide in deck.Slides.Where(s => !string.IsNullOrWhiteSpace(s.TextContent))) {
                     var k = slide.TextContent.Split("scr=");
                     for (int i = 1; i < k.Length; i++) {
@@ -79,12 +97,12 @@ namespace Learning.Server.Controllers {
                 return deck;
             });
         }
-        [HttpGet("{slug}")]
-        public async Task<IActionResult> Get(string slug) {
-            // TODO: need to check if user can get unpublished or not
+        //[HttpGet("{slug}")]
+        //public async Task<IActionResult> Get(string slug) {
+        //    // TODO: need to check if user can get unpublished or not
 
-            return await TryOk(() => _slideDeckRepo.Get(slug));
-        }
+        //    return await TryOk(() => _slideDeckRepo.Get(slug));
+        //}
 
     }
 }
