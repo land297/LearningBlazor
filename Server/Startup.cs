@@ -58,6 +58,18 @@ namespace Learning.Server {
             services.AddScoped<IUserAccessSlideDeckProgramRepo, UserAccessSlideDeckProgramRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IRepoBase3<BlogPost>, BlogRepo > ();
+            services.AddScoped<IForgottenPasswordRepo, ForgottenPasswordRepo>();
+            services.AddTransient<IMailKitEmailSender, MailKitEmailSender>();
+            services.Configure<MailKitEmailSenderOptions>(options =>
+            {
+                options.Host_Address = Configuration.GetSection("AppSettings:SMTPserver").Value;
+                options.Host_Port = 587;
+                options.Host_Username = Configuration.GetSection("AppSettings:Login").Value;
+                options.Host_Password = Configuration.GetSection("AppSettings:Password").Value;
+                options.Sender_EMail = "noreply@mydomain.com";
+                options.Sender_Name = "My Sender Name";
+            });
+
 
             //services.AddCors(policy =>
             //{

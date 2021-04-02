@@ -22,23 +22,26 @@
     <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Loading test</MudText>
     @foreach (var item in Menu.GetMenues()) {
         <MudNavLink Href="application/users" Icon="@Icons.Material.Outlined.PeopleAlt" Disabled="true">@item</MudNavLink>}
+    <MudNavLink Href="userRegistration" Icon="@Icons.Material.Outlined.AccountCircle">Register user</MudNavLink>
 
-    <AuthorizeView Roles="Admin, superuser">
+    <MudNavLink Href="forgottenPassword" Icon="@Icons.Material.Outlined.OfflineBolt">Forgotten password</MudNavLink>
+
+    <AuthorizeView Roles="Admin">
         <Authorized>
             <MudNavLink Href="/admin/AdminIndex" Icon="@Icons.Custom.Uncategorized.AlertSuccess">Admin</MudNavLink>
         </Authorized>
     </AuthorizeView>
 
-            @*<MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Personal</MudText>
-                <MudNavLink Href="/personal/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
-                <MudNavLink Href="/personal/account" Icon="@Icons.Material.Outlined.Person">Account</MudNavLink>
+    @*<MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Personal</MudText>
+        <MudNavLink Href="/personal/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink Href="/personal/account" Icon="@Icons.Material.Outlined.Person">Account</MudNavLink>
 
-                <MudNavGroup Title="Authentication" Icon="@Icons.Material.Outlined.AssignmentInd" HideExpandIcon="true">
-                    <MudNavLink Href="pages/authentication/login" Icon="@Icons.Material.Outlined.InsertDriveFile">Login</MudNavLink>
-                    <MudNavLink Href="pages/authentication/register" Icon="@Icons.Material.Outlined.InsertDriveFile">Register</MudNavLink>
-                    <MudNavLink Href="pages/authentication/forgot-password" Icon="@Icons.Material.Outlined.InsertDriveFile">Forgot Password</MudNavLink>
-                    <MudNavLink Href="pages/authentication/reset-password" Icon="@Icons.Material.Outlined.InsertDriveFile">Reset Password</MudNavLink>
-                </MudNavGroup>*@
+        <MudNavGroup Title="Authentication" Icon="@Icons.Material.Outlined.AssignmentInd" HideExpandIcon="true">
+            <MudNavLink Href="pages/authentication/login" Icon="@Icons.Material.Outlined.InsertDriveFile">Login</MudNavLink>
+            <MudNavLink Href="pages/authentication/register" Icon="@Icons.Material.Outlined.InsertDriveFile">Register</MudNavLink>
+            <MudNavLink Href="pages/authentication/forgot-password" Icon="@Icons.Material.Outlined.InsertDriveFile">Forgot Password</MudNavLink>
+            <MudNavLink Href="pages/authentication/reset-password" Icon="@Icons.Material.Outlined.InsertDriveFile">Reset Password</MudNavLink>
+        </MudNavGroup>*@
 
 </MudNavMenu>
 

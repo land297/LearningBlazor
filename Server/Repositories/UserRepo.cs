@@ -18,6 +18,7 @@ namespace Learning.Server.Repositories {
         Task<User> Get(int id);
         Task<User> GetUser(string email);
         Task<List<User>> GetAll();
+        Task UpdateUser(User user);
     }
 
     public class UserRepo : RepoBase2<User>, IUserRepo {
@@ -42,6 +43,12 @@ namespace Learning.Server.Repositories {
 
             return dbUser;
         }
+
+        public async Task UpdateUser(User user) {
+            DbSet.Update(user);
+            await _dbContext.SaveChangesAsync();
+        }
+           
         
         //public async Task<int> AddUser(UserRegistration userRegistration) {
         //    if (await UsersExits(userRegistration.Email)) {

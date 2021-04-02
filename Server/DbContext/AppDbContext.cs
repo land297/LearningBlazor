@@ -23,6 +23,7 @@ namespace Learning.Server.DbContext {
         public DbSet<CompletedProgramReviewable> CompletedProgramReviewables { get; set; }
         public DbSet<ReviewableAzureBlob> ReviewableAzureBlobs { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
+        public DbSet<ForgottenPasswordRequest> ForgottenPasswordRequests { get; set; }
 
     }
 }
