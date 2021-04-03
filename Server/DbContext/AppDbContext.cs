@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Learning.Server.DbContext {
     public class AppDbContext : Microsoft.EntityFrameworkCore.DbContext {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {
+            this.Database.EnsureCreated();
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Slide> Slides { get; set; }

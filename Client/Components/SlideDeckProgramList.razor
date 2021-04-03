@@ -2,32 +2,32 @@
 @inject NavigationManager NavigationManager
 
 @foreach (var slideDeckProgram in Context) {
-<MudPaper Elevation="3" Class="pa-2 mb-4">
-    <MudText Typo="Typo.h6">@slideDeckProgram.Title</MudText>
-    @if (!string.IsNullOrWhiteSpace(slideDeckProgram.CoverImage)) {
-        <div>
-            <img src="@slideDeckProgram.CoverImage" class="width:100%;" />
+    <MudPaper Elevation="3" Class="pa-2 mb-4">
+        <MudText Typo="Typo.h6">@slideDeckProgram.Title</MudText>
+        @if (!string.IsNullOrWhiteSpace(slideDeckProgram.CoverImage)) {
+            <div>
+                <img src="@slideDeckProgram.CoverImage" class="width:100%;" />
 
-        </div>
-    }
-    <MudText Typo="Typo.body1">@slideDeckProgram.Description</MudText>
-    @*<MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>*@
+            </div>
+        }
+        <MudText Typo="Typo.body1">@slideDeckProgram.Description</MudText>
+        @*<MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>*@
 
-    @*TODO use interface, create own component and resuse for programs*@
-    @if (slideDeckProgram.AccessLevel == Learning.Shared.Models.Enums.AccessLevel.Premium) {
-        <AuthorizeView Roles="Admin, ContentCreator, Premium">
-            <Authorized>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>
-            </Authorized>
-            <NotAuthorized>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"getPremium"))">Get Premium</MudButton>
-            </NotAuthorized>
-        </AuthorizeView>
-    } else {
-        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>
-    }
-    <MudText Typo="Typo.body2" Class="my-2">@slideDeckProgram.AccessLevel</MudText>
-</MudPaper>
+        @*TODO use interface, create own component and resuse for programs*@
+        @if (slideDeckProgram.AccessLevel == Learning.Shared.Models.Enums.AccessLevel.Premium) {
+            <AuthorizeView Roles="Admin, ContentCreator, Premium">
+                <Authorized>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>
+                </Authorized>
+                <NotAuthorized>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"getPremium"))">Get Premium</MudButton>
+                </NotAuthorized>
+            </AuthorizeView>
+        } else {
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo($"viewSlideDeckProgram/{slideDeckProgram.Id}"))">Learn More</MudButton>
+        }
+        <MudText Typo="Typo.body2" Class="my-2">@slideDeckProgram.AccessLevel</MudText>
+    </MudPaper>
 }
 
 @code {

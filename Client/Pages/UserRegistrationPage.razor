@@ -3,6 +3,7 @@
 @inject Learning.Client.Services.IUserService UserService
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@using System.ComponentModel.DataAnnotations
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -38,9 +39,16 @@
     </MudExpansionPanels>
 </EditForm>
 
+
 @code {
     bool success;
-    Learning.Shared.DataTransferModel.UserRegistration model = new Learning.Shared.DataTransferModel.UserRegistration();
+    Learning.Shared.DataTransferModel.UserRegistration model;
+
+    protected override async Task OnInitializedAsync() {
+        model = new Learning.Shared.DataTransferModel.UserRegistration();
+        await Task.Delay(0);
+    }
+
     private async Task OnValidSubmit(EditContext context) {
         success = true;
         var response = await UserService.Register(model);

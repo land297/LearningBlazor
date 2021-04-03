@@ -42,6 +42,7 @@ namespace Learning.Server {
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            var t = Configuration.GetSection("AppSettings:Token").Value;
             //TODO: Check token event https://forums.asp.net/t/2138711.aspx?Invalidate+JWT+token
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(options => {

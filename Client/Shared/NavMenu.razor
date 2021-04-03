@@ -2,8 +2,11 @@
 
 <MudDivider Class="mb-4" />
 <MudNavMenu>
-    <MudNavLink Href="allUserAvatars" Icon="@Icons.Material.Filled.ListAlt">Avatars</MudNavLink>
-
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="allUserAvatars" Icon="@Icons.Material.Filled.ListAlt">Avatars</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
     @*<MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Content</MudText>
         <MudNavGroup Title="Slide decks" Expanded="true">*@
     <MudNavLink Href="listAllSlideDecksPage" Icon="@Icons.Custom.Uncategorized.AlertSuccess">Slide decks</MudNavLink>
@@ -21,10 +24,16 @@
 
     <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Loading test</MudText>
     @foreach (var item in Menu.GetMenues()) {
-        <MudNavLink Href="application/users" Icon="@Icons.Material.Outlined.PeopleAlt" Disabled="true">@item</MudNavLink>}
-    <MudNavLink Href="userRegistration" Icon="@Icons.Material.Outlined.AccountCircle">Register user</MudNavLink>
+    <MudNavLink Href="application/users" Icon="@Icons.Material.Outlined.PeopleAlt" Disabled="true">@item</MudNavLink>
+            }
 
-    <MudNavLink Href="forgottenPassword" Icon="@Icons.Material.Outlined.OfflineBolt">Forgotten password</MudNavLink>
+    <AuthorizeView>
+        <NotAuthorized>
+            <MudNavLink Href="userRegistration" Icon="@Icons.Material.Outlined.AccountCircle">Register user</MudNavLink>
+            <MudNavLink Href="forgottenPassword" Icon="@Icons.Material.Outlined.OfflineBolt">Forgotten password</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+
 
     <AuthorizeView Roles="Admin">
         <Authorized>
