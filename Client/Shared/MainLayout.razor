@@ -2,7 +2,7 @@
 @inject Learning.Client.Services.IAuthService Auth
 
 
-<MudThemeProvider Theme="_themeManager.Theme" />
+<MudThemeProvider Theme="_themeManager" />
 <MudLayout>
     <MudAppBar Elevation="0">
         @*<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />*@
@@ -57,8 +57,7 @@
     </MudNavMenu>
 </MudDrawer>
 
-<MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
-<MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
+
 
 @code {
     bool open;
@@ -81,22 +80,13 @@
         new BreadcrumbItem("Dashboard", href: "#"),
     };
 
-    private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
+    private MudTheme _themeManager;
 
-    void OpenThemeManager(bool value) {
-        _themeManagerOpen = value;
-    }
-
-    void UpdateTheme(ThemeManagerTheme value) {
-        _themeManager = value;
-        StateHasChanged();
-    }
+   
 
     protected override void OnInitialized() {
-        _themeManager.Theme = new MudBlazorAdminDashboard();
-        _themeManager.DrawerClipMode = DrawerClipMode.Always;
-        _themeManager.FontFamily = "Montserrat";
-        _themeManager.DefaultBorderRadius = 3;
+        _themeManager = new MudBlazorAdminDashboard();
+ 
     }
 }
 

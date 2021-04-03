@@ -65,8 +65,8 @@ namespace Learning.Client {
 
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
-            var test = state.User.IsInRole("role1");
-            Console.WriteLine($"User is in role role1: {test}");
+            var test = state.User.IsInRole("role2");
+            Console.WriteLine($"!! User is in role role2: {test}");
             NotifyAuthenticationStateChanged(Task.FromResult(state));
             return state;
         }
