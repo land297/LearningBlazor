@@ -58,7 +58,7 @@ namespace Learning.Client.Services {
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode) {
                 await _localStorageService.SetItemAsync("token", content);
-                
+                Console.WriteLine("!! AuthService login - is logged in!");
                 IsLoggedIn = true;
                 _dispatcher.Dispatch(new Store.SessionUseCase.LoggedInViaTokenAction());
                 LoggedIn?.Invoke();

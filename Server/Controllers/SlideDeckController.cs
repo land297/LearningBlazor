@@ -33,7 +33,7 @@ namespace Learning.Server.Controllers {
         [HttpPost]
         public async Task<IActionResult> Post(SlideDeck slideDeck) {
             //TODO: check if user is authorized
-            foreach (var slide in slideDeck.Slides) {
+            foreach (var slide in slideDeck.Slides.Where(s => !string.IsNullOrEmpty(s.TextContent))) {
                 var k = slide.TextContent.Split("scr=");
                 for (int i = 1; i < k.Length; i++) {
                     var sasurl = k[i].Split(" ").First();

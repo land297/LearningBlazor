@@ -28,6 +28,7 @@ namespace Learning.Shared.DbModels {
         public bool Featured { get; set; }
         public AccessLevel AccessLevel { get; set; }
         public IList<Slide> Slides { get; set; } = new List<Slide>();
+        public ICollection<SlideDeckProgramEntry> Entries { get; set; }
 
         public override void CopyValues(SlideDeck source, ref SlideDeck copy) {
             throw new NotImplementedException();

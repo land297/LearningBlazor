@@ -1,0 +1,30 @@
+﻿@page "/loginPage"
+
+@inject Learning.Client.Services.IAuthService Auth
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<h3>LoginPage</h3>
+<MudTextField @bind-Value="@_email" Label="Email" Variant="Variant.Outlined"></MudTextField>
+<MudTextField @bind-Value="@_password" Label="Password" Variant="Variant.Outlined"></MudTextField>
+<MudButton OnClick="@LoginUser">Log in</MudButton>
+@code {
+    private string _email;
+    private string _password;
+    private async Task LoginUser() {
+        var login = new Learning.Shared.DataTransferModel.Login();
+
+        login.Email = _email;
+        login.Password = _password;
+
+
+
+        var response = await Auth.Login(login);
+        if (response.Success) {
+            NavigationManager.NavigateTo("/",true);
+        } else {
+            Snackbar.Add($"Could not login. Error: {response.Message}", Severity.Error);
+        }
+
+    }
+}

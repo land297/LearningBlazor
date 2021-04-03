@@ -55,7 +55,11 @@ namespace Learning.Server.Repositories {
             var userId = _userService.GetUserId();
 
             var result = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).SingleOrDefaultAsync();
-            result.UserAvatar = await _userAvatar.Get(result.UserAvatarId);
+            if (result.UserAvatarId == null) {
+                result = null;
+                return result;
+            }
+            result.UserAvatar = await _userAvatar.Get(result.UserAvatarId.GetValueOrDefault());
             if (userId > 0) {
                 result.IsPublic = true;
                 await _dbContext.SaveChangesAsync();
@@ -67,7 +71,10 @@ namespace Learning.Server.Repositories {
 
         public async Task<CompletedSlideDeckProgram> GetAny(int id) {
             var result = await _dbContext.CompletedSlideDeckPrograms.Where(x => x.Id == id).Include(x => x.SlideDeckProgram).SingleOrDefaultAsync();
-            result.UserAvatar = await _userAvatar.Get(result.UserAvatarId);
+            if (result.UserAvatarId == null) {
+                return null;
+            }
+            result.UserAvatar = await _userAvatar.Get(result.UserAvatarId.GetValueOrDefault());
             return result;
         }
 

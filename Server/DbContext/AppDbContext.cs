@@ -10,6 +10,57 @@ namespace Learning.Server.DbContext {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {
             this.Database.EnsureCreated();
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            // works because of naming convetion
+            //modelBuilder.Entity<OwnerExerciseAccess>().HasKey(cs => new { cs.ExerciseId, cs.OwnerId });
+            //modelBuilder.Entity<OwnerExerciseProgramAccess>().HasKey(cs => new { cs.ExerciseProgramId, cs.OwnerId });
+            //modelBuilder.Entity<SlideDeckProgramEntry>().WillCascadeOnDelete(false);
+            //modelBuilder.Entity<SlideDeckProgramEntry>()
+
+            //.WithMany()
+            //.WillCascadeOnDelete(false);
+            //modelBuilder.Entity<SlideDeckProgramEntry>()
+            //.HasOne(r => r.SlideDeck)
+            //.WithMany()
+            //.OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<SlideDeckProgramEntry>()
+            //    .HasOne(r => r.SlideDeckProgram)
+            //    .WithMany()
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+
+            //modelBuilder.Entity<SlideDeckProgramEntry>()
+            //    .HasOne<SlideDeck>(e => e.SlideDeck)
+            //    .WithMany(d => d.Entries)
+            //    .HasForeignKey(e => e.SlideDeckId)
+            //    .IsRequired(true)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<SlideDeckProgramEntry>()
+            //    .HasOne<SlideDeckProgram>(e => e.SlideDeckProgram)
+            //    .WithMany(d => d.Entries)
+            //    .HasForeignKey(e => e.SlideDeckProgramId)
+            //    .IsRequired(true)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<CompletedSlideDeckProgram>()
+            //  .HasOne<UserAvatar>(e => e.UserAvatar)
+            //  .WithMany(d => d.CompletedSlideDeckPrograms)
+            //  .HasForeignKey(e => e.UserAvatarId)
+            //  .IsRequired(true)
+            //  .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<CompletedSlideDeckProgram>()
+            //  .HasOne<SlideDeckProgram>(e => e.SlideDeckProgram)
+            //  .WithMany(d => d.Completeds)
+            //  .HasForeignKey(e => e.SlideDeckProgramId)
+            //  .IsRequired(true)
+            //  .OnDelete(DeleteBehavior.Restrict);
+
+
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<User> Users { get; set; }
         public DbSet<Slide> Slides { get; set; }
         public DbSet<SlideDeck> SlideDecks { get; set; }

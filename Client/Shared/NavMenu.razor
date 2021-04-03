@@ -1,5 +1,5 @@
 ﻿@inject Learning.Client.Services.IMenuContentService Menu
-
+@inject Learning.Client.Services.IAuthService Auth
 <MudDivider Class="mb-4" />
 <MudNavMenu>
     <AuthorizeView>
@@ -28,7 +28,11 @@
             }
 
     <AuthorizeView>
+        <Authorized>
+            <MudNavLink OnClick="@(async () => await Auth.Logout())"Icon="@Icons.Material.Outlined.Login">Logout</MudNavLink>
+        </Authorized>
         <NotAuthorized>
+            <MudNavLink Href="loginPage"  Icon="@Icons.Material.Outlined.Login">Login</MudNavLink>
             <MudNavLink Href="userRegistration" Icon="@Icons.Material.Outlined.AccountCircle">Register user</MudNavLink>
             <MudNavLink Href="forgottenPassword" Icon="@Icons.Material.Outlined.OfflineBolt">Forgotten password</MudNavLink>
         </NotAuthorized>

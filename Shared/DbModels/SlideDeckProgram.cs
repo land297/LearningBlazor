@@ -29,7 +29,7 @@ namespace Learning.Shared.DbModels {
         public bool Featured { get; set; }
         public AccessLevel AccessLevel { get; set; }
         public IList<SlideDeckProgramEntry> Entries { get; set; } = new List<SlideDeckProgramEntry>();
-
+        public ICollection<CompletedSlideDeckProgram> Completeds { get; set; }
         public override void CopyValues(SlideDeckProgram source, ref SlideDeckProgram copy) {
             throw new NotImplementedException();
         }

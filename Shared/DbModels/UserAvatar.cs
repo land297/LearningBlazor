@@ -31,10 +31,10 @@ namespace Learning.Shared.DbModels {
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         //TODO: is this a good..
         [JsonIgnore]
-        public List<CompletedSlideDeckProgram> CompletedSlideDeckPrograms { get; set; }
+        public ICollection<CompletedSlideDeckProgram> CompletedSlideDeckPrograms { get; set; }
 
         [NotMapped]
-        public List<UserAccessSlideDeckProgram> PersonalProgramAccess { get; set; }
+        public IList<UserAccessSlideDeckProgram> PersonalProgramAccess { get; set; }
         public override void CopyValues(UserAvatar source, ref UserAvatar copy) {
             throw new NotImplementedException();
         }

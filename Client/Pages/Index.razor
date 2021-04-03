@@ -31,7 +31,7 @@
         }
     }
 
-    <AuthorizeView Roles="Admin, superuser">
+    <AuthorizeView Roles="Admin">
         <Authorized>
             <MudTextField @bind-Value="TextValue" Label="Blog title" Variant="Variant.Outlined"></MudTextField>
             <SfRichTextEditor @bind-Value="newBlogPost">

@@ -53,7 +53,7 @@
         success = true;
         var response = await UserService.Register(model);
         if (response.Success) {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/loginPage");
         } else {
             Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
             Snackbar.Add($"{response.Message} - ingenting gick bra!!", Severity.Error, config => {

@@ -43,7 +43,7 @@ namespace Learning.Client {
             //builder.Services.AddMudBlazorResizeListener();
 
             // TODO: this will be on GithHub public for all and on the client when running?
-            SyncfusionLicenseProvider.RegisterLicense("MzcyMDg2QDMxMzgyZTM0MmUzMG1zdExMNE43amJ3bGwwM0x1dHBNVDJMM2RDc0doZHA2djYyaWpzOU1QL1U9");
+            SyncfusionLicenseProvider.RegisterLicense("NDIzMTU3QDMxMzkyZTMxMmUzME1TQzZuaU5RbUdpRUR5Sjh3bTV1Rkt4dzJ3TmRGdFF6RVE4RkxjMWV2Ujg9");
             builder.Services.AddSyncfusionBlazor();
 
             builder.Services.AddBlazoredLocalStorage();
