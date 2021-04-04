@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learning.Server.Controllers {
-    [Authorize]
+   
     [Route("api/[controller]")]
     [ApiController]
     public class SlideDeckProgramController : ControllerBase2<SlideDeckProgram> {
